@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task Reference Sheets</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;}
+body{background:#0a0e1a;color:#e6edf7;font-family:'IBM Plex Mono',monospace;margin:0;padding:20px 16px 60px;}
+.wrap{max-width:700px;margin:0 auto;}
+h1{font-size:20px;margin:0 0 4px;}
+.sub{color:#8a97ac;font-size:12.5px;margin:0 0 18px;line-height:1.5;}
+button.printbtn{
+  background:#22d3ee;color:#04262b;border:none;padding:12px 20px;border-radius:8px;
+  font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;margin-bottom:20px;
+}
+.task{background:#131a29;border:1px solid #243248;border-radius:10px;padding:18px;margin-bottom:18px;}
+.task h2{font-size:15px;margin:0 0 10px;color:#f0a838;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+td{padding:6px 4px;border-bottom:1px dashed #243248;text-align:left;}
+td:first-child{color:#8a97ac;width:42%;}
+td:last-child{font-weight:600;}
+@media print{
+  body{background:#fff;color:#000;padding:0;}
+  button.printbtn{display:none;}
+  .sub{color:#333;}
+  .task{border:1px solid #000;background:#fff;page-break-after:always;}
+  .task h2{color:#000;border-bottom:2px solid #000;padding-bottom:6px;}
+  td{border-bottom:1px solid #999;color:#000;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>TASK REFERENCE SHEETS</h1>
+  <p class="sub">The search-gate details you need to open each practice task in Outbound, Picking, Inventory, and Returns. Print this once and keep it on hand — you'll need to type these exact values before each app will let you in, exactly like a real system checking against an open task.</p>
+  <button class="printbtn" onclick="window.print()">📥 Download as PDF</button>
+
+  <div class="task">
+    <h2>🚚 OUTBOUND DISPATCH — Search Manifest</h2>
+    <table>
+      <tr><td>Manifest ID</td><td>DSP-33210</td></tr>
+      <tr><td>Vehicle Number</td><td>KA-05-AB-1234</td></tr>
+      <tr><td>Dock Door</td><td>D-02</td></tr>
+      <tr><td>Route</td><td>Bengaluru South Hub</td></tr>
+      <tr><td>Total Cartons</td><td>10</td></tr>
+    </table>
+  </div>
+
+  <div class="task">
+    <h2>🧾 ORDER PICKING — Open Pick List</h2>
+    <table>
+      <tr><td>Pick List ID</td><td>PKL-77410</td></tr>
+      <tr><td>Order Batch</td><td>BATCH-2214</td></tr>
+      <tr><td>Locations Used</td><td>5 bins</td></tr>
+      <tr><td>Total Lines</td><td>8</td></tr>
+    </table>
+  </div>
+
+  <div class="task">
+    <h2>📦 CYCLE COUNT — Open Count Task</h2>
+    <table>
+      <tr><td>Task ID</td><td>CC-4471</td></tr>
+      <tr><td>Zone</td><td>B</td></tr>
+      <tr><td>Bin Range</td><td>B-01 to B-10</td></tr>
+      <tr><td>Count Type</td><td>Full Bin Count</td></tr>
+      <tr><td>Tolerance</td><td>±5% of system qty</td></tr>
+    </table>
+  </div>
+
+  <div class="task">
+    <h2>↩️ RETURNS PROCESSING — Search Return Order</h2>
+    <table>
+      <tr><td>RO / RMA Number</td><td>RMA-88120</td></tr>
+      <tr><td>Order Ref</td><td>ORD-55210</td></tr>
+      <tr><td>RO Status</td><td>Approved</td></tr>
+      <tr><td>Reason</td><td>Wrong size / assorted return</td></tr>
+      <tr><td>Expected Items</td><td>5</td></tr>
+    </table>
+  </div>
+
+  <p class="sub">Item and location barcodes for all four tasks are on the Item Barcode Master Sheet and Location Barcode Sheet — you don't need separate barcode sheets for each task.</p>
+</div>
+</body>
+</html>

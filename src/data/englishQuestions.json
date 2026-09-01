@@ -1,0 +1,42 @@
+[
+  {
+    "sentence": "My name ____ Rahul.",
+    "answer": "is"
+  },
+  {
+    "sentence": "I work ____ a warehouse.",
+    "answer": "in"
+  },
+  {
+    "sentence": "I wake up ____ seven.",
+    "answer": "at"
+  },
+  {
+    "sentence": "I leave home ____ eight.",
+    "answer": "at"
+  },
+  {
+    "sentence": "Where ____ you work?",
+    "answer": "do"
+  },
+  {
+    "sentence": "Can you ____ me?",
+    "answer": "help"
+  },
+  {
+    "sentence": "I ____ checking the stock.",
+    "answer": "am"
+  },
+  {
+    "sentence": "Please ____ this box here.",
+    "answer": "keep"
+  },
+  {
+    "sentence": "I ____ understand.",
+    "answer": "don't"
+  },
+  {
+    "sentence": "How ____ I help you?",
+    "answer": "can"
+  }
+]

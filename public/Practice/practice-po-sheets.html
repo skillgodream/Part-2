@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practice PO Sheets</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;}
+body{background:#0a0e1a;color:#e6edf7;font-family:'IBM Plex Mono',monospace;margin:0;padding:20px 16px 60px;}
+.wrap{max-width:700px;margin:0 auto;}
+h1{font-size:20px;margin:0 0 4px;}
+.sub{color:#8a97ac;font-size:12.5px;margin:0 0 18px;line-height:1.5;}
+button.printbtn{
+  background:#fb7185;color:#2b0a0f;border:none;padding:12px 20px;border-radius:8px;
+  font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;margin-bottom:20px;
+}
+.po{background:#131a29;border:1px solid #243248;border-radius:10px;padding:18px;margin-bottom:20px;}
+.po h2{font-size:15px;margin:0 0 10px;color:#f0a838;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+td,th{padding:6px 4px;border-bottom:1px dashed #243248;text-align:left;}
+th{color:#8a97ac;font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;}
+.refrow td{border-bottom:1px dashed #243248;}
+.refrow td:first-child{color:#8a97ac;width:40%;}
+.refrow td:last-child{font-weight:600;}
+@media print{
+  body{background:#fff;color:#000;padding:0;}
+  button.printbtn{display:none;}
+  .sub{color:#333;}
+  .po{border:1px solid #000;background:#fff;page-break-after:always;}
+  .po h2{color:#000;border-bottom:2px solid #000;padding-bottom:6px;}
+  td,th{border-bottom:1px solid #999;color:#000;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>PRACTICE PURCHASE ORDERS</h1>
+  <p class="sub">4 different POs for repeated Inbound Receiving practice — use a different one each time so the exercise isn't memorized. Item barcodes for all line items are on the separate Item Barcode Master Sheet. Each PO prints on its own page.</p>
+  <button class="printbtn" onclick="window.print()">📥 Download All 4 POs as PDF</button>
+  <p style="font-size:11px;color:#8a97ac;margin-top:-14px;margin-bottom:18px;">Opens your print dialog — choose "Save as PDF" as the destination.</p>
+  <div id="poWrap"></div>
+</div>
+<script>
+const POS = [
+{
+  poNumber:'PO-2026-8842', vendor:'Reliance Retail Distribution Pvt Ltd', invoice:'INV-556231-B',
+  date:'08-Aug-2026', dock:'D-04', docket:'DKT-55123', amount:186400, totalQty:351, boxes:24, gst:'Yes', vendorType:'Regular',
+  items:[
+    ['Cotton T-Shirt Blue - L',50],['Steel Water Bottle 1L',30],['Notebook A4 200pg',40],
+    ['LED Desk Lamp',20],['Wireless Mouse',25],['Ceramic Mug Set (4pc)',15],
+    ['Desk Organizer Tray',22],['Yoga Mat 6mm',18],['Bluetooth Speaker Mini',12],
+    ['Kids Story Book Set',35],['Steel Lunch Box',24],['Phone Case - Universal',60]
+  ]
+},
+{
+  poNumber:'PO-2026-9015', vendor:'Metro Wholesale Supplies', invoice:'INV-560012-C',
+  date:'22-Aug-2026', dock:'D-01', docket:'DKT-56410', amount:152800, totalQty:280, boxes:19, gst:'Yes', vendorType:'Regular',
+  items:[
+    ['Backpack 30L',40],['Foldable Umbrella',60],['Scientific Calculator',25],
+    ['Aviator Sunglasses',30],['Wireless Keyboard',20],['USB-C Charger 20W',50],
+    ['Fleece Blanket',18],['Memory Foam Pillow',22],['Running Shoes - Size 9',15]
+  ]
+},
+{
+  poNumber:'PO-2026-9210', vendor:'Horizon FMCG Distributors', invoice:'INV-561230-A',
+  date:'02-Sep-2026', dock:'D-03', docket:'DKT-57890', amount:104300, totalQty:286, boxes:21, gst:'Yes', vendorType:'Regular',
+  items:[
+    ['Cotton Socks (3-pair pack)',80],['Kitchen Scale Digital',20],['Non-Stick Frying Pan',15],
+    ['LED Table Fan',12],['Wall Clock Analog',20],['Badminton Racket',16],
+    ['Cricket Bat - Kids',10],['Table Tennis Set',8],['Insulated Coffee Mug',45],
+    ['Notebook A4 200pg',60]
+  ]
+},
+{
+  poNumber:'PO-2026-9388', vendor:'Prime Retail Logistics Pvt Ltd', invoice:'INV-562410-B',
+  date:'14-Sep-2026', dock:'D-04', docket:'DKT-58120', amount:89750, totalQty:220, boxes:15, gst:'No', vendorType:'Regular',
+  items:[
+    ['Wireless Mouse',35],['Ceramic Mug Set (4pc)',20],['Kids Story Book Set',28],
+    ['Phone Case - Universal',50],['Aviator Sunglasses',22],['Running Shoes - Size 9',18],
+    ['Non-Stick Frying Pan',14],['Insulated Coffee Mug',33]
+  ]
+}
+];
+const wrap = document.getElementById('poWrap');
+POS.forEach((po,idx)=>{
+  const rows = po.items.map((it,i)=>'<tr><td>'+(i+1)+'</td><td>'+it[0]+'</td><td>'+it[1]+'</td></tr>').join('');
+  const el = document.createElement('div');
+  el.className='po';
+  el.innerHTML =
+    '<h2>PURCHASE ORDER '+(idx+1)+' of '+POS.length+' — Sample</h2>'+
+    '<table>'+
+      '<tr class="refrow"><td>PO Number</td><td>'+po.poNumber+'</td></tr>'+
+      '<tr class="refrow"><td>Vendor</td><td>'+po.vendor+'</td></tr>'+
+      '<tr class="refrow"><td>Invoice Number</td><td>'+po.invoice+'</td></tr>'+
+      '<tr class="refrow"><td>Invoice Date</td><td>'+po.date+'</td></tr>'+
+      '<tr class="refrow"><td>Docket Number</td><td>'+po.docket+'</td></tr>'+
+      '<tr class="refrow"><td>Dock Door</td><td>'+po.dock+'</td></tr>'+
+      '<tr class="refrow"><td>Invoice Amount</td><td>₹'+po.amount.toLocaleString('en-IN')+'</td></tr>'+
+      '<tr class="refrow"><td>Total Invoice Quantity</td><td>'+po.totalQty+'</td></tr>'+
+      '<tr class="refrow"><td>Invoice Boxes</td><td>'+po.boxes+'</td></tr>'+
+      '<tr class="refrow"><td>GST Invoice</td><td>'+po.gst+'</td></tr>'+
+      '<tr class="refrow"><td>Vendor Type</td><td>'+po.vendorType+'</td></tr>'+
+      '<tr class="refrow"><td>Total Line Items</td><td>'+po.items.length+'</td></tr>'+
+    '</table>'+
+    '<table style="margin-top:12px;"><tr><th>#</th><th>Description</th><th>Expected Qty</th></tr>'+rows+'</table>'+
+    '<p style="margin-top:12px;font-size:10.5px;color:#8a97ac;">Training document — WMS Practice Environment. Barcodes are on the separate Item Barcode Master Sheet.</p>';
+  wrap.appendChild(el);
+});
+</script>
+</body>
+</html>

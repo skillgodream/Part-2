@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillGo English Foundations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a1420; --surface:#101d2e; --surface-2:#152436; --line:#223349;
+    --text:#e8edf5; --muted:#7d8ba3;
+    --amber:#f5a524; --cyan:#22d3ee; --rose:#fb7185; --green:#34d399;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    background-image:radial-gradient(circle at 15% 0%, rgba(34,211,238,0.06), transparent 40%),
+      radial-gradient(circle at 85% 100%, rgba(245,165,36,0.05), transparent 40%);
+    color:var(--text); font-family:'IBM Plex Sans',sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .hindi{font-family:'Noto Sans Devanagari','IBM Plex Sans',sans-serif;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  #app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
+
+  header{padding:16px 18px 12px;border-bottom:1px solid var(--line);background:var(--surface);}
+  .brandrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .brand{display:flex;align-items:center;gap:8px;}
+  .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);}
+  .brand-name{font-family:'IBM Plex Mono';font-size:12px;letter-spacing:0.14em;color:var(--muted);text-transform:uppercase;}
+  .streak{font-family:'IBM Plex Mono';font-size:12px;color:var(--amber);display:flex;align-items:center;gap:5px;}
+  .backrow{display:flex;align-items:center;gap:8px;margin-bottom:4px;cursor:pointer;}
+  .backrow.hidden{display:none;}
+  .backrow span{font-family:'IBM Plex Mono';font-size:11px;color:var(--muted);}
+  .unit-title{font-size:20px;font-weight:600;margin:2px 0 2px;}
+  .unit-sub{font-size:12px;color:var(--muted);font-family:'IBM Plex Mono';}
+  .ledger{display:flex;gap:4px;margin-top:12px;}
+  .ledger-seg{flex:1;height:4px;border-radius:2px;background:var(--line);overflow:hidden;}
+  .ledger-seg.done{background:var(--cyan);}
+
+  main{flex:1;padding:20px 18px 90px;}
+  .screen{display:none;animation:fadeIn 0.25s ease;}
+  .screen.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .roadmap-item{display:flex;align-items:center;gap:14px;padding:14px;margin-bottom:10px;
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:border-color 0.15s;}
+  .roadmap-item:hover{border-color:var(--cyan);}
+  .roadmap-item.locked{opacity:0.45;cursor:not-allowed;}
+  .rm-num{font-family:'IBM Plex Mono';font-weight:700;font-size:13px;width:34px;height:34px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;background:var(--surface-2);color:var(--cyan);flex-shrink:0;}
+  .roadmap-item.locked .rm-num{color:var(--muted);}
+  .rm-body{flex:1;}
+  .rm-title{font-size:14px;font-weight:600;}
+  .rm-meta{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono';margin-top:2px;}
+  .rm-badge{font-family:'IBM Plex Mono';font-size:10px;padding:3px 7px;border-radius:5px;background:rgba(52,211,153,0.12);color:var(--green);white-space:nowrap;}
+
+  .section-label{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:0.12em;color:var(--muted);
+    text-transform:uppercase;margin:22px 0 10px;}
+  .section-label:first-child{margin-top:0;}
+
+  .flip-wrap{display:flex;flex-direction:column;align-items:center;gap:18px;padding-top:10px;}
+  .flip-count{font-family:'IBM Plex Mono';font-size:12px;color:var(--muted);}
+  .flipcard{width:100%;max-width:340px;height:230px;perspective:1200px;cursor:pointer;}
+  .flipcard-inner{position:relative;width:100%;height:100%;transition:transform 0.45s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;}
+  .flipcard.flipped .flipcard-inner{transform:rotateY(180deg);}
+  .flipcard-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;border:1px solid var(--line);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;}
+  .flipcard-front{background:var(--surface);}
+  .flipcard-back{background:var(--surface-2);border-color:var(--cyan);transform:rotateY(180deg);}
+  .fc-tag{font-family:'IBM Plex Mono';font-size:10px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px;}
+  .fc-tense{position:absolute;top:14px;right:14px;font-family:'IBM Plex Mono';font-size:9px;padding:3px 7px;border-radius:5px;
+    background:rgba(245,165,36,0.15);color:var(--amber);text-transform:uppercase;letter-spacing:0.08em;}
+  .fc-hindi{font-size:22px;font-weight:600;}
+  .fc-english{font-size:21px;font-weight:700;color:var(--cyan);line-height:1.35;}
+  .fc-pron{font-family:'IBM Plex Mono';font-size:12px;color:var(--amber);margin-top:10px;}
+  .fc-hint{font-size:11px;color:var(--muted);margin-top:14px;font-family:'IBM Plex Mono';}
+  .fc-shadow-btn{margin-top:12px;background:var(--surface);border:1px solid var(--cyan);color:var(--cyan);
+    font-family:'IBM Plex Mono';font-size:11px;padding:8px 14px;border-radius:20px;cursor:pointer;
+    display:flex;align-items:center;gap:6px;}
+  .fc-shadow-btn:active{transform:scale(0.96);}
+  .fc-shadow-btn.playing{border-color:var(--amber);color:var(--amber);}
+  .flip-nav{display:flex;gap:10px;width:100%;max-width:340px;}
+
+  .btn{font-family:'IBM Plex Sans';font-weight:600;font-size:14px;padding:13px 18px;border-radius:9px;border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:6px;transition:transform 0.1s, opacity 0.15s;}
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{background:var(--cyan);color:#04212b;flex:1;}
+  .btn-ghost{background:var(--surface-2);color:var(--text);border:1px solid var(--line);flex:1;}
+  .btn-block{width:100%;margin-top:22px;}
+  .btn:disabled{opacity:0.35;cursor:not-allowed;}
+
+  .q-progress{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .q-count{font-family:'IBM Plex Mono';font-size:12px;color:var(--muted);}
+  .q-score{font-family:'IBM Plex Mono';font-size:12px;color:var(--green);}
+  .q-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;}
+  .q-kicker{font-family:'IBM Plex Mono';font-size:10px;color:var(--amber);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;}
+  .q-prompt{font-size:18px;font-weight:600;line-height:1.4;margin-bottom:4px;}
+  .q-prompt .hindi{font-size:20px;}
+  .q-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+  .options{display:flex;flex-direction:column;gap:8px;margin-top:16px;}
+  .opt{text-align:left;padding:13px 14px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);
+    color:var(--text);font-size:14px;cursor:pointer;font-family:'IBM Plex Sans';transition:border-color 0.15s, background 0.15s;}
+  .opt.correct{border-color:var(--green);background:rgba(52,211,153,0.12);}
+  .opt.wrong{border-color:var(--rose);background:rgba(251,113,133,0.12);}
+  .opt.disabled{pointer-events:none;}
+  .opt.dim{opacity:0.45;pointer-events:none;}
+  .blank-input{width:100%;padding:13px 14px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);
+    color:var(--text);font-size:15px;font-family:'IBM Plex Mono';margin-top:16px;}
+  .blank-input:focus{outline:none;border-color:var(--cyan);}
+
+  /* builder */
+  .builder-target{background:var(--surface-2);border:1px dashed var(--line);border-radius:9px;padding:14px;
+    min-height:52px;display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center;}
+  .builder-target.empty::after{content:"Tap words below in the correct order";font-family:'IBM Plex Mono';font-size:12px;color:var(--muted);}
+  .chip-built{background:rgba(34,211,238,0.15);border:1px solid var(--cyan);color:var(--cyan);padding:8px 12px;
+    border-radius:7px;font-size:14px;cursor:pointer;font-family:'IBM Plex Sans';}
+  .chip-bank{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .chip{background:var(--surface-2);border:1px solid var(--line);color:var(--text);padding:8px 12px;border-radius:7px;
+    font-size:14px;cursor:pointer;font-family:'IBM Plex Sans';transition:opacity 0.15s;}
+  .chip.used{opacity:0.25;pointer-events:none;}
+  .builder-reset{font-family:'IBM Plex Mono';font-size:11px;color:var(--muted);margin-top:8px;cursor:pointer;text-decoration:underline;}
+
+  .feedback{margin-top:14px;padding:12px 14px;border-radius:9px;font-size:13px;font-family:'IBM Plex Mono';display:none;}
+  .feedback.show{display:block;}
+  .feedback.ok{background:rgba(52,211,153,0.1);color:var(--green);border:1px solid rgba(52,211,153,0.3);}
+  .feedback.bad{background:rgba(251,113,133,0.1);color:var(--rose);border:1px solid rgba(251,113,133,0.3);}
+
+  .result-hero{text-align:center;padding:20px 0 10px;}
+  .result-score{font-family:'IBM Plex Mono';font-size:48px;font-weight:700;color:var(--cyan);}
+  .result-label{font-size:13px;color:var(--muted);margin-top:4px;}
+  .mastery-bar{height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden;margin:18px 0;}
+  .mastery-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--cyan));border-radius:4px;}
+  .weak-list{margin-top:16px;}
+  .weak-item{display:flex;justify-content:space-between;padding:10px 12px;background:var(--surface);
+    border:1px solid var(--line);border-radius:8px;margin-bottom:6px;font-size:13px;gap:10px;}
+
+  .bottombar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--line);
+    padding:10px 18px calc(10px + env(safe-area-inset-bottom));max-width:520px;margin:0 auto;}
+
+  /* ---------- SPEAK PRACTICE ---------- */
+  .block-progress{display:flex;gap:4px;margin-bottom:14px;}
+  .block-seg{flex:1;height:4px;border-radius:2px;background:var(--line);}
+  .block-seg.done{background:var(--green);}
+  .block-seg.active{background:var(--cyan);}
+
+  .study-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px;}
+  .study-hindi{font-size:16px;font-weight:600;margin-bottom:4px;}
+  .study-english{color:var(--cyan);font-size:15px;font-weight:600;}
+  .study-pron{font-family:'IBM Plex Mono';font-size:11px;color:var(--amber);margin-top:4px;}
+
+  .speak-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px 20px;text-align:center;}
+  .speak-kicker{font-family:'IBM Plex Mono';font-size:10px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;}
+  .speak-hindi{font-size:22px;font-weight:600;margin-bottom:6px;}
+  .speak-tip{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono';margin-bottom:24px;}
+
+  .mic-btn{
+    width:84px;height:84px;border-radius:50%;border:none;cursor:pointer;
+    background:var(--surface-2);border:2px solid var(--cyan);color:var(--cyan);
+    font-size:30px;display:flex;align-items:center;justify-content:center;margin:0 auto;
+    transition:transform 0.15s, background 0.15s;position:relative;
+  }
+  .mic-btn.listening{background:rgba(251,113,133,0.15);border-color:var(--rose);color:var(--rose);
+    animation:pulse 1.2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(251,113,133,0.4);}50%{box-shadow:0 0 0 14px rgba(251,113,133,0);}}
+  .mic-status{font-family:'IBM Plex Mono';font-size:12px;color:var(--muted);margin-top:14px;}
+
+  .fallback-input{width:100%;padding:13px 14px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);
+    color:var(--text);font-size:15px;font-family:'IBM Plex Sans';margin-top:16px;display:none;}
+
+  .speak-result{margin-top:20px;text-align:left;display:none;}
+  .sr-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .sr-score{font-family:'IBM Plex Mono';font-size:32px;font-weight:700;}
+  .sr-score.high{color:var(--green);}
+  .sr-score.mid{color:var(--amber);}
+  .sr-score.low{color:var(--rose);}
+  .sr-label{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono';}
+  .sr-transcript{background:var(--surface-2);border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:8px;}
+  .sr-transcript .lbl{font-family:'IBM Plex Mono';font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:4px;}
+  .word-chip{display:inline-block;padding:2px 6px;border-radius:5px;margin:2px 2px 0 0;font-size:13px;}
+  .word-chip.hit{background:rgba(52,211,153,0.15);color:var(--green);}
+  .word-chip.miss{background:rgba(251,113,133,0.15);color:var(--rose);text-decoration:line-through;}
+  .sr-tip{font-family:'IBM Plex Mono';font-size:12px;color:var(--amber);margin-top:10px;}
+
+  /* ---------- CONVERSATION PRACTICE (chat UI) ---------- */
+  .convo-topic-card{display:flex;align-items:center;gap:14px;padding:16px;margin-bottom:10px;
+    background:linear-gradient(135deg,var(--surface),var(--surface-2));border:1px solid var(--cyan);border-radius:12px;cursor:pointer;}
+  .convo-avatar{width:44px;height:44px;border-radius:50%;background:var(--surface-2);border:2px solid var(--cyan);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .convo-topic-body{flex:1;}
+  .convo-topic-title{font-size:14px;font-weight:600;}
+  .convo-topic-meta{font-size:11px;color:var(--muted);font-family:'IBM Plex Mono';margin-top:2px;}
+
+  #screen-conversation main, .chat-main{padding:0 !important;}
+  .chat-screen{display:flex;flex-direction:column;height:calc(100vh - 0px);}
+  .chat-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--line);}
+  .chat-header .convo-avatar{width:36px;height:36px;font-size:16px;}
+  .chat-header-name{font-size:14px;font-weight:600;}
+  .chat-header-status{font-size:11px;color:var(--green);font-family:'IBM Plex Mono';}
+  .chat-log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+  .bubble-row{display:flex;gap:8px;align-items:flex-end;}
+  .bubble-row.them{justify-content:flex-start;}
+  .bubble-row.me{justify-content:flex-end;}
+  .bubble-avatar{width:26px;height:26px;border-radius:50%;background:var(--surface-2);border:1px solid var(--cyan);
+    display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+  .bubble{max-width:75%;padding:10px 13px;border-radius:14px;font-size:14px;line-height:1.4;}
+  .bubble-row.them .bubble{background:var(--surface-2);border:1px solid var(--line);border-bottom-left-radius:4px;color:var(--text);}
+  .bubble-row.me .bubble{background:var(--cyan);color:#04212b;border-bottom-right-radius:4px;font-weight:500;}
+  .bubble-hi{font-size:11px;color:var(--muted);margin-top:14px;text-align:center;font-family:'IBM Plex Mono';}
+  .typing-row{display:flex;gap:8px;align-items:center;}
+  .typing-dots{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;border-bottom-left-radius:4px;padding:12px 16px;display:flex;gap:4px;}
+  .typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:typingBounce 1.2s infinite;}
+  .typing-dots span:nth-child(2){animation-delay:0.15s;} .typing-dots span:nth-child(3){animation-delay:0.3s;}
+  @keyframes typingBounce{0%,60%,100%{opacity:0.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-3px);}}
+
+  .chat-inputbar{display:flex;align-items:center;gap:10px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:var(--surface);border-top:1px solid var(--line);}
+  .chat-mic{width:48px;height:48px;border-radius:50%;border:2px solid var(--cyan);background:var(--surface-2);
+    color:var(--cyan);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+  .chat-mic.listening{border-color:var(--rose);color:var(--rose);background:rgba(251,113,133,0.15);animation:pulse 1.2s ease-in-out infinite;}
+  .chat-inputbar input{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:20px;
+    padding:11px 16px;color:var(--text);font-family:'IBM Plex Sans';font-size:14px;}
+  .chat-hint{text-align:center;font-family:'IBM Plex Mono';font-size:10px;color:var(--muted);padding:6px 16px 0;}
+
+  .convo-summary{padding:20px 18px;}
+
+  /* ---------- ICON-TILE NAVIGATION (simple, low-text) ---------- */
+  #tabbar{
+    position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;
+    display:flex;background:var(--surface);border-top:1px solid var(--line);
+    padding-bottom:env(safe-area-inset-bottom);z-index:50;
+  }
+  .tab-btn{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+    padding:10px 4px 8px;background:none;border:none;cursor:pointer;color:var(--muted);
+  }
+  .tab-btn .tab-icon{font-size:24px;}
+  .tab-btn .tab-label{font-size:11px;font-weight:600;font-family:'IBM Plex Sans';}
+  .tab-btn.active{color:var(--cyan);}
+  .tab-btn.active .tab-icon{filter:drop-shadow(0 0 6px rgba(34,211,238,0.5));}
+
+  .backbtn{
+    display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:22px;padding:8px 16px 8px 12px;width:fit-content;cursor:pointer;margin-bottom:14px;
+  }
+  .backbtn .arrow{font-size:18px;color:var(--cyan);}
+  .backbtn .label{font-family:'IBM Plex Sans';font-size:13px;font-weight:600;}
+
+  .tile-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .unit-tile{
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:18px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;
+    cursor:pointer;position:relative;min-height:128px;justify-content:center;
+  }
+  .unit-tile.locked{opacity:0.4;}
+  .unit-tile .tile-icon{font-size:36px;}
+  .unit-tile .tile-label{font-size:13px;font-weight:700;line-height:1.25;}
+  .tile-lock{position:absolute;top:10px;right:10px;font-size:15px;}
+  .tile-ring{position:absolute;top:8px;left:8px;width:28px;height:28px;}
+  .tile-ring svg{transform:rotate(-90deg);}
+  .tile-ring .ring-bg{fill:none;stroke:var(--line);stroke-width:3;}
+  .tile-ring .ring-fill{fill:none;stroke:var(--green);stroke-width:3;stroke-linecap:round;}
+
+  .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px;}
+  .action-tile{
+    background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px 12px;
+    display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;text-align:center;
+  }
+  .action-tile.locked{opacity:0.35;pointer-events:none;}
+  .action-tile .tile-icon{font-size:40px;}
+  .action-tile .tile-label{font-size:14px;font-weight:700;}
+  .action-tile .tile-sub{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono';}
+  .review-badge-btn{
+    position:absolute;top:16px;right:18px;background:rgba(245,165,36,0.15);border:1px solid var(--amber);
+    color:var(--amber);border-radius:20px;padding:8px 14px;font-family:'IBM Plex Mono';font-size:12px;
+    display:flex;align-items:center;gap:6px;cursor:pointer;
+  }
+  .unit-hero{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:18px;position:relative;}
+  .unit-hero .hero-icon{font-size:52px;margin-bottom:8px;}
+  .unit-hero .hero-title{font-size:20px;font-weight:700;}
+
+  .talk-tile{
+    display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--cyan);
+    border-radius:18px;padding:18px;cursor:pointer;margin-bottom:12px;
+  }
+  .talk-tile .tile-icon{font-size:40px;}
+  .talk-tile .talk-title{font-size:15px;font-weight:700;}
+  .talk-tile .talk-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+  .progress-hero{text-align:center;padding:20px 0;}
+  .progress-flame{font-size:56px;}
+  .progress-flame-num{font-family:'IBM Plex Mono';font-size:38px;font-weight:700;color:var(--amber);}
+  .progress-flame-label{font-size:12px;color:var(--muted);}
+  .domain-bar-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);
+    border-radius:12px;padding:14px;margin-bottom:10px;}
+  .domain-bar-icon{font-size:26px;}
+  .domain-bar-track{flex:1;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden;}
+  .domain-bar-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--cyan));border-radius:4px;}
+  .domain-bar-pct{font-family:'IBM Plex Mono';font-size:12px;color:var(--muted);min-width:36px;text-align:right;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header id="appHeader">
+    <div class="brandrow">
+      <div class="brand"><div class="dot"></div><span class="brand-name">SkillGo · English</span></div>
+      <div class="streak">🔥 <span id="streakCount">0</span></div>
+    </div>
+    <div class="backbtn hidden" id="backRow"><span class="arrow">←</span><span class="label">Back</span></div>
+  </header>
+
+  <main>
+
+    <!-- HOME TAB: icon grid of units -->
+    <section class="screen active" id="screen-units">
+      <div class="unit-hero">
+        <div class="hero-icon">📚</div>
+        <div class="hero-title">Choose a lesson</div>
+      </div>
+      <div class="tile-grid" id="unitList"></div>
+    </section>
+
+    <!-- TALK TAB: conversation topics -->
+    <section class="screen" id="screen-talk">
+      <div class="unit-hero">
+        <div class="hero-icon">💬</div>
+        <div class="hero-title">Talk practice</div>
+      </div>
+      <div class="talk-tile" data-topic="pallet">
+        <div class="tile-icon">👷</div>
+        <div>
+          <div class="talk-title">Broken Pallet</div>
+          <div class="talk-sub">Talk to your supervisor</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRESS TAB -->
+    <section class="screen" id="screen-progress">
+      <div class="progress-hero">
+        <div class="progress-flame">🔥</div>
+        <div class="progress-flame-num" id="progStreakNum">0</div>
+        <div class="progress-flame-label">day streak</div>
+      </div>
+      <div id="progressBars"></div>
+    </section>
+
+    <!-- UNIT DETAIL: 2x2 icon grid -->
+    <section class="screen" id="screen-home">
+      <div class="unit-hero">
+        <div class="hero-icon" id="unitHeroIcon">📦</div>
+        <div class="hero-title" id="unitDetailLabel">Unit</div>
+        <div class="review-badge-btn hidden" id="reviewBadgeBtn">↻ <span id="reviewBadgeCount">0</span></div>
+      </div>
+      <div class="action-grid">
+        <div class="action-tile" data-mode="learn">
+          <div class="tile-icon">📖</div>
+          <div class="tile-label">Learn</div>
+          <div class="tile-sub">See &amp; hear</div>
+        </div>
+        <div class="action-tile" data-mode="speak">
+          <div class="tile-icon">🎤</div>
+          <div class="tile-label">Speak</div>
+          <div class="tile-sub">Say it aloud</div>
+        </div>
+        <div class="action-tile" data-mode="drill">
+          <div class="tile-icon">🎯</div>
+          <div class="tile-label">Practice</div>
+          <div class="tile-sub">Quick game</div>
+        </div>
+        <div class="action-tile" data-mode="apply">
+          <div class="tile-icon">🧩</div>
+          <div class="tile-label">Scenarios</div>
+          <div class="tile-sub">Real work</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONVERSATION PRACTICE (chat UI) -->
+    <section class="screen" id="screen-conversation">
+      <div class="chat-screen">
+        <div class="chat-header">
+          <div class="convo-avatar">👷</div>
+          <div>
+            <div class="chat-header-name" id="convoPersonaName">Ramesh Sir</div>
+            <div class="chat-header-status" id="convoStatus">● online</div>
+          </div>
+        </div>
+        <div class="chat-log" id="chatLog"></div>
+        <div class="chat-hint" id="chatHint">Tap the mic and speak your reply in English</div>
+        <div class="chat-inputbar">
+          <button class="chat-mic" id="chatMicBtn">🎤</button>
+          <input type="text" id="chatFallbackInput" placeholder="Type your reply (mic unavailable)">
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-convo-summary">
+      <div class="convo-summary">
+        <div class="result-hero">
+          <div class="result-score" id="convoScore">0/6</div>
+          <div class="result-label">turns without needing correction</div>
+        </div>
+        <div class="unit-sub" style="text-align:center;margin-top:6px;">Nice work — that's a real conversation, not a quiz.</div>
+        <button class="btn btn-primary btn-block" id="convoSummaryBackBtn">Back to home</button>
+      </div>
+    </section>
+
+    <!-- LEARN -->
+    <section class="screen" id="screen-learn">
+      <div class="section-label">Learn — tap card to flip</div>
+      <div class="flip-wrap">
+        <div class="flip-count mono"><span id="lcCurrent">1</span> / <span id="lcTotal">10</span></div>
+        <div class="flipcard" id="flipcard">
+          <div class="flipcard-inner">
+            <div class="flipcard-face flipcard-front">
+              <div class="fc-tense" id="fcTenseFront"></div>
+              <div class="fc-tag">Hindi</div>
+              <div class="fc-hindi hindi" id="fcHindi">—</div>
+              <div class="fc-hint">Tap to reveal English</div>
+            </div>
+            <div class="flipcard-face flipcard-back">
+              <div class="fc-tense" id="fcTenseBack"></div>
+              <div class="fc-tag">English</div>
+              <div class="fc-english" id="fcEnglish">—</div>
+              <div class="fc-pron" id="fcPron">—</div>
+              <button class="fc-shadow-btn" id="fcShadowBtn" type="button">🔊 Hear it &amp; repeat</button>
+              <div class="fc-hint">Say it out loud, then tap next</div>
+            </div>
+          </div>
+        </div>
+        <div class="flip-nav">
+          <button class="btn btn-ghost" id="lcPrev">← Back</button>
+          <button class="btn btn-primary" id="lcNext">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SPEAK PRACTICE -->
+    <section class="screen" id="screen-speak-study">
+      <div class="section-label">Block <span id="studyBlockNum">1</span> — Read &amp; remember</div>
+      <div class="block-progress" id="studyBlockProgress"></div>
+      <div id="studyCards"></div>
+      <button class="btn btn-primary btn-block" id="studyReadyBtn">I remember this → Start speaking</button>
+    </section>
+
+    <section class="screen" id="screen-speak-assess">
+      <div class="section-label">Block <span id="assessBlockNum">1</span> — Speak from memory</div>
+      <div class="block-progress" id="assessBlockProgress"></div>
+      <div class="speak-card">
+        <div class="speak-kicker">SAY THIS IN ENGLISH</div>
+        <div class="speak-hindi hindi" id="speakHindi">—</div>
+        <div class="speak-tip">Don't read — recall it, then tap the mic</div>
+
+        <button class="mic-btn" id="micBtn">🎤</button>
+        <div class="mic-status" id="micStatus">Tap to speak</div>
+        <input type="text" class="fallback-input" id="fallbackInput" placeholder="Type what you would say (mic unavailable)">
+
+        <div class="speak-result" id="speakResult">
+          <div class="sr-score-row">
+            <div><div class="sr-score" id="srScore">0%</div><div class="sr-label">match score</div></div>
+          </div>
+          <div class="sr-transcript"><span class="lbl">You said</span><span id="srHeard">—</span></div>
+          <div class="sr-transcript"><span class="lbl">Target</span><div id="srTarget"></div></div>
+          <div class="sr-tip" id="srTip"></div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" id="speakNextBtn" style="display:none;">Next sentence →</button>
+    </section>
+
+    <section class="screen" id="screen-speak-summary">
+      <div class="result-hero">
+        <div class="result-score" id="speakSummaryScore">0%</div>
+        <div class="result-label">average block score</div>
+      </div>
+      <div class="weak-list" id="speakWeakList"></div>
+      <button class="btn btn-primary btn-block" id="speakContinueBtn">Continue</button>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="screen" id="screen-quiz">
+      <div class="q-progress"><span class="q-count" id="qCount">Q1 / 8</span><span class="q-score" id="qScore">✓ 0</span></div>
+      <div class="q-card">
+        <div class="q-kicker" id="qKicker">TRANSLATE</div>
+        <div class="q-prompt" id="qPrompt">—</div>
+        <div class="q-sub" id="qSub"></div>
+        <div class="options" id="qOptions"></div>
+        <input type="text" class="blank-input" id="qBlankInput" style="display:none;" placeholder="Type your answer in English" autocomplete="off">
+        <div id="builderZone" style="display:none;">
+          <div class="builder-target empty" id="builderTarget"></div>
+          <div class="chip-bank" id="chipBank"></div>
+          <div class="builder-reset" id="builderReset">reset</div>
+        </div>
+        <div class="feedback" id="qFeedback"></div>
+      </div>
+      <button class="btn btn-primary btn-block" id="qNextBtn" disabled>Check answer</button>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="screen" id="screen-results">
+      <div class="result-hero">
+        <div class="result-score" id="resScore">0/8</div>
+        <div class="result-label">correct this round</div>
+      </div>
+      <div class="mastery-bar"><div class="mastery-fill" id="masteryFill" style="width:0%;"></div></div>
+      <div class="unit-sub" style="text-align:center;" id="masteryLabel">Unit mastery: 0%</div>
+      <div class="weak-list" id="weakList"></div>
+      <button class="btn btn-primary btn-block" id="resHomeBtn">Back to unit map</button>
+    </section>
+
+  </main>
+
+  <div class="bottombar" id="learnBottombar" style="display:none;">
+    <button class="btn btn-primary" id="learnDoneBtn">I know all these → Start Drill</button>
+  </div>
+
+  <div id="tabbar">
+    <button class="tab-btn active" data-tab="units"><span class="tab-icon">🏠</span><span class="tab-label">Home</span></button>
+    <button class="tab-btn" data-tab="talk"><span class="tab-icon">💬</span><span class="tab-label">Talk</span></button>
+    <button class="tab-btn" data-tab="progress"><span class="tab-icon">⭐</span><span class="tab-label">Progress</span></button>
+  </div>
+
+</div>
+
+<script>
+/* ============ CONTENT: UNIT 1 ============ */
+const U1_PHRASES = [
+  {hi:"मुझे मदद चाहिए", en:"I need help", pron:"aai need help"},
+  {hi:"कहाँ है?", en:"Where is it?", pron:"vear iz it"},
+  {hi:"यह टूटा हुआ है", en:"This is broken", pron:"dhis iz broh-ken"},
+  {hi:"मुझे समझ नहीं आया", en:"I did not understand", pron:"aai did not undar-stand"},
+  {hi:"कृपया दोबारा बोलिए", en:"Please say it again", pron:"pleez say it uh-gen"},
+  {hi:"मैं अभी आता हूँ", en:"I am coming now", pron:"aai am kuh-ming now"},
+  {hi:"यह तैयार है", en:"This is ready", pron:"dhis iz reh-dee"},
+  {hi:"कितने बजे?", en:"What time?", pron:"vot taim"},
+  {hi:"मुझे देर हो गई", en:"I am late", pron:"aai am layt"},
+  {hi:"धन्यवाद, समझ गया", en:"Thank you, I understood", pron:"thaenk yoo, aai un-dar-stood"},
+];
+const U1_DRILL = [
+  {type:"mcq", hi:"मुझे मदद चाहिए", correct:"I need help", options:["I need help","I am late","Where is it","This is ready"]},
+  {type:"mcq", hi:"कहाँ है?", correct:"Where is it?", options:["What time?","Where is it?","I need help","This is broken"]},
+  {type:"blank", hi:"यह टूटा ___ है", correctWords:["broken"], full:"This is broken", promptEn:"This is ___"},
+  {type:"mcq", hi:"मुझे समझ नहीं आया", correct:"I did not understand", options:["I did not understand","I am coming now","This is ready","Please say it again"]},
+  {type:"mcq", hi:"कृपया दोबारा बोलिए", correct:"Please say it again", options:["Thank you, I understood","Please say it again","What time?","I am late"]},
+  {type:"blank", hi:"मैं अभी ___ हूँ", correctWords:["coming"], full:"I am coming now", promptEn:"I am ___ now"},
+  {type:"mcq", hi:"यह तैयार है", correct:"This is ready", options:["This is broken","I need help","This is ready","I am late"]},
+  {type:"mcq", hi:"कितने बजे?", correct:"What time?", options:["Where is it?","What time?","I am late","This is ready"]},
+];
+const U1_APPLY = [
+  {situation:"Your supervisor points at a damaged pallet and asks what's wrong.", hi:"(पैलेट खराब है)", correct:"This is broken", options:["This is broken","I am late","What time?","Thank you, I understood"]},
+  {situation:"A colleague speaks too fast and you missed it.", hi:"(समझ नहीं आया)", correct:"Please say it again", options:["I need help","Please say it again","This is ready","Where is it?"]},
+  {situation:"You're 10 minutes late to your shift.", hi:"(देर से पहुंचे)", correct:"I am late", options:["I am coming now","I am late","This is broken","What time?"]},
+  {situation:"You can't find the scanner.", hi:"(स्कैनर नहीं मिल रहा)", correct:"Where is it?", options:["Where is it?","I need help","This is ready","Thank you, I understood"]},
+  {situation:"Supervisor explains a task and asks 'Understood?' You did.", hi:"(आप समझ गए)", correct:"Thank you, I understood", options:["I did not understand","Please say it again","Thank you, I understood","I am late"]}
+];
+
+/* ============ CONTENT: UNIT 2 — daily work sentences, tense + function words ============ */
+const U2_PHRASES = [
+  {hi:"मैं हर सुबह स्टॉक चेक करता हूँ", en:"I check the stock every morning.", pron:"aai chek dhuh stock ev-ree mor-ning", tense:"Present"},
+  {hi:"उसने कल स्टॉक चेक किया", en:"He checked the stock yesterday.", pron:"hee chekt dhuh stock yes-tar-day", tense:"Past"},
+  {hi:"मैं कल स्टॉक चेक करूँगा", en:"I will check the stock tomorrow.", pron:"aai vil chek dhuh stock tuh-mor-oh", tense:"Future"},
+  {hi:"उसके पास चाबी है", en:"He has the key.", pron:"hee haz dhuh kee", tense:"Present · has"},
+  {hi:"उसके पास चाबी थी", en:"He had the key.", pron:"hee had dhuh kee", tense:"Past · had"},
+  {hi:"ये बॉक्स तैयार हैं", en:"These boxes are ready.", pron:"dheez bok-siz aar reh-dee", tense:"Present · are"},
+  {hi:"ये बॉक्स तैयार थे", en:"These boxes were ready.", pron:"dheez bok-siz vur reh-dee", tense:"Past · were"},
+  {hi:"ये बॉक्स कल तैयार होंगे", en:"These boxes will be ready tomorrow.", pron:"dheez bok-siz vil bee reh-dee tuh-mor-oh", tense:"Future · will be"},
+  {hi:"आप 1 बजे ब्रेक ले सकते हैं", en:"You may take a break at 1 PM.", pron:"yoo may tayk uh brayk at van pee-em", tense:"Modal · may"},
+  {hi:"क्या आपने लिस्ट चेक की?", en:"Did you check the list?", pron:"did yoo chek dhuh list", tense:"Question · did"},
+];
+const U2_DRILL = [
+  {type:"mcq", hi:"उसके पास चाबी है", correct:"He has the key.", options:["He has the key.","He have the key.","He is has the key.","He having the key."]},
+  {type:"mcq", hi:"ये बॉक्स तैयार हैं (spot the correct one)", correct:"These boxes are ready.", options:["These boxes is ready.","These boxes be ready.","These boxes are ready.","These boxes am ready."]},
+  {type:"builder", hi:"ये बॉक्स तैयार हैं", target:"These boxes are ready.", words:["These","boxes","are","ready."]},
+  {type:"mcq", hi:"उसने कल स्टॉक चेक किया", correct:"He checked the stock yesterday.", options:["He checked the stock yesterday.","He check the stock yesterday.","He checking the stock yesterday.","He will check the stock yesterday."]},
+  {type:"mcq", hi:"correct sentence?", correct:"These boxes were ready.", options:["These boxes was ready.","These boxes were ready.","These boxes is ready.","These boxes will ready."]},
+  {type:"builder", hi:"मैं कल स्टॉक चेक करूँगा", target:"I will check the stock tomorrow.", words:["I","will","check","the","stock","tomorrow."]},
+  {type:"mcq", hi:"आप 1 बजे ब्रेक ले सकते हैं", correct:"You may take a break at 1 PM.", options:["You may take a break at 1 PM.","You may to take a break at 1 PM.","You will may take a break at 1 PM.","You maying take a break at 1 PM."]},
+  {type:"mcq", hi:"क्या आपने लिस्ट चेक की?", correct:"Did you check the list?", options:["Did you checked the list?","Do you checked the list?","Did you check the list?","You checked the list?"]},
+];
+const U2_APPLY = [
+  {situation:"Your supervisor asks what you do every morning before shift starts.", hi:"(रोज़ सुबह की आदत)", correct:"I check the stock every morning.", options:["I check the stock every morning.","I checked the stock every morning.","I will check the stock every morning.","I checking the stock every morning."]},
+  {situation:"Supervisor asks if you finished checking stock yesterday.", hi:"(कल का काम)", correct:"I checked the stock yesterday.", options:["I check the stock yesterday.","I will check the stock yesterday.","I checked the stock yesterday.","I am check the stock yesterday."]},
+  {situation:"A colleague asks if the boxes are ready right now.", hi:"(अभी की स्थिति)", correct:"These boxes are ready.", options:["These boxes is ready.","These boxes are ready.","These boxes was ready.","These box are ready."]},
+  {situation:"Supervisor asks about tomorrow's shipment status.", hi:"(कल की स्थिति)", correct:"These boxes will be ready tomorrow.", options:["These boxes are ready tomorrow.","These boxes will ready tomorrow.","These boxes will be ready tomorrow.","These boxes was ready tomorrow."]},
+  {situation:"A new colleague asks if they can take lunch at 1 PM — you confirm policy.", hi:"(अनुमति बताना)", correct:"You may take a break at 1 PM.", options:["You may take a break at 1 PM.","You can to take a break at 1 PM.","You will may take a break at 1 PM.","You may taking a break at 1 PM."]}
+];
+
+/* ============ UNIT 3 — Safety & Instructions ============ */
+const U3_PHRASES = [
+  {hi:"हेलमेट पहनो", en:"Wear your helmet.", pron:"vear yor hel-met", tense:"Instruction"},
+  {hi:"यह क्षेत्र खतरनाक है", en:"This area is dangerous.", pron:"dhis air-ee-uh iz dayn-jer-uhs", tense:"Present · is"},
+  {hi:"धीरे चलो", en:"Walk slowly.", pron:"vok sloh-lee", tense:"Instruction"},
+  {hi:"मशीन के पास मत जाओ", en:"Do not go near the machine.", pron:"doo not goh neer dhuh muh-sheen", tense:"Negative instruction"},
+  {hi:"मैंने कल सुरक्षा नियम पढ़े", en:"I read the safety rules yesterday.", pron:"aai red dhuh sayf-tee roolz yes-tar-day", tense:"Past"},
+  {hi:"मैं रोज़ सुरक्षा जांच करता हूँ", en:"I check safety every day.", pron:"aai chek sayf-tee ev-ree day", tense:"Present habit"},
+  {hi:"क्या आपने सुरक्षा उपकरण पहना?", en:"Did you wear the safety equipment?", pron:"did yoo vear dhuh sayf-tee ee-kvip-ment", tense:"Question · did"},
+  {hi:"यह मशीन खराब है", en:"This machine is broken.", pron:"dhis muh-sheen iz broh-ken", tense:"Present · is"},
+  {hi:"मुझे मदद चाहिए, यहाँ खतरा है", en:"I need help, there is danger here.", pron:"aai need help, dhair iz dayn-jer heer", tense:"Need"},
+  {hi:"धन्यवाद, मैं समझ गया", en:"Thank you, I understood.", pron:"thaenk yoo, aai un-dar-stood", tense:"Confirming"},
+];
+const U3_DRILL = [
+  {type:"mcq", hi:"हेलमेट पहनो", correct:"Wear your helmet.", options:["Wear your helmet.","Wearing your helmet.","You wear helmet.","Wears your helmet."]},
+  {type:"mcq", hi:"correct sentence?", correct:"This area is dangerous.", options:["This area dangerous.","This area is dangerous.","This area are dangerous.","This area was dangerous."]},
+  {type:"builder", hi:"मशीन के पास मत जाओ", target:"Do not go near the machine.", words:["Do","not","go","near","the","machine."]},
+  {type:"mcq", hi:"मैंने कल सुरक्षा नियम पढ़े", correct:"I read the safety rules yesterday.", options:["I read the safety rules yesterday.","I reads the safety rules yesterday.","I will read the safety rules yesterday.","I reading the safety rules yesterday."]},
+  {type:"mcq", hi:"correct sentence?", correct:"I check safety every day.", options:["I checks safety every day.","I checking safety every day.","I check safety every day.","I checked safety every day."]},
+  {type:"builder", hi:"क्या आपने सुरक्षा उपकरण पहना?", target:"Did you wear the safety equipment?", words:["Did","you","wear","the","safety","equipment?"]},
+  {type:"mcq", hi:"यहाँ खतरा है, मुझे मदद चाहिए", correct:"I need help, there is danger here.", options:["I need help, there is danger here.","I needed help, there was danger here.","I need help, there are danger here.","I needing help, there is danger here."]},
+  {type:"mcq", hi:"यह मशीन ___", correct:"This machine is broken.", options:["This machine is broken.","This machine are broken.","This machine broken.","This machine was broken."]},
+];
+const U3_APPLY = [
+  {situation:"You see a colleague walking into a restricted machine area without gear.", hi:"(चेतावनी देना)", correct:"Do not go near the machine.", options:["Do not go near the machine.","This area was dangerous.","I need help, there is danger here.","Wear your helmet."]},
+  {situation:"Supervisor asks if you've done today's safety check.", hi:"(आज की जांच)", correct:"I check safety every day.", options:["I checked safety every day.","I check safety every day.","I will check safety every day.","I checking safety every day."]},
+  {situation:"You notice smoke near a machine and need someone immediately.", hi:"(तुरंत मदद चाहिए)", correct:"I need help, there is danger here.", options:["I need help, there is danger here.","This machine is broken.","Wear your helmet.","Walk slowly."]},
+  {situation:"New worker asks why everyone is wearing headgear on the floor.", hi:"(नियम समझाना)", correct:"Wear your helmet.", options:["Wear your helmet.","This area is dangerous.","I read the safety rules yesterday.","Did you wear the safety equipment?"]},
+  {situation:"Supervisor checks if you completed the mandatory safety reading.", hi:"(कल का काम)", correct:"I read the safety rules yesterday.", options:["I read the safety rules yesterday.","I will read the safety rules yesterday.","I reads the safety rules yesterday.","I am reading the safety rules yesterday."]}
+];
+
+/* ============ UNIT 4 — Reporting a Problem ============ */
+const U4_PHRASES = [
+  {hi:"यहाँ पानी लीक हो रहा है", en:"There is a water leak here.", pron:"dhair iz uh vaw-tar leek heer", tense:"There is/are"},
+  {hi:"एक बॉक्स गायब है", en:"One box is missing.", pron:"van boks iz mis-ing", tense:"Present · is"},
+  {hi:"गिनती गलत है", en:"The count is wrong.", pron:"dhuh kownt iz rong", tense:"Present · is"},
+  {hi:"मैंने सुपरवाइज़र को बताया", en:"I told the supervisor.", pron:"aai told dhuh soo-par-vai-zar", tense:"Past"},
+  {hi:"क्या आप इसे ठीक कर सकते हैं?", en:"Can you fix this?", pron:"kaen yoo fiks dhis", tense:"Question · can"},
+  {hi:"मुझे एक नया औज़ार चाहिए", en:"I need a new tool.", pron:"aai need uh nyoo tool", tense:"Need"},
+  {hi:"यह कल भी खराब था", en:"This was broken yesterday too.", pron:"dhis vaz broh-ken yes-tar-day too", tense:"Past · was"},
+  {hi:"मैं इसे कल तक ठीक करूंगा", en:"I will fix this by tomorrow.", pron:"aai vil fiks dhis bai tuh-mor-oh", tense:"Future"},
+  {hi:"क्या आपने रिपोर्ट भेजी?", en:"Did you send the report?", pron:"did yoo send dhuh ree-port", tense:"Question · did"},
+  {hi:"कृपया किसी को इसे ठीक करने भेजिए", en:"Please send someone to fix it.", pron:"pleez send sum-van too fiks it", tense:"Request"},
+];
+const U4_DRILL = [
+  {type:"mcq", hi:"यहाँ पानी लीक हो रहा है", correct:"There is a water leak here.", options:["There is a water leak here.","There are a water leak here.","There was a water leak here.","There is water leaks here."]},
+  {type:"builder", hi:"एक बॉक्स गायब है", target:"One box is missing.", words:["One","box","is","missing."]},
+  {type:"mcq", hi:"correct sentence?", correct:"The count is wrong.", options:["The count are wrong.","The count is wrong.","The count was wrong.","The count wrong."]},
+  {type:"mcq", hi:"मैंने सुपरवाइज़र को बताया", correct:"I told the supervisor.", options:["I told the supervisor.","I tell the supervisor.","I telled the supervisor.","I will tell the supervisor."]},
+  {type:"mcq", hi:"क्या आप इसे ठीक कर सकते हैं?", correct:"Can you fix this?", options:["Can you fix this?","Can you to fix this?","Do you can fix this?","Could you fixed this?"]},
+  {type:"builder", hi:"मैं इसे कल तक ठीक करूंगा", target:"I will fix this by tomorrow.", words:["I","will","fix","this","by","tomorrow."]},
+  {type:"mcq", hi:"क्या आपने रिपोर्ट भेजी?", correct:"Did you send the report?", options:["Did you send the report?","Did you sent the report?","Do you send the report?","You send the report?"]},
+  {type:"mcq", hi:"यह कल भी खराब था", correct:"This was broken yesterday too.", options:["This was broken yesterday too.","This is broken yesterday too.","This were broken yesterday too.","This will broken yesterday too."]},
+];
+const U4_APPLY = [
+  {situation:"You find a pipe leaking near the loading dock.", hi:"(रिपोर्ट करना)", correct:"There is a water leak here.", options:["There is a water leak here.","One box is missing.","The count is wrong.","This was broken yesterday too."]},
+  {situation:"You counted the shipment and a carton isn't there.", hi:"(गुम बॉक्स)", correct:"One box is missing.", options:["One box is missing.","The count is wrong.","I need a new tool.","Can you fix this?"]},
+  {situation:"Your supervisor asks who you already informed about the issue.", hi:"(पहले किसे बताया)", correct:"I told the supervisor.", options:["I told the supervisor.","I tell the supervisor.","I will tell the supervisor.","I am telling the supervisor."]},
+  {situation:"A colleague's scanner isn't working and needs someone to look at it.", hi:"(मदद के लिए पूछना)", correct:"Please send someone to fix it.", options:["Please send someone to fix it.","Can you fix this?","I will fix this by tomorrow.","Did you send the report?"]},
+  {situation:"Supervisor asks when the broken conveyor will be resolved.", hi:"(समय बताना)", correct:"I will fix this by tomorrow.", options:["I will fix this by tomorrow.","I fixed this by tomorrow.","I fix this by tomorrow.","I am fix this by tomorrow."]}
+];
+
+/* ============ UNIT 5 — Asking Permission / Making Requests ============ */
+const U5_PHRASES = [
+  {hi:"क्या मैं ब्रेक ले सकता हूँ?", en:"May I take a break?", pron:"may aai tayk uh brayk", tense:"Permission"},
+  {hi:"क्या मैं वॉशरूम जा सकता हूँ?", en:"May I use the washroom?", pron:"may aai yooz dhuh vosh-room", tense:"Permission"},
+  {hi:"क्या मैं आज जल्दी जा सकता हूँ?", en:"Can I leave early today?", pron:"kaen aai leev ur-lee tuh-day", tense:"Permission"},
+  {hi:"क्या आप इसमें मेरी मदद कर सकते हैं?", en:"Could you help me with this?", pron:"kood yoo help mee vith dhis", tense:"Request"},
+  {hi:"आप 1 बजे ब्रेक ले सकते हैं", en:"You may take a break at 1 PM.", pron:"yoo may tayk uh brayk at van pee-em", tense:"Modal · may"},
+  {hi:"मुझे कल एक दिन की छुट्टी चाहिए", en:"I need one day off tomorrow.", pron:"aai need van day off tuh-mor-oh", tense:"Need · future"},
+  {hi:"कृपया मुझे पाँच मिनट दीजिए", en:"Please give me five minutes.", pron:"pleez giv mee faiv min-its", tense:"Request"},
+  {hi:"क्या मुझे मेरी सैलरी स्लिप मिल सकती है?", en:"Can I get my salary slip?", pron:"kaen aai get mai sa-luh-ree slip", tense:"Request"},
+  {hi:"क्या आपने मेरी छुट्टी मंज़ूर की?", en:"Did you approve my leave?", pron:"did yoo uh-proov mai leev", tense:"Question · did"},
+  {hi:"धन्यवाद, मैं जल्दी वापस आऊंगा", en:"Thank you, I will be back soon.", pron:"thaenk yoo, aai vil bee baek soon", tense:"Future"},
+];
+const U5_DRILL = [
+  {type:"mcq", hi:"क्या मैं ब्रेक ले सकता हूँ?", correct:"May I take a break?", options:["May I take a break?","May I taking a break?","I may take a break?","Can I to take a break?"]},
+  {type:"builder", hi:"क्या मैं आज जल्दी जा सकता हूँ?", target:"Can I leave early today?", words:["Can","I","leave","early","today?"]},
+  {type:"mcq", hi:"correct sentence?", correct:"Could you help me with this?", options:["Could you help me with this?","Could you to help me with this?","Could you helping me with this?","You could help me with this?"]},
+  {type:"mcq", hi:"मुझे कल एक दिन की छुट्टी चाहिए", correct:"I need one day off tomorrow.", options:["I need one day off tomorrow.","I needed one day off tomorrow.","I will need one day off tomorrow.","I needing one day off tomorrow."]},
+  {type:"builder", hi:"कृपया मुझे पाँच मिनट दीजिए", target:"Please give me five minutes.", words:["Please","give","me","five","minutes."]},
+  {type:"mcq", hi:"क्या मुझे मेरी सैलरी स्लिप मिल सकती है?", correct:"Can I get my salary slip?", options:["Can I get my salary slip?","Can I got my salary slip?","Can I getting my salary slip?","I can get my salary slip?"]},
+  {type:"mcq", hi:"क्या आपने मेरी छुट्टी मंज़ूर की?", correct:"Did you approve my leave?", options:["Did you approve my leave?","Did you approved my leave?","Do you approve my leave?","You approved my leave?"]},
+  {type:"mcq", hi:"धन्यवाद, मैं जल्दी वापस आऊंगा", correct:"Thank you, I will be back soon.", options:["Thank you, I will be back soon.","Thank you, I am back soon.","Thank you, I was back soon.","Thank you, I back soon."]},
+];
+const U5_APPLY = [
+  {situation:"You've been on the floor for hours and need a short rest.", hi:"(ब्रेक माँगना)", correct:"May I take a break?", options:["May I take a break?","I need one day off tomorrow.","Can I get my salary slip?","Did you approve my leave?"]},
+  {situation:"You have a family function tomorrow and need the day off.", hi:"(छुट्टी माँगना)", correct:"I need one day off tomorrow.", options:["I need one day off tomorrow.","May I take a break?","Could you help me with this?","Please give me five minutes."]},
+  {situation:"You're struggling to lift a heavy carton alone.", hi:"(मदद माँगना)", correct:"Could you help me with this?", options:["Could you help me with this?","May I use the washroom?","Can I leave early today?","Thank you, I will be back soon."]},
+  {situation:"It's month-end and you haven't received your pay document.", hi:"(सैलरी स्लिप माँगना)", correct:"Can I get my salary slip?", options:["Can I get my salary slip?","Did you approve my leave?","I need one day off tomorrow.","Please give me five minutes."]},
+  {situation:"You applied for leave last week and want to confirm status.", hi:"(पुष्टि करना)", correct:"Did you approve my leave?", options:["Did you approve my leave?","Can I get my salary slip?","You may take a break at 1 PM.","May I take a break?"]}
+];
+
+/* ============ UNIT 6 — Numbers, Time & Shift Handover ============ */
+const U6_PHRASES = [
+  {hi:"मेरी शिफ्ट 9 बजे शुरू होती है", en:"My shift starts at 9 AM.", pron:"mai shift staarts at nain ay-em", tense:"Present habit"},
+  {hi:"मेरी शिफ्ट 6 बजे खत्म होती है", en:"My shift ends at 6 PM.", pron:"mai shift endz at siks pee-em", tense:"Present habit"},
+  {hi:"मैंने 50 बॉक्स पूरे किए", en:"I have completed 50 boxes.", pron:"aai hav kuhm-plee-ted fif-tee bok-siz", tense:"Present · have"},
+  {hi:"20 बॉक्स बचे हैं", en:"There are 20 boxes left.", pron:"dhair aar tvain-tee bok-siz left", tense:"There is/are"},
+  {hi:"मैं अभी शिफ्ट सौंप रहा हूँ", en:"I will hand over the shift now.", pron:"aai vil haend oh-var dhuh shift now", tense:"Future"},
+  {hi:"अगली शिफ्ट एक घंटे में शुरू होगी", en:"The next shift starts in one hour.", pron:"dhuh nekst shift staarts in van ow-ar", tense:"Present habit"},
+  {hi:"मैंने आज 8 घंटे काम किया", en:"I worked 8 hours today.", pron:"aai vurkt ayt ow-arz tuh-day", tense:"Past"},
+  {hi:"अगला ब्रेक किस समय है?", en:"What time is the next break?", pron:"vot taim iz dhuh nekst brayk", tense:"Question"},
+  {hi:"क्या आपने सारे आइटम गिने?", en:"Did you count all the items?", pron:"did yoo kownt aal dhuh ai-temz", tense:"Question · did"},
+  {hi:"अगली शिफ्ट के लिए सब तैयार है", en:"Everything is ready for the next shift.", pron:"ev-ree-thing iz reh-dee for dhuh nekst shift", tense:"Present · is"},
+];
+const U6_DRILL = [
+  {type:"mcq", hi:"मेरी शिफ्ट 9 बजे शुरू होती है", correct:"My shift starts at 9 AM.", options:["My shift starts at 9 AM.","My shift start at 9 AM.","My shift starting at 9 AM.","My shift started at 9 AM."]},
+  {type:"builder", hi:"20 बॉक्स बचे हैं", target:"There are 20 boxes left.", words:["There","are","20","boxes","left."]},
+  {type:"mcq", hi:"मैंने 50 बॉक्स पूरे किए", correct:"I have completed 50 boxes.", options:["I have completed 50 boxes.","I has completed 50 boxes.","I having completed 50 boxes.","I completed have 50 boxes."]},
+  {type:"mcq", hi:"correct sentence?", correct:"I worked 8 hours today.", options:["I work 8 hours today.","I worked 8 hours today.","I will work 8 hours today.","I working 8 hours today."]},
+  {type:"builder", hi:"मैं अभी शिफ्ट सौंप रहा हूँ", target:"I will hand over the shift now.", words:["I","will","hand","over","the","shift","now."]},
+  {type:"mcq", hi:"अगला ब्रेक किस समय है?", correct:"What time is the next break?", options:["What time is the next break?","What time the next break is?","What time are the next break?","What time was the next break?"]},
+  {type:"mcq", hi:"क्या आपने सारे आइटम गिने?", correct:"Did you count all the items?", options:["Did you count all the items?","Did you counted all the items?","Do you count all the items?","You counted all the items?"]},
+  {type:"mcq", hi:"अगली शिफ्ट के लिए सब तैयार है", correct:"Everything is ready for the next shift.", options:["Everything is ready for the next shift.","Everything are ready for the next shift.","Everything was ready for the next shift.","Everything ready for the next shift."]},
+];
+const U6_APPLY = [
+  {situation:"A new joinee asks when your shift begins.", hi:"(समय बताना)", correct:"My shift starts at 9 AM.", options:["My shift starts at 9 AM.","My shift ends at 6 PM.","The next shift starts in one hour.","I worked 8 hours today."]},
+  {situation:"Supervisor asks how much work is done so far today.", hi:"(प्रगति बताना)", correct:"I have completed 50 boxes.", options:["I have completed 50 boxes.","There are 20 boxes left.","I worked 8 hours today.","Everything is ready for the next shift."]},
+  {situation:"The incoming shift worker asks what's pending.", hi:"(बचा हुआ काम)", correct:"There are 20 boxes left.", options:["There are 20 boxes left.","I have completed 50 boxes.","My shift ends at 6 PM.","Did you count all the items?"]},
+  {situation:"It's the end of your shift and the next worker has arrived.", hi:"(हैंडओवर करना)", correct:"I will hand over the shift now.", options:["I will hand over the shift now.","My shift starts at 9 AM.","What time is the next break?","I worked 8 hours today."]},
+  {situation:"Supervisor does a final check before shift change.", hi:"(पुष्टि माँगना)", correct:"Did you count all the items?", options:["Did you count all the items?","Everything is ready for the next shift.","There are 20 boxes left.","I have completed 50 boxes."]}
+];
+
+/* ============ UNIT 7 — Customer / Colleague Talk ============ */
+const U7_PHRASES = [
+  {hi:"मैं आपकी क्या मदद कर सकता हूँ?", en:"How can I help you?", pron:"how kaen aai help yoo", tense:"Question"},
+  {hi:"आपका ऑर्डर तैयार है", en:"Your order is ready.", pron:"yor or-dar iz reh-dee", tense:"Present · is"},
+  {hi:"कृपया कुछ मिनट इंतज़ार करें", en:"Please wait a few minutes.", pron:"pleez vayt uh fyoo min-its", tense:"Request"},
+  {hi:"देरी के लिए माफ़ी", en:"I am sorry for the delay.", pron:"aai am so-ree for dhuh dee-lay", tense:"Apology"},
+  {hi:"इंतज़ार करने के लिए धन्यवाद", en:"Thank you for waiting.", pron:"thaenk yoo for vay-ting", tense:"Thanking"},
+  {hi:"कृपया अपना नाम बता सकते हैं?", en:"Can I get your name, please?", pron:"kaen aai get yor naym, pleez", tense:"Request"},
+  {hi:"आपका पैकेज कल आएगा", en:"Your package will arrive tomorrow.", pron:"yor pae-kij vil uh-raiv tuh-mor-oh", tense:"Future"},
+  {hi:"मैं जांच करके आपको बताऊंगा", en:"I will check and tell you.", pron:"aai vil chek aend tel yoo", tense:"Future"},
+  {hi:"क्या आपको आपका ऑर्डर मिला?", en:"Did you receive your order?", pron:"did yoo ree-seev yor or-dar", tense:"Question · did"},
+  {hi:"आपका दिन शुभ हो", en:"Have a nice day.", pron:"hav uh nais day", tense:"Closing"},
+];
+const U7_DRILL = [
+  {type:"mcq", hi:"मैं आपकी क्या मदद कर सकता हूँ?", correct:"How can I help you?", options:["How can I help you?","How I can help you?","How can I helping you?","How I help you?"]},
+  {type:"builder", hi:"आपका ऑर्डर तैयार है", target:"Your order is ready.", words:["Your","order","is","ready."]},
+  {type:"mcq", hi:"correct sentence?", correct:"I am sorry for the delay.", options:["I am sorry for the delay.","I sorry for the delay.","I is sorry for the delay.","I was sorry for the delay."]},
+  {type:"mcq", hi:"कृपया अपना नाम बता सकते हैं?", correct:"Can I get your name, please?", options:["Can I get your name, please?","Can I got your name, please?","Can I getting your name, please?","I can get your name, please?"]},
+  {type:"builder", hi:"आपका पैकेज कल आएगा", target:"Your package will arrive tomorrow.", words:["Your","package","will","arrive","tomorrow."]},
+  {type:"mcq", hi:"मैं जांच करके आपको बताऊंगा", correct:"I will check and tell you.", options:["I will check and tell you.","I check and tell you.","I will checked and tell you.","I will checking and tell you."]},
+  {type:"mcq", hi:"क्या आपको आपका ऑर्डर मिला?", correct:"Did you receive your order?", options:["Did you receive your order?","Did you received your order?","Do you receive your order?","You received your order?"]},
+  {type:"mcq", hi:"इंतज़ार करने के लिए धन्यवाद", correct:"Thank you for waiting.", options:["Thank you for waiting.","Thank you for wait.","Thank you for waited.","Thank you to waiting."]},
+];
+const U7_APPLY = [
+  {situation:"A customer walks up to your counter looking for assistance.", hi:"(स्वागत करना)", correct:"How can I help you?", options:["How can I help you?","Your order is ready.","Have a nice day.","I am sorry for the delay."]},
+  {situation:"You're running behind on preparing someone's order.", hi:"(माफ़ी माँगना)", correct:"I am sorry for the delay.", options:["I am sorry for the delay.","Thank you for waiting.","Your order is ready.","Can I get your name, please?"]},
+  {situation:"A customer's order just got packed and is ready for pickup.", hi:"(सूचित करना)", correct:"Your order is ready.", options:["Your order is ready.","Your package will arrive tomorrow.","I will check and tell you.","Did you receive your order?"]},
+  {situation:"A customer asks if their delivery reached them yesterday.", hi:"(पुष्टि करना)", correct:"Did you receive your order?", options:["Did you receive your order?","Your package will arrive tomorrow.","Can I get your name, please?","How can I help you?"]},
+  {situation:"You're closing the counter for the day with a regular customer.", hi:"(विदाई)", correct:"Have a nice day.", options:["Have a nice day.","I am sorry for the delay.","Please wait a few minutes.","Thank you for waiting."]}
+];
+
+/* ============ UNIT 8 — Morning & Evening Routine ============ */
+const U8_PHRASES = [
+  {hi:"मैं रोज़ सुबह जल्दी उठता हूँ", en:"I wake up early every day.", pron:"aai vayk up ur-lee ev-ree day", tense:"Present habit"},
+  {hi:"मैं रोज़ रात को जल्दी सोता हूँ", en:"I sleep early every night.", pron:"aai sleep ur-lee ev-ree nait", tense:"Present habit"},
+  {hi:"मैंने आज सुबह चाय पी", en:"I drank tea this morning.", pron:"aai draenk tee dhis mor-ning", tense:"Past"},
+  {hi:"मैं कल जल्दी उठूंगा", en:"I will wake up early tomorrow.", pron:"aai vil vayk up ur-lee tuh-mor-oh", tense:"Future"},
+  {hi:"घर पर बिजली नहीं है", en:"There is no electricity at home.", pron:"dhair iz noh ee-lek-tri-si-tee at hohm", tense:"There is/are"},
+  {hi:"पानी की टंकी खाली है", en:"The water tank is empty.", pron:"dhuh vaw-tar taenk iz em-tee", tense:"Present · is"},
+  {hi:"मुझे थोड़ा आराम चाहिए", en:"I need some rest.", pron:"aai need sum rest", tense:"Need"},
+  {hi:"क्या तुमने खाना खाया?", en:"Did you eat food?", pron:"did yoo eet food", tense:"Question · did"},
+  {hi:"मैं थका हुआ हूँ", en:"I am tired.", pron:"aai am tai-ard", tense:"Feeling"},
+  {hi:"आज मेरी छुट्टी है", en:"Today is my day off.", pron:"tuh-day iz mai day off", tense:"Present · is"},
+];
+const U8_DRILL = [
+  {type:"mcq", hi:"मैं रोज़ सुबह जल्दी उठता हूँ", correct:"I wake up early every day.", options:["I wake up early every day.","I wakes up early every day.","I waking up early every day.","I woke up early every day."]},
+  {type:"builder", hi:"पानी की टंकी खाली है", target:"The water tank is empty.", words:["The","water","tank","is","empty."]},
+  {type:"mcq", hi:"मैंने आज सुबह चाय पी", correct:"I drank tea this morning.", options:["I drank tea this morning.","I drink tea this morning.","I will drank tea this morning.","I drinking tea this morning."]},
+  {type:"mcq", hi:"correct sentence?", correct:"There is no electricity at home.", options:["There is no electricity at home.","There are no electricity at home.","There was no electricity at home.","There no electricity at home."]},
+  {type:"builder", hi:"मैं कल जल्दी उठूंगा", target:"I will wake up early tomorrow.", words:["I","will","wake","up","early","tomorrow."]},
+  {type:"mcq", hi:"क्या तुमने खाना खाया?", correct:"Did you eat food?", options:["Did you eat food?","Did you ate food?","Do you eat food?","You ate food?"]},
+  {type:"mcq", hi:"आज मेरी छुट्टी है", correct:"Today is my day off.", options:["Today is my day off.","Today are my day off.","Today was my day off.","Today my day off."]},
+  {type:"mcq", hi:"मैं थका ___", correct:"I am tired.", options:["I am tired.","I is tired.","I are tired.","I was tired."]},
+];
+const U8_APPLY = [
+  {situation:"Your neighbour asks what time you usually get up.", hi:"(रोज़ की आदत)", correct:"I wake up early every day.", options:["I wake up early every day.","I woke up early every day.","I will wake up early every day.","I waking up early every day."]},
+  {situation:"You've had no power at home since morning — tell a friend.", hi:"(समस्या बताना)", correct:"There is no electricity at home.", options:["There is no electricity at home.","There are no electricity at home.","The water tank is empty.","I need some rest."]},
+  {situation:"Family asks if you've had breakfast.", hi:"(आज सुबह की बात)", correct:"I drank tea this morning.", options:["I drank tea this morning.","I drink tea this morning.","I will drink tea this morning.","I am drink tea this morning."]},
+  {situation:"You're exhausted after a long day and someone asks how you feel.", hi:"(थकान बताना)", correct:"I am tired.", options:["I am tired.","I was tired.","I tired.","I is tired."]},
+  {situation:"Someone asks why you're home today instead of at work.", hi:"(छुट्टी बताना)", correct:"Today is my day off.", options:["Today is my day off.","Today was my day off.","I need some rest.","I am tired."]}
+];
+
+/* ============ UNIT 9 — Talking with Family ============ */
+const U9_PHRASES = [
+  {hi:"मेरी माँ घर पर है", en:"My mother is at home.", pron:"mai muh-dhar iz at hohm", tense:"Present · is"},
+  {hi:"मैंने पापा को फोन किया", en:"I called my father.", pron:"aai kaald mai faa-dhar", tense:"Past"},
+  {hi:"मैं कल परिवार से मिलूंगा", en:"I will meet my family tomorrow.", pron:"aai vil meet mai faem-lee tuh-mor-oh", tense:"Future"},
+  {hi:"मेरे पास समय नहीं है", en:"I do not have time.", pron:"aai doo not hav taim", tense:"Negative · have"},
+  {hi:"बच्चे रोज़ स्कूल जाते हैं", en:"The children go to school every day.", pron:"dhuh chil-dren goh too skool ev-ree day", tense:"Present habit"},
+  {hi:"मेरी पत्नी बीमार है", en:"My wife is sick.", pron:"mai vaif iz sik", tense:"Present · is"},
+  {hi:"क्या तुमने माँ से बात की?", en:"Did you talk to mother?", pron:"did yoo tok too muh-dhar", tense:"Question · did"},
+  {hi:"मुझे अपने परिवार की याद आती है", en:"I miss my family.", pron:"aai mis mai faem-lee", tense:"Feeling"},
+  {hi:"चलो साथ में खाना खाते हैं", en:"Let's eat together.", pron:"lets eet too-geh-dhar", tense:"Suggestion"},
+  {hi:"मैं आज रात फोन करूंगा", en:"I will call you tonight.", pron:"aai vil kaal yoo too-nait", tense:"Future"},
+];
+const U9_DRILL = [
+  {type:"mcq", hi:"मेरी माँ घर पर है", correct:"My mother is at home.", options:["My mother is at home.","My mother are at home.","My mother was at home.","My mother home."]},
+  {type:"builder", hi:"मैंने पापा को फोन किया", target:"I called my father.", words:["I","called","my","father."]},
+  {type:"mcq", hi:"मेरे पास समय नहीं है", correct:"I do not have time.", options:["I do not have time.","I does not have time.","I not have time.","I do not has time."]},
+  {type:"mcq", hi:"correct sentence?", correct:"The children go to school every day.", options:["The children goes to school every day.","The children go to school every day.","The children going to school every day.","The children went to school every day."]},
+  {type:"builder", hi:"मैं कल परिवार से मिलूंगा", target:"I will meet my family tomorrow.", words:["I","will","meet","my","family","tomorrow."]},
+  {type:"mcq", hi:"क्या तुमने माँ से बात की?", correct:"Did you talk to mother?", options:["Did you talk to mother?","Did you talked to mother?","Do you talk to mother?","You talked to mother?"]},
+  {type:"mcq", hi:"मेरी पत्नी ___", correct:"My wife is sick.", options:["My wife is sick.","My wife are sick.","My wife was sick.","My wife sick."]},
+  {type:"mcq", hi:"चलो साथ में खाना खाते हैं", correct:"Let's eat together.", options:["Let's eat together.","Let's eating together.","Let's ate together.","We let's eat together."]},
+];
+const U9_APPLY = [
+  {situation:"A colleague asks where your mother is right now.", hi:"(घर पर है)", correct:"My mother is at home.", options:["My mother is at home.","My mother was at home.","I called my father.","I will meet my family tomorrow."]},
+  {situation:"Your friend asks if you've spoken to your mother recently.", hi:"(हाल ही में बात)", correct:"Did you talk to mother?", options:["Did you talk to mother?","Do you talk to mother?","Did you talked to mother?","You talk to mother?"]},
+  {situation:"You're planning a family visit for the weekend.", hi:"(योजना बताना)", correct:"I will meet my family tomorrow.", options:["I will meet my family tomorrow.","I met my family tomorrow.","I meet my family tomorrow.","I am meet my family tomorrow."]},
+  {situation:"A colleague asks why you seem distracted at work today.", hi:"(भावना बताना)", correct:"I miss my family.", options:["I miss my family.","I do not have time.","My wife is sick.","Let's eat together."]},
+  {situation:"Family has cooked and is waiting for you to join.", hi:"(साथ खाने का न्योता)", correct:"Let's eat together.", options:["Let's eat together.","I will call you tonight.","I do not have time.","Did you talk to mother?"]}
+];
+
+/* ============ UNIT 10 — Household Needs & Requests ============ */
+const U10_PHRASES = [
+  {hi:"मुझे किराया देना है", en:"I have to pay the rent.", pron:"aai hav too pay dhuh rent", tense:"Obligation"},
+  {hi:"बिजली का बिल आ गया", en:"The electricity bill came.", pron:"dhuh ee-lek-tri-si-tee bil kaym", tense:"Past"},
+  {hi:"नल खराब है", en:"The tap is broken.", pron:"dhuh taep iz broh-ken", tense:"Present · is"},
+  {hi:"क्या आप इसे ठीक कर सकते हैं?", en:"Can you fix this?", pron:"kaen yoo fiks dhis", tense:"Question · can"},
+  {hi:"मुझे बाज़ार जाना है", en:"I need to go to the market.", pron:"aai need too goh too dhuh maar-ket", tense:"Need"},
+  {hi:"सामान महंगा है", en:"The goods are expensive.", pron:"dhuh goodz aar iks-pen-siv", tense:"Present · are"},
+  {hi:"मैंने कल सामान खरीदा", en:"I bought things yesterday.", pron:"aai bawt thingz yes-tar-day", tense:"Past"},
+  {hi:"पड़ोसी अच्छे हैं", en:"The neighbours are nice.", pron:"dhuh nay-barz aar nais", tense:"Present · are"},
+  {hi:"क्या तुमने बिल भरा?", en:"Did you pay the bill?", pron:"did yoo pay dhuh bil", tense:"Question · did"},
+  {hi:"मैं इसे कल तक भर दूंगा", en:"I will pay it by tomorrow.", pron:"aai vil pay it bai tuh-mor-oh", tense:"Future"},
+];
+const U10_DRILL = [
+  {type:"mcq", hi:"मुझे किराया देना है", correct:"I have to pay the rent.", options:["I have to pay the rent.","I has to pay the rent.","I having to pay the rent.","I have pay the rent."]},
+  {type:"builder", hi:"नल खराब है", target:"The tap is broken.", words:["The","tap","is","broken."]},
+  {type:"mcq", hi:"correct sentence?", correct:"The goods are expensive.", options:["The goods is expensive.","The goods are expensive.","The goods was expensive.","The goods expensive."]},
+  {type:"mcq", hi:"मैंने कल सामान खरीदा", correct:"I bought things yesterday.", options:["I bought things yesterday.","I buy things yesterday.","I will buy things yesterday.","I buying things yesterday."]},
+  {type:"builder", hi:"क्या तुमने बिल भरा?", target:"Did you pay the bill?", words:["Did","you","pay","the","bill?"]},
+  {type:"mcq", hi:"पड़ोसी ___", correct:"The neighbours are nice.", options:["The neighbours are nice.","The neighbours is nice.","The neighbours was nice.","The neighbours am nice."]},
+  {type:"mcq", hi:"मुझे बाज़ार जाना है", correct:"I need to go to the market.", options:["I need to go to the market.","I needs to go to the market.","I need go to the market.","I needed to go to the market."]},
+  {type:"mcq", hi:"बिजली का बिल आ गया", correct:"The electricity bill came.", options:["The electricity bill came.","The electricity bill come.","The electricity bill will come.","The electricity bill coming."]},
+];
+const U10_APPLY = [
+  {situation:"Landlord asks if you've arranged this month's payment.", hi:"(किराया बताना)", correct:"I have to pay the rent.", options:["I have to pay the rent.","I paid the rent.","The tap is broken.","I need to go to the market."]},
+  {situation:"You notice water dripping constantly from the kitchen tap.", hi:"(समस्या बताना)", correct:"The tap is broken.", options:["The tap is broken.","The electricity bill came.","I bought things yesterday.","The goods are expensive."]},
+  {situation:"You want someone to come repair something at home.", hi:"(मदद माँगना)", correct:"Can you fix this?", options:["Can you fix this?","I will pay it by tomorrow.","I need to go to the market.","Did you pay the bill?"]},
+  {situation:"Spouse asks about prices at the market today.", hi:"(दाम के बारे में)", correct:"The goods are expensive.", options:["The goods are expensive.","I bought things yesterday.","I need to go to the market.","The tap is broken."]},
+  {situation:"Someone asks if the electricity bill has been cleared.", hi:"(बिल की स्थिति)", correct:"Did you pay the bill?", options:["Did you pay the bill?","I will pay it by tomorrow.","The electricity bill came.","I have to pay the rent."]}
+];
+
+/* ============ UNIT 11 — Health & Feelings ============ */
+const U11_PHRASES = [
+  {hi:"मुझे सिरदर्द है", en:"I have a headache.", pron:"aai hav uh hed-ayk", tense:"Present · have"},
+  {hi:"मुझे बुखार है", en:"I have a fever.", pron:"aai hav uh fee-var", tense:"Present · have"},
+  {hi:"मुझे दवा चाहिए", en:"I need medicine.", pron:"aai need med-sin", tense:"Need"},
+  {hi:"मैं कल डॉक्टर के पास गया", en:"I went to the doctor yesterday.", pron:"aai vent too dhuh dok-tar yes-tar-day", tense:"Past"},
+  {hi:"मैं आज अच्छा नहीं हूँ", en:"I am not well today.", pron:"aai am not vel tuh-day", tense:"Present · is (negative)"},
+  {hi:"मैं जल्दी ठीक हो जाऊंगा", en:"I will get better soon.", pron:"aai vil get be-tar soon", tense:"Future"},
+  {hi:"क्या तुम्हें बेहतर महसूस हो रहा है?", en:"Do you feel better?", pron:"doo yoo feel be-tar", tense:"Question · do"},
+  {hi:"मुझे आराम चाहिए", en:"I need rest.", pron:"aai need rest", tense:"Need"},
+  {hi:"मैं कल काम पर नहीं आ सका", en:"I could not come to work yesterday.", pron:"aai kood not kum too vurk yes-tar-day", tense:"Past · could not"},
+  {hi:"धन्यवाद, अब मैं ठीक हूँ", en:"Thank you, I am fine now.", pron:"thaenk yoo, aai am fain now", tense:"Present · is"},
+];
+const U11_DRILL = [
+  {type:"mcq", hi:"मुझे सिरदर्द है", correct:"I have a headache.", options:["I have a headache.","I has a headache.","I having a headache.","I am headache."]},
+  {type:"builder", hi:"मुझे बुखार है", target:"I have a fever.", words:["I","have","a","fever."]},
+  {type:"mcq", hi:"मैं कल डॉक्टर के पास गया", correct:"I went to the doctor yesterday.", options:["I went to the doctor yesterday.","I go to the doctor yesterday.","I will go to the doctor yesterday.","I going to the doctor yesterday."]},
+  {type:"mcq", hi:"correct sentence?", correct:"I am not well today.", options:["I am not well today.","I not well today.","I is not well today.","I was not well today."]},
+  {type:"builder", hi:"मैं जल्दी ठीक हो जाऊंगा", target:"I will get better soon.", words:["I","will","get","better","soon."]},
+  {type:"mcq", hi:"क्या तुम्हें बेहतर महसूस हो रहा है?", correct:"Do you feel better?", options:["Do you feel better?","Does you feel better?","Did you feels better?","You feel better?"]},
+  {type:"mcq", hi:"मैं कल काम पर नहीं आ सका", correct:"I could not come to work yesterday.", options:["I could not come to work yesterday.","I can not come to work yesterday.","I could not came to work yesterday.","I will not come to work yesterday."]},
+  {type:"mcq", hi:"धन्यवाद, अब मैं ठीक हूँ", correct:"Thank you, I am fine now.", options:["Thank you, I am fine now.","Thank you, I is fine now.","Thank you, I was fine now.","Thank you, I fine now."]},
+];
+const U11_APPLY = [
+  {situation:"Supervisor notices you look unwell and asks what's wrong.", hi:"(तकलीफ बताना)", correct:"I have a headache.", options:["I have a headache.","I need rest.","I am not well today.","I have a fever."]},
+  {situation:"You need to explain yesterday's absence to your supervisor.", hi:"(कल की छुट्टी)", correct:"I could not come to work yesterday.", options:["I could not come to work yesterday.","I can not come to work yesterday.","I did not come to work yesterday.","I will not come to work yesterday."]},
+  {situation:"A colleague checks in on you a few days after you were sick.", hi:"(हालचाल पूछना)", correct:"Do you feel better?", options:["Do you feel better?","Did you feel better?","Are you feel better?","You feel better?"]},
+  {situation:"You're heading home early because you feel unwell.", hi:"(आज की हालत)", correct:"I am not well today.", options:["I am not well today.","I have a headache.","I went to the doctor yesterday.","I will get better soon."]},
+  {situation:"After recovering, a colleague asks how you're doing now.", hi:"(अब की हालत)", correct:"Thank you, I am fine now.", options:["Thank you, I am fine now.","Thank you, I was fine now.","I need medicine.","I need rest."]}
+];
+
+/* ============ UNIT 12 — Phone Calls & Simple Messages Home ============ */
+const U12_PHRASES = [
+  {hi:"मैं घर पहुंच गया", en:"I reached home.", pron:"aai reechd hohm", tense:"Past"},
+  {hi:"मैं देर से आऊंगा", en:"I will come late.", pron:"aai vil kum layt", tense:"Future"},
+  {hi:"चिंता मत करो", en:"Do not worry.", pron:"doo not vur-ree", tense:"Negative instruction"},
+  {hi:"मैंने खाना खा लिया", en:"I ate food.", pron:"aai ayt food", tense:"Past"},
+  {hi:"क्या तुम ठीक से सोए?", en:"Did you sleep well?", pron:"did yoo sleep vel", tense:"Question · did"},
+  {hi:"मैं कल फोन करूंगा", en:"I will call tomorrow.", pron:"aai vil kaal tuh-mor-oh", tense:"Future"},
+  {hi:"सब ठीक है", en:"Everything is fine.", pron:"ev-ree-thing iz fain", tense:"Present · is"},
+  {hi:"कृपया मुझे पैसे भेजो", en:"Please send me money.", pron:"pleez send mee mun-ee", tense:"Request"},
+  {hi:"मैं जल्दी घर आऊंगा", en:"I will come home soon.", pron:"aai vil kum hohm soon", tense:"Future"},
+  {hi:"मुझे तुम्हारी याद आ रही है", en:"I miss you.", pron:"aai mis yoo", tense:"Feeling"},
+];
+const U12_DRILL = [
+  {type:"mcq", hi:"मैं घर पहुंच गया", correct:"I reached home.", options:["I reached home.","I reach home.","I will reach home.","I reaching home."]},
+  {type:"builder", hi:"चिंता मत करो", target:"Do not worry.", words:["Do","not","worry."]},
+  {type:"mcq", hi:"correct sentence?", correct:"Everything is fine.", options:["Everything are fine.","Everything is fine.","Everything was fine.","Everything fine."]},
+  {type:"mcq", hi:"क्या तुम ठीक से सोए?", correct:"Did you sleep well?", options:["Did you sleep well?","Did you slept well?","Do you sleep well?","You slept well?"]},
+  {type:"builder", hi:"मैं जल्दी घर आऊंगा", target:"I will come home soon.", words:["I","will","come","home","soon."]},
+  {type:"mcq", hi:"कृपया मुझे पैसे भेजो", correct:"Please send me money.", options:["Please send me money.","Please sends me money.","Please sending me money.","Please sent me money."]},
+  {type:"mcq", hi:"मुझे तुम्हारी याद आ रही है", correct:"I miss you.", options:["I miss you.","I missing you.","I missed you.","I am miss you."]},
+  {type:"mcq", hi:"मैंने खाना खा लिया", correct:"I ate food.", options:["I ate food.","I eat food.","I eaten food.","I will eat food."]},
+];
+const U12_APPLY = [
+  {situation:"You've just arrived home and want to let family know.", hi:"(पहुंचने की सूचना)", correct:"I reached home.", options:["I reached home.","I will come home soon.","I will come late.","Everything is fine."]},
+  {situation:"Family is worried because you're running behind schedule.", hi:"(देर होने पर आश्वासन)", correct:"Do not worry.", options:["Do not worry.","I will come late.","I miss you.","Everything is fine."]},
+  {situation:"Your mother asks if you slept properly last night.", hi:"(नींद के बारे में)", correct:"Did you sleep well?", options:["Did you sleep well?","Do you sleep well?","Did you slept well?","You sleep well?"]},
+  {situation:"Family asks how things are going at your end.", hi:"(हालचाल)", correct:"Everything is fine.", options:["Everything is fine.","Everything was fine.","I ate food.","I miss you."]},
+  {situation:"You're on a call with your spouse before bed.", hi:"(प्यार जताना)", correct:"I miss you.", options:["I miss you.","I will call tomorrow.","Do not worry.","Please send me money."]}
+];
+
+/* ============ UNIT 13 — Greetings & Small Talk ============ */
+const U13_PHRASES = [
+  {hi:"तुम कैसे हो?", en:"How are you?", pron:"how aar yoo", tense:"Question"},
+  {hi:"मैं ठीक हूँ, तुम बताओ", en:"I am fine, what about you?", pron:"aai am fain, vot uh-bowt yoo", tense:"Present · is"},
+  {hi:"बहुत दिनों बाद मिले", en:"Long time no see.", pron:"long taim noh see", tense:"Greeting"},
+  {hi:"तुम्हारा दिन कैसा रहा?", en:"How was your day?", pron:"how vaz yor day", tense:"Question · past"},
+  {hi:"मेरा दिन अच्छा रहा", en:"My day was good.", pron:"mai day vaz good", tense:"Past · was"},
+  {hi:"तुम कहाँ रहते हो?", en:"Where do you live?", pron:"vear doo yoo liv", tense:"Question · do"},
+  {hi:"मैं यहीं पास में रहता हूँ", en:"I live nearby.", pron:"aai liv near-bai", tense:"Present habit"},
+  {hi:"मुझे तुमसे मिलकर खुशी हुई", en:"I am happy to meet you.", pron:"aai am hae-pee too meet yoo", tense:"Feeling"},
+  {hi:"चलते हैं, फिर मिलते हैं", en:"I will go now, see you later.", pron:"aai vil goh now, see yoo lay-tar", tense:"Future"},
+  {hi:"अपना ख्याल रखना", en:"Take care.", pron:"tayk kair", tense:"Closing"},
+];
+const U13_DRILL = [
+  {type:"mcq", hi:"तुम कैसे हो?", correct:"How are you?", options:["How are you?","How is you?","How you are?","How was you?"]},
+  {type:"builder", hi:"मेरा दिन अच्छा रहा", target:"My day was good.", words:["My","day","was","good."]},
+  {type:"mcq", hi:"correct sentence?", correct:"I am happy to meet you.", options:["I is happy to meet you.","I am happy to meet you.","I are happy to meet you.","I was happy to meet you."]},
+  {type:"mcq", hi:"तुम कहाँ रहते हो?", correct:"Where do you live?", options:["Where do you live?","Where does you live?","Where you live?","Where did you live?"]},
+  {type:"builder", hi:"तुम्हारा दिन कैसा रहा?", target:"How was your day?", words:["How","was","your","day?"]},
+  {type:"mcq", hi:"मैं यहीं पास में रहता हूँ", correct:"I live nearby.", options:["I live nearby.","I lives nearby.","I living nearby.","I lived nearby."]},
+  {type:"mcq", hi:"चलते हैं, फिर मिलते हैं", correct:"I will go now, see you later.", options:["I will go now, see you later.","I go now, see you later.","I went now, see you later.","I going now, see you later."]},
+  {type:"mcq", hi:"अपना ख्याल रखना", correct:"Take care.", options:["Take care.","Taking care.","Took care.","You take care."]},
+];
+const U13_APPLY = [
+  {situation:"You bump into an old friend on the street.", hi:"(हालचाल पूछना)", correct:"How are you?", options:["How are you?","Where do you live?","Take care.","How was your day?"]},
+  {situation:"A friend asks how your day went.", hi:"(दिन के बारे में)", correct:"My day was good.", options:["My day was good.","My day is good.","I live nearby.","Long time no see."]},
+  {situation:"You're meeting someone's friend for the first time.", hi:"(पहली मुलाकात)", correct:"I am happy to meet you.", options:["I am happy to meet you.","I was happy to meet you.","How are you?","Take care."]},
+  {situation:"Ending a chat as you head off somewhere.", hi:"(विदाई)", correct:"I will go now, see you later.", options:["I will go now, see you later.","I went now, see you later.","Take care.","How are you?"]},
+  {situation:"You haven't seen a friend in months and just spotted them.", hi:"(लंबे समय बाद मिलना)", correct:"Long time no see.", options:["Long time no see.","How are you?","Where do you live?","My day was good."]}
+];
+
+/* ============ UNIT 14 — Making Plans ============ */
+const U14_PHRASES = [
+  {hi:"इस वीकेंड क्या करोगे?", en:"What will you do this weekend?", pron:"vot vil yoo doo dhis veek-end", tense:"Future question"},
+  {hi:"चलो शनिवार को मिलते हैं", en:"Let's meet on Saturday.", pron:"lets meet on sae-tar-day", tense:"Suggestion"},
+  {hi:"मैं फ्री हूँ", en:"I am free.", pron:"aai am free", tense:"Present · is"},
+  {hi:"मैं व्यस्त हूँ", en:"I am busy.", pron:"aai am bi-zee", tense:"Present · is"},
+  {hi:"चलो मैच देखने चलते हैं", en:"Let's go watch the match.", pron:"lets goh votch dhuh maetch", tense:"Suggestion"},
+  {hi:"मैं तुम्हें बुलाऊंगा", en:"I will call you.", pron:"aai vil kaal yoo", tense:"Future"},
+  {hi:"क्या तुम आ सकते हो?", en:"Can you come?", pron:"kaen yoo kum", tense:"Question · can"},
+  {hi:"हम शाम को मिलेंगे", en:"We will meet in the evening.", pron:"vee vil meet in dhuh eev-ning", tense:"Future"},
+  {hi:"मुझे देर हो सकती है", en:"I may be late.", pron:"aai may bee layt", tense:"Modal · may"},
+  {hi:"तय हो गया, कल मिलते हैं", en:"It's settled, let's meet tomorrow.", pron:"its se-tld, lets meet tuh-mor-oh", tense:"Confirming"},
+];
+const U14_DRILL = [
+  {type:"mcq", hi:"इस वीकेंड क्या करोगे?", correct:"What will you do this weekend?", options:["What will you do this weekend?","What you will do this weekend?","What do you will this weekend?","What will you did this weekend?"]},
+  {type:"builder", hi:"चलो शनिवार को मिलते हैं", target:"Let's meet on Saturday.", words:["Let's","meet","on","Saturday."]},
+  {type:"mcq", hi:"correct sentence?", correct:"I am free.", options:["I is free.","I am free.","I are free.","I was free."]},
+  {type:"mcq", hi:"क्या तुम आ सकते हो?", correct:"Can you come?", options:["Can you come?","Can you comes?","Can you to come?","Do you can come?"]},
+  {type:"builder", hi:"हम शाम को मिलेंगे", target:"We will meet in the evening.", words:["We","will","meet","in","the","evening."]},
+  {type:"mcq", hi:"मुझे देर हो सकती है", correct:"I may be late.", options:["I may be late.","I may being late.","I will may late.","I may to be late."]},
+  {type:"mcq", hi:"चलो मैच देखने चलते हैं", correct:"Let's go watch the match.", options:["Let's go watch the match.","Let's going watch the match.","Let's went watch the match.","Lets go watches the match."]},
+  {type:"mcq", hi:"मैं व्यस्त हूँ", correct:"I am busy.", options:["I am busy.","I is busy.","I are busy.","I was busy."]},
+];
+const U14_APPLY = [
+  {situation:"A friend is asking about your weekend plans.", hi:"(योजना पूछना)", correct:"What will you do this weekend?", options:["What will you do this weekend?","Let's meet on Saturday.","I am busy.","Can you come?"]},
+  {situation:"You want to suggest meeting up this weekend.", hi:"(सुझाव देना)", correct:"Let's meet on Saturday.", options:["Let's meet on Saturday.","What will you do this weekend?","I may be late.","I am free."]},
+  {situation:"A friend asks if you're available tonight.", hi:"(खाली होना)", correct:"I am free.", options:["I am free.","I am busy.","I will call you.","We will meet in the evening."]},
+  {situation:"You're inviting a friend to watch cricket.", hi:"(न्योता देना)", correct:"Let's go watch the match.", options:["Let's go watch the match.","Let's meet on Saturday.","I may be late.","Can you come?"]},
+  {situation:"You know traffic might delay you before meeting a friend.", hi:"(देर की चेतावनी)", correct:"I may be late.", options:["I may be late.","I am busy.","I will call you.","It's settled, let's meet tomorrow."]}
+];
+
+/* ============ UNIT 15 — Sharing News / Asking About Others ============ */
+const U15_PHRASES = [
+  {hi:"क्या नया है?", en:"What's new?", pron:"vots nyoo", tense:"Question"},
+  {hi:"मुझे एक अच्छी खबर मिली", en:"I got some good news.", pron:"aai got sum good nyooz", tense:"Past"},
+  {hi:"तुम्हारा परिवार कैसा है?", en:"How is your family?", pron:"how iz yor faem-lee", tense:"Question"},
+  {hi:"सब लोग ठीक हैं", en:"Everyone is fine.", pron:"ev-ree-van iz fain", tense:"Present · is"},
+  {hi:"मेरा भाई शहर आया", en:"My brother came to the city.", pron:"mai bruh-dhar kaym too dhuh si-tee", tense:"Past"},
+  {hi:"क्या तुमने सुना?", en:"Did you hear that?", pron:"did yoo heer dhaet", tense:"Question · did"},
+  {hi:"मुझे नई नौकरी मिली", en:"I got a new job.", pron:"aai got uh nyoo job", tense:"Past"},
+  {hi:"बधाई हो", en:"Congratulations.", pron:"kon-graeh-choo-lay-shunz", tense:"Reaction"},
+  {hi:"यह सुनकर अच्छा लगा", en:"I am happy to hear that.", pron:"aai am hae-pee too heer dhaet", tense:"Feeling"},
+  {hi:"मुझे तुम्हें कुछ बताना है", en:"I need to tell you something.", pron:"aai need too tel yoo sum-thing", tense:"Need"},
+];
+const U15_DRILL = [
+  {type:"mcq", hi:"क्या नया है?", correct:"What's new?", options:["What's new?","What new?","What is news?","What are new?"]},
+  {type:"builder", hi:"सब लोग ठीक हैं", target:"Everyone is fine.", words:["Everyone","is","fine."]},
+  {type:"mcq", hi:"correct sentence?", correct:"How is your family?", options:["How is your family?","How are your family?","How your family is?","How was your family?"]},
+  {type:"mcq", hi:"मुझे नई नौकरी मिली", correct:"I got a new job.", options:["I got a new job.","I get a new job.","I will get a new job.","I getting a new job."]},
+  {type:"builder", hi:"क्या तुमने सुना?", target:"Did you hear that?", words:["Did","you","hear","that?"]},
+  {type:"mcq", hi:"मेरा भाई शहर आया", correct:"My brother came to the city.", options:["My brother came to the city.","My brother come to the city.","My brother comes to the city.","My brother will come to the city."]},
+  {type:"mcq", hi:"यह सुनकर अच्छा लगा", correct:"I am happy to hear that.", options:["I am happy to hear that.","I is happy to hear that.","I was happy to hear that.","I happy to hear that."]},
+  {type:"mcq", hi:"मुझे तुम्हें कुछ बताना है", correct:"I need to tell you something.", options:["I need to tell you something.","I needs to tell you something.","I need tell you something.","I needed to tell you something."]},
+];
+const U15_APPLY = [
+  {situation:"You run into a friend you haven't spoken to in a while.", hi:"(खबर पूछना)", correct:"What's new?", options:["What's new?","How is your family?","Congratulations.","Did you hear that?"]},
+  {situation:"A friend just told you they got a promotion.", hi:"(बधाई देना)", correct:"Congratulations.", options:["Congratulations.","I got some good news.","What's new?","Everyone is fine."]},
+  {situation:"You want to tell a friend you found a new job.", hi:"(खुशखबरी बताना)", correct:"I got a new job.", options:["I got a new job.","I get a new job.","My brother came to the city.","I need to tell you something."]},
+  {situation:"Someone asks after your parents and siblings.", hi:"(परिवार का हाल)", correct:"How is your family?", options:["How is your family?","Everyone is fine.","My brother came to the city.","What's new?"]},
+  {situation:"You have something important to share with a friend.", hi:"(बात करनी है)", correct:"I need to tell you something.", options:["I need to tell you something.","What's new?","I got some good news.","Did you hear that?"]}
+];
+
+/* ============ UNIT 16 — Borrowing, Lending & Money Talk ============ */
+const U16_PHRASES = [
+  {hi:"क्या तुम मुझे पैसे उधार दे सकते हो?", en:"Can you lend me some money?", pron:"kaen yoo lend mee sum mun-ee", tense:"Question · can"},
+  {hi:"मैं तुम्हें कल वापस कर दूंगा", en:"I will return it to you tomorrow.", pron:"aai vil ree-turn it too yoo tuh-mor-oh", tense:"Future"},
+  {hi:"मेरे पास अभी पैसे नहीं हैं", en:"I do not have money right now.", pron:"aai doo not hav mun-ee rait now", tense:"Negative · have"},
+  {hi:"मैंने तुम्हारा उधार चुका दिया", en:"I paid back your loan.", pron:"aai payd baek yor lohn", tense:"Past"},
+  {hi:"धन्यवाद, तुमने बड़ी मदद की", en:"Thank you, you helped me a lot.", pron:"thaenk yoo, yoo helpt mee uh lot", tense:"Past"},
+  {hi:"क्या तुम्हें पैसे चाहिए?", en:"Do you need money?", pron:"doo yoo need mun-ee", tense:"Question · do"},
+  {hi:"मैं तुम्हारी मदद कर सकता हूँ", en:"I can help you.", pron:"aai kaen help yoo", tense:"Modal · can"},
+  {hi:"यह मेरी तरफ से है", en:"This is from me.", pron:"dhis iz from mee", tense:"Present · is"},
+  {hi:"चिंता मत करो, कोई बात नहीं", en:"Do not worry, it's fine.", pron:"doo not vur-ree, its fain", tense:"Negative instruction"},
+  {hi:"मैं जल्दी ही तुम्हें चुका दूंगा", en:"I will pay you back soon.", pron:"aai vil pay yoo baek soon", tense:"Future"},
+];
+const U16_DRILL = [
+  {type:"mcq", hi:"क्या तुम मुझे पैसे उधार दे सकते हो?", correct:"Can you lend me some money?", options:["Can you lend me some money?","Can you lends me some money?","Can you to lend me some money?","Do you can lend me some money?"]},
+  {type:"builder", hi:"मेरे पास अभी पैसे नहीं हैं", target:"I do not have money right now.", words:["I","do","not","have","money","right","now."]},
+  {type:"mcq", hi:"correct sentence?", correct:"I paid back your loan.", options:["I pay back your loan.","I paid back your loan.","I will pay back your loan.","I paying back your loan."]},
+  {type:"mcq", hi:"क्या तुम्हें पैसे चाहिए?", correct:"Do you need money?", options:["Do you need money?","Does you need money?","Did you need money?","You need money?"]},
+  {type:"builder", hi:"मैं तुम्हारी मदद कर सकता हूँ", target:"I can help you.", words:["I","can","help","you."]},
+  {type:"mcq", hi:"धन्यवाद, तुमने बड़ी मदद की", correct:"Thank you, you helped me a lot.", options:["Thank you, you helped me a lot.","Thank you, you help me a lot.","Thank you, you helping me a lot.","Thank you, you will help me a lot."]},
+  {type:"mcq", hi:"मैं जल्दी ही तुम्हें चुका दूंगा", correct:"I will pay you back soon.", options:["I will pay you back soon.","I pay you back soon.","I paid you back soon.","I will paid you back soon."]},
+  {type:"mcq", hi:"यह मेरी तरफ से है", correct:"This is from me.", options:["This is from me.","This are from me.","This was from me.","This from me."]},
+];
+const U16_APPLY = [
+  {situation:"You're short on cash and need to ask a friend.", hi:"(उधार माँगना)", correct:"Can you lend me some money?", options:["Can you lend me some money?","Do you need money?","I do not have money right now.","This is from me."]},
+  {situation:"You're promising to return money you borrowed.", hi:"(वापस करने का वादा)", correct:"I will return it to you tomorrow.", options:["I will return it to you tomorrow.","I paid back your loan.","I do not have money right now.","Can you lend me some money?"]},
+  {situation:"A friend seems to be struggling financially this month.", hi:"(मदद की पेशकश)", correct:"Do you need money?", options:["Do you need money?","I can help you.","I do not have money right now.","This is from me."]},
+  {situation:"You just repaid money you owed a friend.", hi:"(चुकाने की सूचना)", correct:"I paid back your loan.", options:["I paid back your loan.","I will pay you back soon.","I do not have money right now.","Thank you, you helped me a lot."]},
+  {situation:"A friend is apologising for not repaying you yet.", hi:"(आश्वासन देना)", correct:"Do not worry, it's fine.", options:["Do not worry, it's fine.","Can you lend me some money?","I paid back your loan.","Do you need money?"]}
+];
+
+/* ============ UNIT 17 — Everyday Chat: Weather, Festivals, Cricket ============ */
+const U17_PHRASES = [
+  {hi:"आज बहुत गर्मी है", en:"It is very hot today.", pron:"it iz ve-ree hot tuh-day", tense:"Present · is"},
+  {hi:"कल बारिश हुई", en:"It rained yesterday.", pron:"it raynd yes-tar-day", tense:"Past"},
+  {hi:"कल बारिश होगी", en:"It will rain tomorrow.", pron:"it vil rayn tuh-mor-oh", tense:"Future"},
+  {hi:"त्योहार की शुभकामनाएं", en:"Happy festival wishes.", pron:"hae-pee fes-ti-vl vish-iz", tense:"Greeting"},
+  {hi:"आज मैच है", en:"There is a match today.", pron:"dhair iz uh maetch tuh-day", tense:"There is/are"},
+  {hi:"हमारी टीम जीत गई", en:"Our team won.", pron:"ow-ar teem von", tense:"Past"},
+  {hi:"कल कौन सी टीम खेलेगी?", en:"Which team will play tomorrow?", pron:"vich teem vil play tuh-mor-oh", tense:"Future question"},
+  {hi:"मुझे क्रिकेट पसंद है", en:"I like cricket.", pron:"aai laik kri-ket", tense:"Present · like"},
+  {hi:"आज मौसम अच्छा है", en:"The weather is nice today.", pron:"dhuh veh-dhar iz nais tuh-day", tense:"Present · is"},
+  {hi:"त्योहार पर घर चलते हैं", en:"Let's go home for the festival.", pron:"lets goh hohm for dhuh fes-ti-vl", tense:"Suggestion"},
+];
+const U17_DRILL = [
+  {type:"mcq", hi:"आज बहुत गर्मी है", correct:"It is very hot today.", options:["It is very hot today.","It are very hot today.","It was very hot today.","It very hot today."]},
+  {type:"builder", hi:"कल बारिश होगी", target:"It will rain tomorrow.", words:["It","will","rain","tomorrow."]},
+  {type:"mcq", hi:"correct sentence?", correct:"It rained yesterday.", options:["It rain yesterday.","It rained yesterday.","It will rain yesterday.","It raining yesterday."]},
+  {type:"mcq", hi:"हमारी टीम जीत गई", correct:"Our team won.", options:["Our team won.","Our team win.","Our team will win.","Our team winning."]},
+  {type:"builder", hi:"मुझे क्रिकेट पसंद है", target:"I like cricket.", words:["I","like","cricket."]},
+  {type:"mcq", hi:"कल कौन सी टीम खेलेगी?", correct:"Which team will play tomorrow?", options:["Which team will play tomorrow?","Which team play tomorrow?","Which team plays tomorrow?","Which team played tomorrow?"]},
+  {type:"mcq", hi:"आज मौसम अच्छा है", correct:"The weather is nice today.", options:["The weather is nice today.","The weather are nice today.","The weather was nice today.","The weather nice today."]},
+  {type:"mcq", hi:"आज मैच है", correct:"There is a match today.", options:["There is a match today.","There are a match today.","There was a match today.","There a match today."]},
+];
+const U17_APPLY = [
+  {situation:"A colleague comments on how uncomfortable the heat is today.", hi:"(मौसम की बात)", correct:"It is very hot today.", options:["It is very hot today.","It rained yesterday.","The weather is nice today.","It will rain tomorrow."]},
+  {situation:"You're checking if you'll need an umbrella tomorrow.", hi:"(मौसम की भविष्यवाणी)", correct:"It will rain tomorrow.", options:["It will rain tomorrow.","It rained yesterday.","It is very hot today.","There is a match today."]},
+  {situation:"You want to greet a colleague during a festival.", hi:"(त्योहार की बधाई)", correct:"Happy festival wishes.", options:["Happy festival wishes.","Let's go home for the festival.","I like cricket.","Our team won."]},
+  {situation:"Everyone's talking about last night's match result.", hi:"(मैच का नतीजा)", correct:"Our team won.", options:["Our team won.","Our team win.","There is a match today.","I like cricket."]},
+  {situation:"A friend asks about your interest in sports.", hi:"(पसंद बताना)", correct:"I like cricket.", options:["I like cricket.","There is a match today.","Our team won.","Which team will play tomorrow?"]}
+];
+
+const UNITS = [
+  {id:"u1", title:"Warehouse Floor Basics", desc:"Everyday phrases you'll use in your first week",
+   phrases:U1_PHRASES, drill:U1_DRILL, apply:U1_APPLY, unlockAfter:null, applyThreshold:6},
+  {id:"u2", title:"Daily Work Sentences", desc:"Present, past & future — the mistakes that give away broken English",
+   phrases:U2_PHRASES, drill:U2_DRILL, apply:U2_APPLY, unlockAfter:"u1", unlockThreshold:8, applyThreshold:6},
+  {id:"u3", title:"Safety & Instructions", desc:"Warnings, rules, and staying safe on the floor",
+   phrases:U3_PHRASES, drill:U3_DRILL, apply:U3_APPLY, unlockAfter:"u2", unlockThreshold:8, applyThreshold:6},
+  {id:"u4", title:"Reporting a Problem", desc:"Leaks, missing items, broken equipment",
+   phrases:U4_PHRASES, drill:U4_DRILL, apply:U4_APPLY, unlockAfter:"u3", unlockThreshold:8, applyThreshold:6},
+  {id:"u5", title:"Permission & Requests", desc:"Breaks, leave, help — asking the right way",
+   phrases:U5_PHRASES, drill:U5_DRILL, apply:U5_APPLY, unlockAfter:"u4", unlockThreshold:8, applyThreshold:6},
+  {id:"u6", title:"Numbers, Time & Shift", desc:"Counts, timings, and handover to the next shift",
+   phrases:U6_PHRASES, drill:U6_DRILL, apply:U6_APPLY, unlockAfter:"u5", unlockThreshold:8, applyThreshold:6},
+  {id:"u7", title:"Customer & Colleague Talk", desc:"Serving, apologising, and closing well",
+   phrases:U7_PHRASES, drill:U7_DRILL, apply:U7_APPLY, unlockAfter:"u6", unlockThreshold:8, applyThreshold:6},
+  {id:"u8", title:"Morning & Evening Routine", desc:"Home — waking up, sleeping, the small daily things",
+   phrases:U8_PHRASES, drill:U8_DRILL, apply:U8_APPLY, unlockAfter:"u7", unlockThreshold:7, applyThreshold:6},
+  {id:"u9", title:"Talking with Family", desc:"Home — parents, spouse, children, everyday conversation",
+   phrases:U9_PHRASES, drill:U9_DRILL, apply:U9_APPLY, unlockAfter:"u8", unlockThreshold:8, applyThreshold:6},
+  {id:"u10", title:"Household Needs", desc:"Home — rent, repairs, market, everyday requests",
+   phrases:U10_PHRASES, drill:U10_DRILL, apply:U10_APPLY, unlockAfter:"u9", unlockThreshold:8, applyThreshold:6},
+  {id:"u11", title:"Health & Feelings", desc:"Home — being unwell, needing rest, feeling better",
+   phrases:U11_PHRASES, drill:U11_DRILL, apply:U11_APPLY, unlockAfter:"u10", unlockThreshold:8, applyThreshold:6},
+  {id:"u12", title:"Phone Calls Home", desc:"Home — checking in, reassuring, staying connected",
+   phrases:U12_PHRASES, drill:U12_DRILL, apply:U12_APPLY, unlockAfter:"u11", unlockThreshold:8, applyThreshold:6},
+  {id:"u13", title:"Greetings & Small Talk", desc:"Friends — the everyday hello and how-are-you",
+   phrases:U13_PHRASES, drill:U13_DRILL, apply:U13_APPLY, unlockAfter:"u12", unlockThreshold:7, applyThreshold:6},
+  {id:"u14", title:"Making Plans", desc:"Friends — weekends, meeting up, matches",
+   phrases:U14_PHRASES, drill:U14_DRILL, apply:U14_APPLY, unlockAfter:"u13", unlockThreshold:8, applyThreshold:6},
+  {id:"u15", title:"Sharing News", desc:"Friends — good news, asking after family",
+   phrases:U15_PHRASES, drill:U15_DRILL, apply:U15_APPLY, unlockAfter:"u14", unlockThreshold:8, applyThreshold:6},
+  {id:"u16", title:"Borrowing & Money Talk", desc:"Friends — lending, repaying, helping out",
+   phrases:U16_PHRASES, drill:U16_DRILL, apply:U16_APPLY, unlockAfter:"u15", unlockThreshold:8, applyThreshold:6},
+  {id:"u17", title:"Weather, Festivals & Cricket", desc:"Friends — the everyday chat that fills a day",
+   phrases:U17_PHRASES, drill:U17_DRILL, apply:U17_APPLY, unlockAfter:"u16", unlockThreshold:8, applyThreshold:6},
+];
+
+/* ============ STATE ============ */
+let state = {
+  currentUnit: null,
+  learnIndex: 0,
+  quizType: null,
+  quizItems: [],
+  quizIndex: 0,
+  quizScore: 0,
+  wrongItems: [],
+  masteredByUnit: {},
+  reviewByUnit: {},
+  streak: 0,
+};
+try{
+  state.masteredByUnit = JSON.parse(localStorage.getItem('sg_mastered_v2') || '{}');
+  state.reviewByUnit = JSON.parse(localStorage.getItem('sg_review_v2') || '{}');
+  state.streak = parseInt(localStorage.getItem('sg_streak_v2') || '0');
+}catch(e){}
+UNITS.forEach(u=>{
+  if(!state.masteredByUnit[u.id]) state.masteredByUnit[u.id] = [];
+  if(!state.reviewByUnit[u.id]) state.reviewByUnit[u.id] = [];
+});
+
+function saveState(){
+  try{
+    localStorage.setItem('sg_mastered_v2', JSON.stringify(state.masteredByUnit));
+    localStorage.setItem('sg_review_v2', JSON.stringify(state.reviewByUnit));
+    localStorage.setItem('sg_streak_v2', state.streak);
+  }catch(e){}
+}
+function unitById(id){ return UNITS.find(u=>u.id===id); }
+function mastered(id){ return new Set(state.masteredByUnit[id]); }
+function setMastered(id, s){ state.masteredByUnit[id] = [...s]; saveState(); }
+
+/* ============ NAV ============ */
+const UNIT_ICONS = {u1:"📦", u2:"⏰", u3:"⛑️", u4:"🔧", u5:"🙋", u6:"🔢", u7:"🤝", u8:"🌅", u9:"👨‍👩‍👧", u10:"🏠", u11:"❤️‍🩹", u12:"📱", u13:"👋", u14:"📅", u15:"📰", u16:"🤲", u17:"🏏"};
+const TEST_MODE = true; // ⚠️ unlocks everything for testing — set to false before real learners use this
+const TOP_TABS = ['screen-units','screen-talk','screen-progress'];
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('learnBottombar').style.display = id === 'screen-learn' ? 'block' : 'none';
+  document.getElementById('streakCount').textContent = state.streak;
+
+  const isTopTab = TOP_TABS.includes(id);
+  document.getElementById('backRow').classList.toggle('hidden', isTopTab);
+  document.getElementById('tabbar').style.display = isTopTab ? 'flex' : 'none';
+
+  if(isTopTab){
+    document.querySelectorAll('.tab-btn').forEach(b=> b.classList.toggle('active', 'screen-'+b.dataset.tab === id));
+    if(id === 'screen-units') renderUnitList();
+    if(id === 'screen-progress') renderProgressTab();
+  } else if(state.currentUnit && id === 'screen-home'){
+    renderUnitDetail();
+  }
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=> showScreen('screen-' + btn.dataset.tab));
+});
+document.getElementById('backRow').addEventListener('click', ()=> showScreen('screen-units'));
+
+function ringSVG(pct){
+  const r = 11, c = 2*Math.PI*r;
+  const offset = c - (pct/100)*c;
+  return `<svg width="28" height="28"><circle class="ring-bg" cx="14" cy="14" r="${r}"></circle>
+    <circle class="ring-fill" cx="14" cy="14" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${offset}"></circle></svg>`;
+}
+
+function renderUnitList(){
+  const wrap = document.getElementById('unitList');
+  wrap.innerHTML = '';
+  UNITS.forEach((u)=>{
+    const locked = !TEST_MODE && u.unlockAfter && mastered(u.unlockAfter).size < u.unlockThreshold;
+    const m = mastered(u.id).size;
+    const pct = Math.round((m/u.phrases.length)*100);
+    const tile = document.createElement('div');
+    tile.className = 'unit-tile' + (locked ? ' locked' : '');
+    tile.innerHTML = `
+      ${locked ? '<div class="tile-lock">🔒</div>' : `<div class="tile-ring">${ringSVG(pct)}</div>`}
+      <div class="tile-icon">${UNIT_ICONS[u.id] || '📘'}</div>
+      <div class="tile-label">${u.title}</div>
+    `;
+    if(!locked){ tile.addEventListener('click', ()=>{ state.currentUnit = u.id; showScreen('screen-home'); }); }
+    wrap.appendChild(tile);
+  });
+}
+
+function renderUnitDetail(){
+  const u = unitById(state.currentUnit);
+  const m = mastered(u.id).size;
+  document.getElementById('unitHeroIcon').textContent = UNIT_ICONS[u.id] || '📘';
+  document.getElementById('unitDetailLabel').textContent = u.title;
+
+  const dueCount = state.reviewByUnit[u.id].length;
+  const reviewBtn = document.getElementById('reviewBadgeBtn');
+  reviewBtn.classList.toggle('hidden', dueCount === 0);
+  document.getElementById('reviewBadgeCount').textContent = dueCount;
+
+  document.querySelector('.action-tile[data-mode="speak"]').classList.toggle('locked', !TEST_MODE && m === 0);
+  document.querySelector('.action-tile[data-mode="drill"]').classList.toggle('locked', !TEST_MODE && m === 0);
+  document.querySelector('.action-tile[data-mode="apply"]').classList.toggle('locked', !TEST_MODE && m < u.applyThreshold);
+}
+
+document.getElementById('reviewBadgeBtn').addEventListener('click', ()=>{
+  const u = unitById(state.currentUnit);
+  if(state.reviewByUnit[u.id].length === 0) return;
+  startQuiz('review');
+});
+
+function renderProgressTab(){
+  document.getElementById('progStreakNum').textContent = state.streak;
+  const wrap = document.getElementById('progressBars');
+  wrap.innerHTML = '';
+  UNITS.forEach(u=>{
+    const m = mastered(u.id).size;
+    const pct = Math.round((m/u.phrases.length)*100);
+    const row = document.createElement('div');
+    row.className = 'domain-bar-row';
+    row.innerHTML = `
+      <div class="domain-bar-icon">${UNIT_ICONS[u.id] || '📘'}</div>
+      <div class="domain-bar-track"><div class="domain-bar-fill" style="width:${pct}%;"></div></div>
+      <div class="domain-bar-pct">${pct}%</div>
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+document.querySelectorAll('.action-tile[data-mode]').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    if(el.classList.contains('locked')) return;
+    const u = unitById(state.currentUnit);
+    const mode = el.dataset.mode;
+    if(mode === 'learn') startLearn();
+    if(mode === 'speak'){
+      if(!TEST_MODE && mastered(u.id).size === 0){ alert('Try Learn first, so you have something to remember.'); return; }
+      startSpeakBlock(0);
+    }
+    if(mode === 'drill') startQuiz('drill');
+    if(mode === 'apply'){
+      if(!TEST_MODE && mastered(u.id).size < u.applyThreshold){ alert(`Learn a few more sentences first.`); return; }
+      startQuiz('apply');
+    }
+  });
+});
+
+/* ============ LEARN MODE ============ */
+function startLearn(){
+  state.learnIndex = 0;
+  document.getElementById('lcTotal').textContent = unitById(state.currentUnit).phrases.length;
+  renderFlashcard();
+  showScreen('screen-learn');
+}
+function renderFlashcard(){
+  const u = unitById(state.currentUnit);
+  const p = u.phrases[state.learnIndex];
+  document.getElementById('fcHindi').textContent = p.hi;
+  document.getElementById('fcEnglish').textContent = p.en;
+  document.getElementById('fcPron').textContent = '🔊 ' + p.pron;
+  document.getElementById('fcTenseFront').textContent = p.tense || '';
+  document.getElementById('fcTenseFront').style.display = p.tense ? 'block' : 'none';
+  document.getElementById('fcTenseBack').textContent = p.tense || '';
+  document.getElementById('fcTenseBack').style.display = p.tense ? 'block' : 'none';
+  document.getElementById('lcCurrent').textContent = state.learnIndex + 1;
+  document.getElementById('flipcard').classList.remove('flipped');
+  document.getElementById('lcPrev').disabled = state.learnIndex === 0;
+  document.getElementById('lcNext').textContent = state.learnIndex === u.phrases.length-1 ? 'Finish ✓' : 'Next →';
+}
+document.getElementById('flipcard').addEventListener('click', function(e){
+  if(e.target.id === 'fcShadowBtn') return;
+  this.classList.toggle('flipped');
+  if(this.classList.contains('flipped')){
+    const u = unitById(state.currentUnit);
+    const s = mastered(u.id); s.add(state.learnIndex); setMastered(u.id, s);
+    renderUnitDetail();
+  }
+});
+document.getElementById('fcShadowBtn').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const u = unitById(state.currentUnit);
+  const p = u.phrases[state.learnIndex];
+  if(!window.speechSynthesis) return;
+  const btn = document.getElementById('fcShadowBtn');
+  btn.classList.add('playing'); btn.textContent = '🔊 Listen...';
+  const utter = new SpeechSynthesisUtterance(p.en);
+  utter.lang = 'en-IN'; utter.rate = 0.85;
+  utter.onend = ()=>{ btn.classList.remove('playing'); btn.textContent = '🎙 Your turn — repeat it now'; setTimeout(()=>{ btn.textContent = '🔊 Hear it & repeat'; }, 2500); };
+  window.speechSynthesis.speak(utter);
+});
+document.getElementById('lcPrev').addEventListener('click', ()=>{ if(state.learnIndex>0){ state.learnIndex--; renderFlashcard(); }});
+document.getElementById('lcNext').addEventListener('click', ()=>{
+  const u = unitById(state.currentUnit);
+  if(state.learnIndex < u.phrases.length-1){ state.learnIndex++; renderFlashcard(); }
+  else { showScreen('screen-home'); renderUnitDetail(); }
+});
+document.getElementById('learnDoneBtn').addEventListener('click', ()=> startQuiz('drill'));
+
+/* ============ QUIZ ENGINE ============ */
+function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
+
+function startQuiz(type){
+  const u = unitById(state.currentUnit);
+  state.quizType = type;
+  state.quizIndex = 0;
+  state.quizScore = 0;
+  state.wrongItems = [];
+
+  if(type === 'drill') state.quizItems = shuffle([...u.drill]);
+  if(type === 'apply') state.quizItems = shuffle([...u.apply]).map(s=>({type:'scenario', ...s}));
+  if(type === 'review'){
+    state.quizItems = state.reviewByUnit[u.id];
+    state.reviewByUnit[u.id] = [];
+    saveState();
+  }
+  renderQuizQuestion();
+  showScreen('screen-quiz');
+}
+
+let currentSelection = null;
+let builtSequence = [];
+
+function renderQuizQuestion(){
+  const item = state.quizItems[state.quizIndex];
+  document.getElementById('qCount').textContent = `Q${state.quizIndex+1} / ${state.quizItems.length}`;
+  document.getElementById('qScore').textContent = `✓ ${state.quizScore}`;
+  document.getElementById('qFeedback').className = 'feedback';
+  document.getElementById('qFeedback').textContent = '';
+  document.getElementById('qNextBtn').disabled = true;
+  document.getElementById('qNextBtn').textContent = 'Check answer';
+  currentSelection = null; builtSequence = [];
+
+  const kicker = document.getElementById('qKicker');
+  const prompt = document.getElementById('qPrompt');
+  const sub = document.getElementById('qSub');
+  const optionsWrap = document.getElementById('qOptions');
+  const blankInput = document.getElementById('qBlankInput');
+  const builderZone = document.getElementById('builderZone');
+  optionsWrap.innerHTML = ''; blankInput.style.display = 'none'; blankInput.value = '';
+  builderZone.style.display = 'none';
+
+  if(item.type === 'scenario'){
+    kicker.textContent = 'ON THE FLOOR';
+    prompt.textContent = item.situation;
+    sub.innerHTML = `<span class="hindi">${item.hi}</span>`;
+    item.options.forEach(opt => optionsWrap.appendChild(makeOptionBtn(opt, item.correct)));
+  } else if(item.type === 'blank'){
+    kicker.textContent = 'COMPLETE THE SENTENCE';
+    prompt.innerHTML = `<span class="hindi">${item.hi}</span>`;
+    sub.textContent = `English: ${item.promptEn}`;
+    blankInput.style.display = 'block';
+    blankInput.oninput = ()=>{ document.getElementById('qNextBtn').disabled = blankInput.value.trim()===''; };
+  } else if(item.type === 'builder'){
+    kicker.textContent = 'BUILD THE SENTENCE';
+    prompt.innerHTML = `<span class="hindi">${item.hi}</span>`;
+    sub.textContent = 'Tap the words in the correct order';
+    builderZone.style.display = 'block';
+    renderBuilder(item);
+  } else {
+    kicker.textContent = 'TRANSLATE';
+    prompt.innerHTML = `<span class="hindi">${item.hi}</span>`;
+    sub.textContent = 'Choose the correct English';
+    item.options.forEach(opt => optionsWrap.appendChild(makeOptionBtn(opt, item.correct)));
+  }
+}
+
+function makeOptionBtn(text, correct){
+  const btn = document.createElement('button');
+  btn.className = 'opt';
+  btn.textContent = text;
+  btn.addEventListener('click', ()=> selectOption(btn, text, correct));
+  return btn;
+}
+function selectOption(btn, text, correct){
+  document.querySelectorAll('#qOptions .opt').forEach(o=> o.style.borderColor = 'var(--line)');
+  currentSelection = {text, correct};
+  btn.style.borderColor = 'var(--cyan)';
+  document.getElementById('qNextBtn').disabled = false;
+}
+
+function renderBuilder(item){
+  const target = document.getElementById('builderTarget');
+  const bank = document.getElementById('chipBank');
+  target.innerHTML = ''; target.classList.add('empty');
+  bank.innerHTML = '';
+  const shuffled = shuffle(item.words.map((w,i)=>({w,i})));
+  shuffled.forEach(obj=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = obj.w;
+    chip.dataset.idx = obj.i;
+    chip.addEventListener('click', ()=>{
+      if(chip.classList.contains('used')) return;
+      chip.classList.add('used');
+      builtSequence.push({w:obj.w, idx:obj.i, chipEl:chip});
+      renderBuiltTarget(item);
+    });
+    bank.appendChild(chip);
+  });
+}
+function renderBuiltTarget(item){
+  const target = document.getElementById('builderTarget');
+  target.innerHTML = '';
+  target.classList.toggle('empty', builtSequence.length===0);
+  builtSequence.forEach((b, pos)=>{
+    const c = document.createElement('div');
+    c.className = 'chip-built';
+    c.textContent = b.w;
+    c.addEventListener('click', ()=>{
+      b.chipEl.classList.remove('used');
+      builtSequence.splice(pos,1);
+      renderBuiltTarget(item);
+    });
+    target.appendChild(c);
+  });
+  document.getElementById('qNextBtn').disabled = builtSequence.length !== item.words.length;
+}
+document.getElementById('builderReset').addEventListener('click', ()=>{
+  const item = state.quizItems[state.quizIndex];
+  builtSequence.forEach(b=> b.chipEl.classList.remove('used'));
+  builtSequence = [];
+  renderBuiltTarget(item);
+});
+
+document.getElementById('qNextBtn').addEventListener('click', ()=>{
+  const btnEl = document.getElementById('qNextBtn');
+  if(btnEl.textContent === 'Check answer'){
+    checkAnswer();
+    btnEl.textContent = state.quizIndex === state.quizItems.length - 1 ? 'See results' : 'Next question →';
+  } else {
+    state.quizIndex++;
+    if(state.quizIndex >= state.quizItems.length){ finishQuiz(); }
+    else { renderQuizQuestion(); }
+  }
+});
+
+function checkAnswer(){
+  const item = state.quizItems[state.quizIndex];
+  const fb = document.getElementById('qFeedback');
+  let isCorrect = false;
+  let correctText = item.correct || item.full || item.target;
+
+  if(item.type === 'blank'){
+    const val = document.getElementById('qBlankInput').value.trim().toLowerCase();
+    isCorrect = item.correctWords.some(w => val === w.toLowerCase());
+    document.getElementById('qBlankInput').style.borderColor = isCorrect ? 'var(--green)' : 'var(--rose)';
+  } else if(item.type === 'builder'){
+    const built = builtSequence.map(b=>b.w).join(' ');
+    isCorrect = built === item.target;
+    document.querySelectorAll('.chip-built').forEach(c=> c.style.borderColor = isCorrect ? 'var(--green)' : 'var(--rose)');
+  } else {
+    isCorrect = currentSelection && currentSelection.text === correctText;
+    document.querySelectorAll('#qOptions .opt').forEach(o=>{
+      o.classList.add('disabled');
+      if(o.textContent === correctText) o.classList.add('correct');
+      else if(currentSelection && o.textContent === currentSelection.text) o.classList.add('wrong');
+      else o.classList.add('dim');
+    });
+  }
+
+  if(isCorrect){
+    state.quizScore++;
+    fb.className = 'feedback show ok';
+    fb.textContent = '✓ Correct — well done.';
+  } else {
+    fb.className = 'feedback show bad';
+    fb.textContent = `✗ Correct answer: "${correctText}"`;
+    state.wrongItems.push({...item, correctDisplay: correctText});
+    const u = unitById(state.currentUnit);
+    if(!state.reviewByUnit[u.id].find(r => r.hi === item.hi)){
+      const reviewItem = item.type === 'builder'
+        ? {type:'mcq', hi:item.hi, correct:item.target, options: shuffle([item.target, ...generateDistractors(item.target)])}
+        : item;
+      state.reviewByUnit[u.id].push(reviewItem);
+    }
+  }
+  saveState();
+}
+
+// simple distractor fallback for review-ified builder items
+function generateDistractors(sentence){
+  const words = sentence.replace('.','').split(' ');
+  const d1 = words.slice().reverse().join(' ') + '.';
+  const d2 = words.map((w,i)=> i===1 ? w.toUpperCase() : w).join(' ');
+  return [d1, sentence.replace(' is ',' are ').replace(' are ',' is ')].slice(0,2);
+}
+
+function finishQuiz(){
+  const u = unitById(state.currentUnit);
+  document.getElementById('resScore').textContent = `${state.quizScore}/${state.quizItems.length}`;
+  const m = mastered(u.id).size;
+  const masteryPct = Math.round((m/u.phrases.length)*100);
+  document.getElementById('masteryFill').style.width = masteryPct + '%';
+  document.getElementById('masteryLabel').textContent = `Unit mastery: ${masteryPct}%`;
+
+  const weakList = document.getElementById('weakList');
+  weakList.innerHTML = '';
+  if(state.wrongItems.length){
+    const label = document.createElement('div');
+    label.className = 'section-label';
+    label.textContent = 'Added to review queue';
+    weakList.appendChild(label);
+    state.wrongItems.forEach(w=>{
+      const row = document.createElement('div');
+      row.className = 'weak-item';
+      row.innerHTML = `<span class="hindi">${w.hi}</span><span class="mono" style="color:var(--amber)">${w.correctDisplay}</span>`;
+      weakList.appendChild(row);
+    });
+  }
+  if(state.quizType !== 'review'){ state.streak++; saveState(); }
+  renderUnitDetail();
+  showScreen('screen-results');
+}
+document.getElementById('resHomeBtn').addEventListener('click', ()=>{ showScreen('screen-home'); renderUnitDetail(); });
+
+/* ============ SPEAK PRACTICE ENGINE ============ */
+let speakState = {
+  blockIdx: 0,
+  blocks: [],
+  itemIdx: 0,
+  results: [], // {hi, en, score, heard}
+};
+
+function blockify(phrases, size){
+  const blocks = [];
+  for(let i=0;i<phrases.length;i+=size) blocks.push(phrases.slice(i,i+size));
+  return blocks;
+}
+
+function startSpeakBlock(blockIdx){
+  const u = unitById(state.currentUnit);
+  speakState.blocks = blockify(u.phrases, 3);
+  speakState.blockIdx = blockIdx;
+  speakState.itemIdx = 0;
+  speakState.results = [];
+  renderStudyScreen();
+  showScreen('screen-speak-study');
+}
+
+function renderBlockProgress(containerId, total, current, doneSet){
+  const wrap = document.getElementById(containerId);
+  wrap.innerHTML = '';
+  for(let i=0;i<total;i++){
+    const seg = document.createElement('div');
+    seg.className = 'block-seg' + (i<current ? ' done' : (i===current ? ' active' : ''));
+    wrap.appendChild(seg);
+  }
+}
+
+function renderStudyScreen(){
+  const block = speakState.blocks[speakState.blockIdx];
+  document.getElementById('studyBlockNum').textContent = `${speakState.blockIdx+1} / ${speakState.blocks.length}`;
+  renderBlockProgress('studyBlockProgress', speakState.blocks.length, speakState.blockIdx, null);
+  const wrap = document.getElementById('studyCards');
+  wrap.innerHTML = '';
+  block.forEach(p=>{
+    const c = document.createElement('div');
+    c.className = 'study-card';
+    c.innerHTML = `<div class="study-hindi hindi">${p.hi}</div><div class="study-english">${p.en}</div><div class="study-pron">🔊 ${p.pron}</div>`;
+    wrap.appendChild(c);
+  });
+}
+
+document.getElementById('studyReadyBtn').addEventListener('click', ()=>{
+  speakState.itemIdx = 0;
+  renderAssessItem();
+  showScreen('screen-speak-assess');
+});
+
+function renderAssessItem(){
+  const block = speakState.blocks[speakState.blockIdx];
+  const item = block[speakState.itemIdx];
+  document.getElementById('assessBlockNum').textContent = `${speakState.blockIdx+1} / ${speakState.blocks.length}`;
+  renderBlockProgress('assessBlockProgress', block.length, speakState.itemIdx, null);
+  document.getElementById('speakHindi').textContent = item.hi;
+  document.getElementById('micStatus').textContent = 'Tap to speak';
+  document.getElementById('micBtn').classList.remove('listening');
+  document.getElementById('speakResult').style.display = 'none';
+  document.getElementById('speakNextBtn').style.display = 'none';
+  document.getElementById('fallbackInput').value = '';
+}
+
+/* ---- speech recognition wrapper with typed fallback ---- */
+const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognizer = null;
+if(SpeechRec){
+  recognizer = new SpeechRec();
+  recognizer.lang = 'en-IN';
+  recognizer.interimResults = false;
+  recognizer.maxAlternatives = 1;
+} else {
+  document.getElementById('fallbackInput').style.display = 'block';
+}
+
+document.getElementById('micBtn').addEventListener('click', ()=>{
+  if(!recognizer){ document.getElementById('fallbackInput').style.display = 'block'; document.getElementById('fallbackInput').focus(); return; }
+  document.getElementById('micBtn').classList.add('listening');
+  document.getElementById('micStatus').textContent = 'Listening...';
+  try{ recognizer.start(); }catch(e){ /* already started */ }
+});
+
+if(recognizer){
+  recognizer.onresult = (e)=>{
+    const heard = e.results[0][0].transcript;
+    handleSpeechResult(heard);
+  };
+  recognizer.onerror = ()=>{
+    document.getElementById('micBtn').classList.remove('listening');
+    document.getElementById('micStatus').textContent = 'Could not hear you — try again or type below';
+    document.getElementById('fallbackInput').style.display = 'block';
+  };
+  recognizer.onend = ()=>{ document.getElementById('micBtn').classList.remove('listening'); };
+}
+
+document.getElementById('fallbackInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && e.target.value.trim()){ handleSpeechResult(e.target.value.trim()); }
+});
+
+// word-level LCS to score spoken transcript against target sentence, order-aware
+function scoreTranscript(target, heard){
+  const norm = s => s.toLowerCase().replace(/[.,!?]/g,'').split(/\s+/).filter(Boolean);
+  const t = norm(target), h = norm(heard);
+  const dp = Array(t.length+1).fill(null).map(()=>Array(h.length+1).fill(0));
+  for(let i=1;i<=t.length;i++){
+    for(let j=1;j<=h.length;j++){
+      dp[i][j] = t[i-1]===h[j-1] ? dp[i-1][j-1]+1 : Math.max(dp[i-1][j], dp[i][j-1]);
+    }
+  }
+  // backtrack to find which target words were matched
+  let i=t.length, j=h.length; const matched = new Set();
+  while(i>0 && j>0){
+    if(t[i-1]===h[j-1]){ matched.add(i-1); i--; j--; }
+    else if(dp[i-1][j] >= dp[i][j-1]) i--; else j--;
+  }
+  const score = Math.round((dp[t.length][h.length] / t.length) * 100);
+  return {score, targetWords:t, matched};
+}
+
+function handleSpeechResult(heard){
+  const block = speakState.blocks[speakState.blockIdx];
+  const item = block[speakState.itemIdx];
+  const {score, targetWords, matched} = scoreTranscript(item.en, heard);
+
+  document.getElementById('speakResult').style.display = 'block';
+  document.getElementById('micStatus').textContent = 'Tap to speak again';
+  const scoreEl = document.getElementById('srScore');
+  scoreEl.textContent = score + '%';
+  scoreEl.className = 'sr-score ' + (score>=80?'high':score>=50?'mid':'low');
+  document.getElementById('srHeard').textContent = heard;
+
+  const targetWrap = document.getElementById('srTarget');
+  targetWrap.innerHTML = '';
+  targetWords.forEach((w,idx)=>{
+    const chip = document.createElement('span');
+    chip.className = 'word-chip ' + (matched.has(idx) ? 'hit' : 'miss');
+    chip.textContent = w;
+    targetWrap.appendChild(chip);
+  });
+
+  const tip = document.getElementById('srTip');
+  if(score>=80) tip.textContent = '✓ Strong — you\'re ready for the next sentence.';
+  else if(score>=50) tip.textContent = '→ Close. Focus on the crossed-out words above and try again.';
+  else tip.textContent = '→ Review the sentence once more, then try again.';
+
+  speakState.results.push({hi:item.hi, en:item.en, score, heard});
+  document.getElementById('speakNextBtn').style.display = 'block';
+  document.getElementById('speakNextBtn').textContent = score>=80 ? 'Next sentence →' : 'Try again / Next →';
+}
+
+document.getElementById('speakNextBtn').addEventListener('click', ()=>{
+  const block = speakState.blocks[speakState.blockIdx];
+  if(speakState.itemIdx < block.length-1){ speakState.itemIdx++; renderAssessItem(); }
+  else { renderSpeakSummary(); showScreen('screen-speak-summary'); }
+});
+
+function renderSpeakSummary(){
+  const u = unitById(state.currentUnit);
+  const results = speakState.results;
+  const avg = Math.round(results.reduce((a,r)=>a+r.score,0)/results.length);
+  document.getElementById('speakSummaryScore').textContent = avg + '%';
+  const wrap = document.getElementById('speakWeakList');
+  wrap.innerHTML = '';
+  const label = document.createElement('div');
+  label.className = 'section-label';
+  label.textContent = 'This block';
+  wrap.appendChild(label);
+  results.forEach(r=>{
+    const row = document.createElement('div');
+    row.className = 'weak-item';
+    row.innerHTML = `<span class="hindi">${r.hi}</span><span class="mono" style="color:${r.score>=80?'var(--green)':r.score>=50?'var(--amber)':'var(--rose)'}">${r.score}%</span>`;
+    wrap.appendChild(row);
+  });
+  state.streak++; saveState();
+
+  document.getElementById('speakContinueBtn').onclick = ()=>{
+    if(speakState.blockIdx < speakState.blocks.length-1){
+      startSpeakBlock(speakState.blockIdx+1);
+    } else {
+      showScreen('screen-home'); renderUnitDetail();
+    }
+  };
+}
+
+/* init */
+showScreen('screen-units');
+
+/* ============ CONVERSATION PRACTICE (chat UI, no API key needed) ============
+   Scripted branching tree with keyword-based understanding. Swap this out for
+   the live-model version (see build plan item #1) once a backend proxy + API
+   key exist — the chat UI and mic capture below don't need to change at all. */
+const CONVO_TOPICS = {
+  pallet: { persona:"Ramesh Sir", avatar:"👷", title:"Reporting a Broken Pallet" }
+};
+
+const PALLET_TREE = {
+  n0: { line:"Good morning! Can you check pallet 4 for me?", hi:"(सुप्रभात! क्या तुम पैलेट 4 चेक कर सकते हो?)",
+        branches:[], defaultNext:"n1" },
+  n1: { line:"Great, what do you see?", hi:"(अब बताओ, क्या दिखा?)",
+        branches:[{keywords:["broken","break","crack","damage"], next:"n2"}], defaultNext:"n1fallback" },
+  n1fallback: { line:"Tell me — is it okay, or is something wrong? You can say: 'This is broken.' So, is the pallet broken?", hi:"",
+        branches:[{keywords:["broken","break","crack","yes"], next:"n2"}], defaultNext:"n2" },
+  n2: { line:"Ah, the pallet is broken? I will send someone. Is it fully broken or just cracked?", hi:"",
+        branches:[{keywords:["crack"], next:"n3crack"},{keywords:["full","complete","totally","yes"], next:"n3full"}], defaultNext:"n3full" },
+  n3crack: { line:"Okay, just a crack — I will note it. Did you also check pallet 5?", hi:"",
+        branches:[{keywords:["yes","checked","done"], next:"n4yes"},{keywords:["no","not yet"], next:"n4no"}], defaultNext:"n4yes" },
+  n3full: { line:"Okay, it's fully broken — I will remove it. Did you also check pallet 5?", hi:"",
+        branches:[{keywords:["yes","checked","done"], next:"n4yes"},{keywords:["no","not yet"], next:"n4no"}], defaultNext:"n4yes" },
+  n4yes: { line:"Good. Is pallet 5 ready?", hi:"",
+        branches:[{keywords:["yes","ready"], next:"n5ready"},{keywords:["no","not ready"], next:"n5notready"}], defaultNext:"n5ready" },
+  n4no: { line:"No problem, please check pallet 5 after this. Thank you for reporting the broken one.", hi:"", end:true },
+  n5ready: { line:"Perfect. Thank you for checking both. Have a good shift!", hi:"", end:true },
+  n5notready: { line:"Okay, let me know when it's ready. Thanks for the update!", hi:"", end:true },
+};
+
+const TOPIC_TREES = { pallet: PALLET_TREE };
+
+let convoState = { topicId:null, currentNode:null, turns:0, correctCount:0, awaitingReply:false };
+
+document.querySelectorAll('.talk-tile').forEach(card=>{
+  card.addEventListener('click', ()=> startConversation(card.dataset.topic));
+});
+
+function startConversation(topicId){
+  const topic = CONVO_TOPICS[topicId];
+  convoState = { topicId, currentNode:null, turns:0, correctCount:0, awaitingReply:false };
+  document.getElementById('convoPersonaName').textContent = topic.persona;
+  document.getElementById('chatLog').innerHTML = '';
+  showScreen('screen-conversation');
+  showNode('n0');
+}
+
+function showNode(nodeId){
+  const node = TOPIC_TREES[convoState.topicId][nodeId];
+  addBubble(node.line, 'them', node.hi);
+  speakText(node.line);
+  convoState.currentNode = nodeId;
+  convoState.awaitingReply = false;
+  document.getElementById('chatMicBtn').disabled = false;
+  if(node.end){
+    convoState.turns++;
+    setTimeout(()=> finishConversation(), 1400);
+  }
+}
+
+function addBubble(text, who, hi){
+  const log = document.getElementById('chatLog');
+  const row = document.createElement('div');
+  row.className = 'bubble-row ' + (who === 'them' ? 'them' : 'me');
+  const avatar = who === 'them' ? `<div class="bubble-avatar">${CONVO_TOPICS[convoState.topicId].avatar}</div>` : '';
+  row.innerHTML = `${avatar}<div class="bubble">${text}</div>`;
+  log.appendChild(row);
+  if(hi){
+    const h = document.createElement('div');
+    h.className = 'bubble-hi hindi';
+    h.textContent = hi;
+    log.appendChild(h);
+  }
+  log.scrollTop = log.scrollHeight;
+}
+
+function showTyping(){
+  const log = document.getElementById('chatLog');
+  const row = document.createElement('div');
+  row.className = 'bubble-row them typing-row';
+  row.id = 'typingRow';
+  row.innerHTML = `<div class="bubble-avatar">${CONVO_TOPICS[convoState.topicId].avatar}</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
+  log.appendChild(row);
+  log.scrollTop = log.scrollHeight;
+}
+function hideTyping(){ const t = document.getElementById('typingRow'); if(t) t.remove(); }
+
+function handleConvoReply(userText){
+  if(convoState.awaitingReply) return;
+  addBubble(escapeHtml(userText), 'me');
+  convoState.awaitingReply = true;
+  document.getElementById('chatMicBtn').disabled = true;
+
+  const node = TOPIC_TREES[convoState.topicId][convoState.currentNode];
+  const lower = userText.toLowerCase();
+  let matched = null;
+  for(const b of (node.branches || [])){
+    if(b.keywords.some(k => lower.includes(k))){ matched = b; break; }
+  }
+  const nextId = matched ? matched.next : node.defaultNext;
+  if(matched || !node.branches || node.branches.length === 0) convoState.correctCount++;
+  convoState.turns++;
+
+  showTyping();
+  setTimeout(()=>{ hideTyping(); showNode(nextId); }, 700 + Math.random()*500);
+}
+
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+function speakText(text){
+  if(!window.speechSynthesis) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-IN'; utter.rate = 0.92;
+  window.speechSynthesis.speak(utter);
+}
+
+function finishConversation(){
+  document.getElementById('convoScore').textContent = `${convoState.correctCount}/${convoState.turns}`;
+  showScreen('screen-convo-summary');
+}
+document.getElementById('convoSummaryBackBtn').addEventListener('click', ()=> showScreen('screen-units'));
+
+/* voice capture for chat */
+let chatRecognizer = null;
+if(SpeechRec){
+  chatRecognizer = new SpeechRec();
+  chatRecognizer.lang = 'en-IN';
+  chatRecognizer.interimResults = false;
+  chatRecognizer.maxAlternatives = 1;
+  chatRecognizer.onresult = (e)=>{
+    const heard = e.results[0][0].transcript;
+    document.getElementById('chatMicBtn').classList.remove('listening');
+    handleConvoReply(heard);
+  };
+  chatRecognizer.onerror = ()=>{ document.getElementById('chatMicBtn').classList.remove('listening'); };
+  chatRecognizer.onend = ()=>{ document.getElementById('chatMicBtn').classList.remove('listening'); };
+} else {
+  document.getElementById('chatFallbackInput').style.display = 'block';
+}
+document.getElementById('chatMicBtn').addEventListener('click', ()=>{
+  if(convoState.awaitingReply) return;
+  if(!chatRecognizer){ document.getElementById('chatFallbackInput').focus(); return; }
+  document.getElementById('chatMicBtn').classList.add('listening');
+  try{ chatRecognizer.start(); }catch(e){}
+});
+document.getElementById('chatFallbackInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && e.target.value.trim() && !convoState.awaitingReply){
+    const val = e.target.value.trim(); e.target.value = '';
+    handleConvoReply(val);
+  }
+});
+</script>
+</body>
+</html>
