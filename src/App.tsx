@@ -289,101 +289,103 @@ function AppLayout() {
             );
           })()}
 
-          {/* 3. TRANSLUCENT APPLE GLASS BOTTOM NAVIGATION BAR WITH POP-UP ICONS & GREEN OUTLINE */}
+          {/* 3. TRANSLUCENT APPLE GLASS DOCK NAVIGATION BAR WITH APPLE-STYLE FROSTED GLASS ICONS */}
           {currentRoute.screen !== 'role-detail' && 
            currentRoute.screen !== 'my-learning' && 
            currentRoute.screen !== 'choose-skill' && 
            currentRoute.screen !== 'skill-detail' && (
-            <nav 
-              id="mobile-bottom-nav"
-              className="fixed bottom-0 left-0 right-0 z-50 bg-white/35 hover:bg-white/45 backdrop-blur-2xl border-t border-white/50 shadow-[0_-10px_35px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.8)] px-3 pt-2 pb-2.5 max-w-md mx-auto sm:rounded-t-3xl flex items-center justify-around transition-all"
-            >
-              {/* Tab 1: Home */}
-              <button
-                onClick={() => navigate('home')}
-                id="mobile-bottom-tab-home"
-                className="group relative flex flex-col items-center justify-center flex-1 py-0.5 px-1 cursor-pointer select-none"
+            <div className="fixed bottom-3 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+              <nav 
+                id="mobile-bottom-nav"
+                className="pointer-events-auto bg-white/40 hover:bg-white/50 backdrop-blur-3xl border border-white/70 shadow-[0_14px_38px_rgba(0,0,0,0.12),inset_0_1px_1.5px_rgba(255,255,255,0.95)] px-3 py-2 rounded-[28px] w-full max-w-[375px] flex items-center justify-between gap-1 transition-all"
               >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-2.5 group-hover:scale-115 group-hover:border-2 group-hover:border-emerald-500 group-hover:bg-emerald-500/15 group-hover:text-emerald-600 group-hover:shadow-[0_8px_18px_-2px_rgba(16,185,129,0.45)] ${
-                  activeTab === 'home' 
-                    ? '-translate-y-1.5 scale-105 border-2 border-emerald-500 bg-emerald-500/15 text-emerald-600 shadow-[0_4px_14px_rgba(16,185,129,0.35)]' 
-                    : 'border-2 border-white/40 text-slate-700 bg-white/40 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]'
-                }`}>
-                  <Home className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${activeTab === 'home' ? 'stroke-[2.5] text-emerald-600' : 'stroke-[2]'}`} />
-                </div>
-                <span className={`text-[10px] mt-0.5 tracking-tight transition-all duration-200 group-hover:text-emerald-600 group-hover:font-extrabold ${activeTab === 'home' ? 'font-extrabold text-emerald-600' : 'font-medium text-slate-700'}`}>
-                  Home
-                </span>
-              </button>
+                {/* Tab 1: Home */}
+                <button
+                  onClick={() => navigate('home')}
+                  id="mobile-bottom-tab-home"
+                  className="group relative flex flex-col items-center justify-center flex-1 py-0.5 cursor-pointer select-none"
+                >
+                  <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-1.5 group-hover:scale-110 ${
+                    activeTab === 'home' 
+                      ? '-translate-y-1 scale-105 border border-emerald-500/60 bg-emerald-500/15 text-emerald-600 shadow-[0_4px_16px_rgba(16,185,129,0.3),inset_0_1px_1px_rgba(255,255,255,0.9)]' 
+                      : 'border border-white/60 text-slate-700 bg-white/50 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] group-hover:border-emerald-500/40 group-hover:bg-emerald-50/50'
+                  }`}>
+                    <Home className={`w-5 h-5 transition-transform duration-200 ${activeTab === 'home' ? 'stroke-[2.5] text-emerald-600' : 'stroke-[2]'}`} />
+                  </div>
+                  <span className={`text-[10px] mt-1 tracking-tight transition-all duration-200 ${activeTab === 'home' ? 'font-extrabold text-emerald-600' : 'font-semibold text-slate-700'}`}>
+                    Home
+                  </span>
+                </button>
 
-              {/* Tab 2: Careers */}
-              <button
-                onClick={() => navigate('choose-skill')}
-                id="mobile-bottom-tab-careers"
-                className="group relative flex flex-col items-center justify-center flex-1 py-0.5 px-1 cursor-pointer select-none"
-              >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-2.5 group-hover:scale-115 group-hover:border-2 group-hover:border-emerald-500 group-hover:bg-emerald-500/15 group-hover:text-emerald-600 group-hover:shadow-[0_8px_18px_-2px_rgba(16,185,129,0.45)] ${
-                  activeTab === 'careers' 
-                    ? '-translate-y-1.5 scale-105 border-2 border-emerald-500 bg-emerald-500/15 text-emerald-600 shadow-[0_4px_14px_rgba(16,185,129,0.35)]' 
-                    : 'border-2 border-white/40 text-slate-700 bg-white/40 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]'
-                }`}>
-                  <ShoppingBag className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${activeTab === 'careers' ? 'stroke-[2.5] text-emerald-600' : 'stroke-[2]'}`} />
-                </div>
-                <span className={`text-[10px] mt-0.5 tracking-tight transition-all duration-200 group-hover:text-emerald-600 group-hover:font-extrabold ${activeTab === 'careers' ? 'font-extrabold text-emerald-600' : 'font-medium text-slate-700'}`}>
-                  Careers
-                </span>
-              </button>
+                {/* Tab 2: Careers */}
+                <button
+                  onClick={() => navigate('choose-skill')}
+                  id="mobile-bottom-tab-careers"
+                  className="group relative flex flex-col items-center justify-center flex-1 py-0.5 cursor-pointer select-none"
+                >
+                  <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-1.5 group-hover:scale-110 ${
+                    activeTab === 'careers' 
+                      ? '-translate-y-1 scale-105 border border-emerald-500/60 bg-emerald-500/15 text-emerald-600 shadow-[0_4px_16px_rgba(16,185,129,0.3),inset_0_1px_1px_rgba(255,255,255,0.9)]' 
+                      : 'border border-white/60 text-slate-700 bg-white/50 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] group-hover:border-emerald-500/40 group-hover:bg-emerald-50/50'
+                  }`}>
+                    <ShoppingBag className={`w-5 h-5 transition-transform duration-200 ${activeTab === 'careers' ? 'stroke-[2.5] text-emerald-600' : 'stroke-[2]'}`} />
+                  </div>
+                  <span className={`text-[10px] mt-1 tracking-tight transition-all duration-200 ${activeTab === 'careers' ? 'font-extrabold text-emerald-600' : 'font-semibold text-slate-700'}`}>
+                    Careers
+                  </span>
+                </button>
 
-              {/* Tab 3: My Learning */}
-              <button
-                onClick={() => navigate('my-learning')}
-                id="mobile-bottom-tab-learning"
-                className="group relative flex flex-col items-center justify-center flex-1 py-0.5 px-1 cursor-pointer select-none"
-              >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-2.5 group-hover:scale-115 group-hover:border-2 group-hover:border-emerald-500 group-hover:bg-emerald-500/15 group-hover:text-emerald-600 group-hover:shadow-[0_8px_18px_-2px_rgba(16,185,129,0.45)] ${
-                  activeTab === 'learning' 
-                    ? '-translate-y-1.5 scale-105 border-2 border-emerald-500 bg-emerald-500/15 text-emerald-600 shadow-[0_4px_14px_rgba(16,185,129,0.35)]' 
-                    : 'border-2 border-white/40 text-slate-700 bg-white/40 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]'
-                }`}>
-                  <BookOpen className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${activeTab === 'learning' ? 'stroke-[2.5] text-emerald-600' : 'stroke-[2]'}`} />
-                </div>
-                <span className={`text-[10px] mt-0.5 tracking-tight transition-all duration-200 group-hover:text-emerald-600 group-hover:font-extrabold ${activeTab === 'learning' ? 'font-extrabold text-emerald-600' : 'font-medium text-slate-700'}`}>
-                  Learning
-                </span>
-              </button>
+                {/* Tab 3: My Learning */}
+                <button
+                  onClick={() => navigate('my-learning')}
+                  id="mobile-bottom-tab-learning"
+                  className="group relative flex flex-col items-center justify-center flex-1 py-0.5 cursor-pointer select-none"
+                >
+                  <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-1.5 group-hover:scale-110 ${
+                    activeTab === 'learning' 
+                      ? '-translate-y-1 scale-105 border border-emerald-500/60 bg-emerald-500/15 text-emerald-600 shadow-[0_4px_16px_rgba(16,185,129,0.3),inset_0_1px_1px_rgba(255,255,255,0.9)]' 
+                      : 'border border-white/60 text-slate-700 bg-white/50 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] group-hover:border-emerald-500/40 group-hover:bg-emerald-50/50'
+                  }`}>
+                    <BookOpen className={`w-5 h-5 transition-transform duration-200 ${activeTab === 'learning' ? 'stroke-[2.5] text-emerald-600' : 'stroke-[2]'}`} />
+                  </div>
+                  <span className={`text-[10px] mt-1 tracking-tight transition-all duration-200 ${activeTab === 'learning' ? 'font-extrabold text-emerald-600' : 'font-semibold text-slate-700'}`}>
+                    Learning
+                  </span>
+                </button>
 
-              {/* Tab 4: Dashboard */}
-              <button
-                onClick={() => navigate('my-dashboard')}
-                id="mobile-bottom-tab-dashboard"
-                className="group relative flex flex-col items-center justify-center flex-1 py-0.5 px-1 cursor-pointer select-none"
-              >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-2.5 group-hover:scale-115 group-hover:border-2 group-hover:border-emerald-500 group-hover:bg-emerald-500/15 group-hover:text-emerald-600 group-hover:shadow-[0_8px_18px_-2px_rgba(16,185,129,0.45)] ${
-                  activeTab === 'dashboard' 
-                    ? '-translate-y-1.5 scale-105 border-2 border-emerald-500 bg-emerald-500/15 text-emerald-600 shadow-[0_4px_14px_rgba(16,185,129,0.35)]' 
-                    : 'border-2 border-white/40 text-slate-700 bg-white/40 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]'
-                }`}>
-                  <TrendingUp className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${activeTab === 'dashboard' ? 'stroke-[2.5] text-emerald-600' : 'stroke-[2]'}`} />
-                </div>
-                <span className={`text-[10px] mt-0.5 tracking-tight transition-all duration-200 group-hover:text-emerald-600 group-hover:font-extrabold ${activeTab === 'dashboard' ? 'font-extrabold text-emerald-600' : 'font-medium text-slate-700'}`}>
-                  Dashboard
-                </span>
-              </button>
+                {/* Tab 4: Dashboard */}
+                <button
+                  onClick={() => navigate('my-dashboard')}
+                  id="mobile-bottom-tab-dashboard"
+                  className="group relative flex flex-col items-center justify-center flex-1 py-0.5 cursor-pointer select-none"
+                >
+                  <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-1.5 group-hover:scale-110 ${
+                    activeTab === 'dashboard' 
+                      ? '-translate-y-1 scale-105 border border-emerald-500/60 bg-emerald-500/15 text-emerald-600 shadow-[0_4px_16px_rgba(16,185,129,0.3),inset_0_1px_1px_rgba(255,255,255,0.9)]' 
+                      : 'border border-white/60 text-slate-700 bg-white/50 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] group-hover:border-emerald-500/40 group-hover:bg-emerald-50/50'
+                  }`}>
+                    <TrendingUp className={`w-5 h-5 transition-transform duration-200 ${activeTab === 'dashboard' ? 'stroke-[2.5] text-emerald-600' : 'stroke-[2]'}`} />
+                  </div>
+                  <span className={`text-[10px] mt-1 tracking-tight transition-all duration-200 ${activeTab === 'dashboard' ? 'font-extrabold text-emerald-600' : 'font-semibold text-slate-700'}`}>
+                    Dashboard
+                  </span>
+                </button>
 
-              {/* Tab 5: Profile */}
-              <button
-                onClick={() => setProfileModalOpen(true)}
-                id="mobile-bottom-tab-profile"
-                className="group relative flex flex-col items-center justify-center flex-1 py-0.5 px-1 cursor-pointer select-none"
-              >
-                <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-2.5 group-hover:scale-115 group-hover:border-2 group-hover:border-emerald-500 group-hover:bg-emerald-500/15 group-hover:text-emerald-600 group-hover:shadow-[0_8px_18px_-2px_rgba(16,185,129,0.45)] border-2 border-white/40 text-slate-700 bg-white/40 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]">
-                  <User className="w-5 h-5 stroke-[2] transition-transform duration-200 group-hover:scale-110" />
-                </div>
-                <span className="text-[10px] mt-0.5 font-medium text-slate-700 tracking-tight transition-all duration-200 group-hover:text-emerald-600 group-hover:font-extrabold">
-                  Profile
-                </span>
-              </button>
-            </nav>
+                {/* Tab 5: Profile */}
+                <button
+                  onClick={() => setProfileModalOpen(true)}
+                  id="mobile-bottom-tab-profile"
+                  className="group relative flex flex-col items-center justify-center flex-1 py-0.5 cursor-pointer select-none"
+                >
+                  <div className="w-10 h-10 rounded-[14px] flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-1.5 group-hover:scale-110 border border-white/60 text-slate-700 bg-white/50 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)] group-hover:border-emerald-500/40 group-hover:bg-emerald-50/50">
+                    <User className="w-5 h-5 stroke-[2] transition-transform duration-200" />
+                  </div>
+                  <span className="text-[10px] mt-1 font-semibold text-slate-700 tracking-tight transition-all duration-200">
+                    Profile
+                  </span>
+                </button>
+              </nav>
+            </div>
           )}
         </div>
       )}

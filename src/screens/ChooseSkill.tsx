@@ -18,7 +18,8 @@ import {
   X,
   Volume2,
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  Bot
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { JOB_ROLES } from '../lib/catalog';
@@ -176,12 +177,12 @@ export function ChooseSkillScreen() {
   return (
     <div className="w-full min-h-screen bg-[#F7FAFC] font-sans text-slate-900 pb-28 select-none flex flex-col items-center">
       
-      {/* Container restricted to mobile width */}
-      <div className="w-full max-w-md px-5 pt-1 flex flex-col flex-1">
+      {/* Container restricted to mobile width - brought down by 10% */}
+      <div className="w-full max-w-md px-5 pt-5 sm:pt-6 flex flex-col flex-1">
         
         {/* 1. TOP HEADER: "Find Your Favorite Career" or "Popular Roles" in middle top center */}
         {!selectedCategory ? (
-          <div className="text-center mt-1 mb-3">
+          <div className="text-center mt-2 mb-3">
             <h1 className="text-2xl sm:text-[26px] font-extrabold text-[#0D1F3C] tracking-tight leading-tight">
               Find Your Favorite Career
             </h1>
@@ -190,7 +191,7 @@ export function ChooseSkillScreen() {
             </p>
           </div>
         ) : (
-          <div className="text-center mt-1 mb-3">
+          <div className="text-center mt-2 mb-3">
             <h1 className="text-2xl sm:text-[26px] font-extrabold text-[#0D1F3C] tracking-tight leading-tight text-center">
               Popular Roles
             </h1>
@@ -202,7 +203,7 @@ export function ChooseSkillScreen() {
           <div className="flex flex-col items-center w-full flex-1">
             
             {/* 2. 360-DEGREE CIRCULAR COVERFLOW CAROUSEL (Behind card visible, blurred & smaller) */}
-            <div className="relative w-full overflow-visible my-2 flex items-center justify-center" style={{ perspective: '1100px' }}>
+            <div className="relative w-full overflow-visible my-2.5 flex items-center justify-center" style={{ perspective: '1100px' }}>
               <div className="relative h-[260px] w-full flex items-center justify-center" style={{ transformStyle: 'preserve-3d' }}>
                 {INDUSTRIES.map((item, index) => {
                   const count = INDUSTRIES.length;
@@ -303,7 +304,7 @@ export function ChooseSkillScreen() {
             <div className="w-full mt-3 px-1">
               <button
                 onClick={() => handleOpenIndustry(activeIndustry.id)}
-                className="w-full py-4 px-5 bg-white hover:bg-slate-50 active:scale-[0.98] rounded-[22px] shadow-[0_16px_36px_-6px_rgba(0,0,0,0.1),0_4px_12px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,1)] border border-slate-100/90 transition-all duration-300 flex items-center justify-between group cursor-pointer"
+                className="w-full py-3.5 px-5 bg-white hover:bg-slate-50 active:scale-[0.98] rounded-[22px] shadow-[0_16px_36px_-6px_rgba(0,0,0,0.1),0_4px_12px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,1)] border border-slate-100/90 transition-all duration-300 flex items-center justify-between group cursor-pointer"
               >
                 <div className="flex items-center gap-3.5 text-left">
                   <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -349,9 +350,9 @@ export function ChooseSkillScreen() {
           </div>
         ) : (
           /* VIEW 2: Selected Industry Roles View - 2-Column Grid with Banner Depth, No Outline & Role Cards under each picture */
-          <div className="flex flex-col items-center w-full flex-1 pt-3 sm:pt-4">
+          <div className="flex flex-col items-center w-full flex-1 pt-4 sm:pt-6">
             
-            {/* 1. 2-COLUMN GRID OF ROLE PICTURES + CARDS (Shifted ~10% towards bottom) */}
+            {/* 1. 2-COLUMN GRID OF ROLE PICTURES + CARDS (Shifted down) */}
             <div className="w-full grid grid-cols-2 gap-x-3.5 gap-y-4 my-2">
               {filteredRoles.map((roleItem: JobRole) => {
                 const roleImage = ROLE_IMAGES[roleItem.id] || roleItem.image || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80';

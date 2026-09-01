@@ -171,36 +171,38 @@ export function CourseModulesScreen() {
   return (
     <div className="w-full bg-[#FDFDFE] min-h-screen pb-20">
 
-      {/* TOP LEFT DEDICATED BACK BUTTON ICON TO ROLE DETAIL */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-1 flex items-center">
-        <button 
-          onClick={() => navigate('role-detail', { roleId: role.id, skillId: skill.id })}
-          className="w-10 h-10 rounded-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.08)] border border-slate-100/90 text-slate-800 hover:text-[#1864DB] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group"
-          title="Back to Team Leader Curriculum"
-        >
-          <ArrowLeft className="w-5 h-5 stroke-[2.5] text-slate-800 group-hover:text-[#1864DB] group-hover:-translate-x-0.5 transition-transform" />
-        </button>
-      </div>
-
-      {/* 2. MAIN LEARNING WORKSPACE */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4">
+      {/* MAIN LEARNING WORKSPACE */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
         
-        {/* 1. TOP TEAM LEADER COURSE PROGRESS FLAT CARD (Home page green background & curved card styling with depth) */}
-        <div className="w-full bg-[#DCEAF0] rounded-[22px] p-5 sm:p-6 mb-6 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.06)] border border-white/80 transition-all relative overflow-hidden">
+        {/* 1. TOP TEAM LEADER COURSE PROGRESS FLAT CARD WITH INTEGRATED BACK BUTTON (Home page green background & curved card styling with depth) */}
+        <div className="w-full bg-[#DCEAF0] rounded-[22px] p-4 sm:p-6 mb-6 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.06)] border border-white/80 transition-all relative overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-100/80 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-emerald-600" />
-                  Course Progress
-                </span>
+            
+            {/* Left: Integrated Back Button + Title & Progress Badge */}
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => navigate('role-detail', { roleId: role.id, skillId: skill.id })}
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white shadow-[0_2px_10px_rgba(0,0,0,0.08)] border border-white text-slate-800 hover:text-[#1864DB] hover:bg-slate-50 flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group shrink-0"
+                title="Back to Team Leader Curriculum"
+              >
+                <ArrowLeft className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[2.5] text-slate-800 group-hover:text-[#1864DB] group-hover:-translate-x-0.5 transition-transform" />
+              </button>
+
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-emerald-600" />
+                    Course Progress
+                  </span>
+                </div>
+                <h2 className="text-base sm:text-xl font-black text-[#0B192C] tracking-tight leading-tight">
+                  {role.title} Course Progress
+                </h2>
               </div>
-              <h2 className="text-lg sm:text-xl font-black text-[#0B192C] tracking-tight">
-                {role.title} Course Progress
-              </h2>
             </div>
 
-            <div className="flex items-baseline sm:flex-col sm:items-end gap-2 sm:gap-0.5">
+            {/* Right: Module Count & Completion % */}
+            <div className="flex items-baseline sm:flex-col sm:items-end gap-2 sm:gap-0.5 pl-12 sm:pl-0">
               <span className="text-sm sm:text-base font-black text-[#0B192C]">
                 {completedModules.length} to {role.modules.length} Modules ({progressPercent}%)
               </span>
