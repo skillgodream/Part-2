@@ -214,8 +214,8 @@ function AppLayout() {
       {loadingStage === 'app' && (
         <div className={`h-screen flex flex-col font-sans text-slate-900 antialiased selection:bg-blue-600 selection:text-white ${currentRoute.screen === 'home' || currentRoute.screen === 'library' ? 'bg-[#FFF8F9]' : 'bg-[#FDFDFE]'}`}>
           
-          {/* 1. APPLE-STYLE TRANSLUCENT TOP NAVIGATION BAR (Hidden on Home Screen) */}
-          {currentRoute.screen !== 'home' && (
+          {/* 1. APPLE-STYLE TRANSLUCENT TOP NAVIGATION BAR (Hidden on Home Screen & Role Detail Screen) */}
+          {currentRoute.screen !== 'home' && currentRoute.screen !== 'role-detail' && (
             <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 h-14 sm:h-16 flex items-center justify-between px-4 sm:px-6">
               <SkillGoLogo onClick={() => navigate('home')} />
               <div className="flex items-center gap-2">
@@ -227,7 +227,7 @@ function AppLayout() {
           )}
 
           {/* 2. DYNAMIC SCREEN CONTENT */}
-          <main className={`flex-1 overflow-y-auto ${currentRoute.screen === 'home' ? 'pt-0' : 'pt-16'} pb-20 md:pb-0 flex flex-col`}>
+          <main className={`flex-1 overflow-y-auto ${currentRoute.screen === 'home' || currentRoute.screen === 'role-detail' ? 'pt-0' : 'pt-16'} pb-20 md:pb-0 flex flex-col`}>
             {currentRoute.screen === 'home' && <HomeScreen />}
             {currentRoute.screen === 'choose-skill' && <ChooseSkillScreen />}
             {currentRoute.screen === 'skill-detail' && <ChooseSkillScreen />}
@@ -257,68 +257,70 @@ function AppLayout() {
           </main>
 
           {/* 3. FLOATING APPLE GLASS TRANSLUCENT BOTTOM NAVIGATION BAR */}
-          <nav 
-            id="mobile-bottom-nav"
-            className="fixed bottom-5 left-4 right-4 max-w-md mx-auto z-50 bg-white/65 backdrop-blur-2xl border border-white/60 shadow-[0_16px_36px_-6px_rgba(0,0,0,0.12),0_0_0_1px_rgba(255,255,255,0.4)_inset] rounded-full px-2.5 py-1.5 md:hidden flex items-center justify-around"
-          >
-            {/* Tab 1: Home */}
-            <button
-              onClick={() => navigate('home')}
-              id="mobile-bottom-tab-home"
-              className={`group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 ${
-                activeTab === 'home' ? 'bg-white/80 text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-              }`}
+          {currentRoute.screen !== 'role-detail' && (
+            <nav 
+              id="mobile-bottom-nav"
+              className="fixed bottom-5 left-4 right-4 max-w-md mx-auto z-50 bg-white/65 backdrop-blur-2xl border border-white/60 shadow-[0_16px_36px_-6px_rgba(0,0,0,0.12),0_0_0_1px_rgba(255,255,255,0.4)_inset] rounded-full px-2.5 py-1.5 md:hidden flex items-center justify-around"
             >
-              <Home className={`w-5 h-5 ${activeTab === 'home' ? 'stroke-[2.4] text-slate-900' : 'stroke-[1.8]'}`} />
-              <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Home</span>
-            </button>
+              {/* Tab 1: Home */}
+              <button
+                onClick={() => navigate('home')}
+                id="mobile-bottom-tab-home"
+                className={`group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 ${
+                  activeTab === 'home' ? 'bg-white/80 text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <Home className={`w-5 h-5 ${activeTab === 'home' ? 'stroke-[2.4] text-slate-900' : 'stroke-[1.8]'}`} />
+                <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Home</span>
+              </button>
 
-            {/* Tab 2: Careers */}
-            <button
-              onClick={() => navigate('choose-skill')}
-              id="mobile-bottom-tab-careers"
-              className={`group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 ${
-                activeTab === 'careers' ? 'bg-white/80 text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              <ShoppingBag className={`w-5 h-5 ${activeTab === 'careers' ? 'stroke-[2.4] text-slate-900' : 'stroke-[1.8]'}`} />
-              <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Careers</span>
-            </button>
+              {/* Tab 2: Careers */}
+              <button
+                onClick={() => navigate('choose-skill')}
+                id="mobile-bottom-tab-careers"
+                className={`group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 ${
+                  activeTab === 'careers' ? 'bg-white/80 text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <ShoppingBag className={`w-5 h-5 ${activeTab === 'careers' ? 'stroke-[2.4] text-slate-900' : 'stroke-[1.8]'}`} />
+                <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Careers</span>
+              </button>
 
-            {/* Tab 3: My Learning */}
-            <button
-              onClick={() => navigate('my-learning')}
-              id="mobile-bottom-tab-learning"
-              className={`group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 ${
-                activeTab === 'learning' ? 'bg-white/80 text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              <BookOpen className={`w-5 h-5 ${activeTab === 'learning' ? 'stroke-[2.4] text-slate-900' : 'stroke-[1.8]'}`} />
-              <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Learning</span>
-            </button>
+              {/* Tab 3: My Learning */}
+              <button
+                onClick={() => navigate('my-learning')}
+                id="mobile-bottom-tab-learning"
+                className={`group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 ${
+                  activeTab === 'learning' ? 'bg-white/80 text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <BookOpen className={`w-5 h-5 ${activeTab === 'learning' ? 'stroke-[2.4] text-slate-900' : 'stroke-[1.8]'}`} />
+                <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Learning</span>
+              </button>
 
-            {/* Tab 4: Dashboard */}
-            <button
-              onClick={() => navigate('my-dashboard')}
-              id="mobile-bottom-tab-dashboard"
-              className={`group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 ${
-                activeTab === 'dashboard' ? 'bg-white/80 text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              <TrendingUp className={`w-5 h-5 ${activeTab === 'dashboard' ? 'stroke-[2.4] text-slate-900' : 'stroke-[1.8]'}`} />
-              <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Dashboard</span>
-            </button>
+              {/* Tab 4: Dashboard */}
+              <button
+                onClick={() => navigate('my-dashboard')}
+                id="mobile-bottom-tab-dashboard"
+                className={`group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 ${
+                  activeTab === 'dashboard' ? 'bg-white/80 text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <TrendingUp className={`w-5 h-5 ${activeTab === 'dashboard' ? 'stroke-[2.4] text-slate-900' : 'stroke-[1.8]'}`} />
+                <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Dashboard</span>
+              </button>
 
-            {/* Tab 5: Profile */}
-            <button
-              onClick={() => setProfileModalOpen(true)}
-              id="mobile-bottom-tab-profile"
-              className="group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 text-slate-500 hover:text-slate-800"
-            >
-              <User className="w-5 h-5 stroke-[1.8]" />
-              <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Profile</span>
-            </button>
-          </nav>
+              {/* Tab 5: Profile */}
+              <button
+                onClick={() => setProfileModalOpen(true)}
+                id="mobile-bottom-tab-profile"
+                className="group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 text-slate-500 hover:text-slate-800"
+              >
+                <User className="w-5 h-5 stroke-[1.8]" />
+                <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Profile</span>
+              </button>
+            </nav>
+          )}
         </div>
       )}
 

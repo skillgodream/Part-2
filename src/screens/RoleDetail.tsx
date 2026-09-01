@@ -1,391 +1,390 @@
 import React, { useState } from 'react';
-import animatedPic from '../assets/animated.jpeg';
-import inboundPic from '../assets/inbound.jpeg';
-import inventoryPic from '../assets/invrentory.jpeg';
-import pickerPic from '../assets/picker.jpeg';
-import warehousePic from '../assets/warehouse pic.jpeg';
 import { 
   ArrowLeft, 
-  CheckCircle2, 
-  ShieldCheck, 
-  Clock, 
-  Sparkles, 
-  Layers, 
-  BookOpen, 
-  ChevronRight,
-  Check,
-  ShoppingBag,
-  Plus,
-  PlayCircle,
-  Award,
-  Boxes,
-  PackageCheck,
-  ClipboardCheck,
-  Truck,
-  Store,
-  CreditCard,
-  Eye,
-  Zap,
-  Navigation,
-  UtensilsCrossed,
-  ConciergeBell,
-  Calendar,
-  Wrench,
-  Cpu,
-  Flame,
-  BatteryCharging,
-  Sliders,
-  ShieldAlert,
-  Sprout,
-  Activity,
-  LucideIcon
+  Calendar, 
+  Armchair, 
+  Plane, 
+  Utensils, 
+  Briefcase, 
+  Home, 
+  Globe, 
+  Bookmark, 
+  Settings,
+  CheckCircle2,
+  X
 } from 'lucide-react';
 import { JOB_ROLES, SKILL_CATEGORIES } from '../lib/catalog';
 import { useRouter } from '../lib/router';
 import { useCartState, useEnrollmentState } from '../lib/enrollmentStore';
-import { PlanType, JobRole, SkillCategory, CourseModule } from '../lib/types';
+import { JobRole, SkillCategory, PlanType } from '../lib/types';
 import { CartModal } from '../components/CartModal';
-import { LiquidGlassCard } from '../components/LiquidGlassCard';
 
-// Modern icon mapping per role
-const ROLE_ICONS: Record<string, LucideIcon> = {
-  // Logistics
-  'warehouse-associate': Boxes,
-  'qc-inbound-inspector': ClipboardCheck,
-  'inventory-staging-specialist': Layers,
-  'dispatch-fleet-coordinator': Truck,
-
-  // Retail
-  'retail-store-associate': Store,
-  'cashier-pos-specialist': CreditCard,
-  'visual-merchandiser': Eye,
-  'store-inventory-supervisor': PackageCheck,
-
-  // Quick Commerce
-  'dark-store-picker-packer': Zap,
-  'hub-dispatch-rider-coordinator': Navigation,
-  'inbound-fresh-quality-grader': Sprout,
-  'dark-store-shift-lead': Activity,
-
-  // Hospitality
-  'fb-service-specialist': UtensilsCrossed,
-  'guest-relations-associate': ConciergeBell,
-  'food-safety-hygiene-officer': ShieldCheck,
-  'banquet-event-coordinator': Calendar,
-
-  // Facility Management
-  'facility-maintenance-technician': Wrench,
-  'bms-operations-executive': Cpu,
-  'fls-fire-safety-officer': Flame,
-  'utility-hvac-lead': BatteryCharging,
-};
-
-// Color accents for modern role icon badges
-const ROLE_COLORS: Record<string, { bg: string; text: string; ring: string }> = {
-  'logistics-supply-chain': { bg: 'bg-orange-50', text: 'text-orange-600', ring: 'ring-orange-200' },
-  'retail-operations': { bg: 'bg-indigo-50', text: 'text-indigo-600', ring: 'ring-indigo-200' },
-  'quick-commerce': { bg: 'bg-amber-50', text: 'text-amber-600', ring: 'ring-amber-200' },
-  'hospitality': { bg: 'bg-rose-50', text: 'text-rose-600', ring: 'ring-rose-200' },
-  'facility-management': { bg: 'bg-emerald-50', text: 'text-emerald-600', ring: 'ring-emerald-200' },
-};
-
-// Role-specific person photo mapping as requested
-const getRolePhoto = (roleId: string): string => {
-  switch (roleId) {
-    case 'warehouse-associate':
-      return animatedPic; // warehouse worker
-    case 'qc-inbound-inspector':
-      return '/assets/images/inbound dp.jpeg';
-    case 'inventory-staging-specialist':
-      return '/assets/images/inventory.jpeg';
-    case 'dispatch-fleet-coordinator':
-      return '/assets/images/outbound.jpeg';
-    case 'dark-store-picker-packer':
-      return '/assets/images/Picker dp.jpeg';
-    default:
-      return 'https://images.unsplash.com/photo-1586528116493-a025325555d4?auto=format&fit=crop&w=1200&q=80';
-  }
-};
+interface TicketItem {
+  id: string;
+  fromCode: string;
+  fromCity: string;
+  departureTime: string;
+  flightDuration: string;
+  toCode: string;
+  toCity: string;
+  arrivalTime: string;
+  serviceClass: string;
+  airlineName: string;
+  price: string;
+  numericPrice: number;
+}
 
 export function RoleDetailScreen() {
   const { currentRoute, navigate } = useRouter();
-  const { addToCart, isInCart, isSkillEnrolled } = useCartState();
-  const { activeEnrollment } = useEnrollmentState();
-  
+  const { addToCart, isSkillEnrolled } = useCartState();
+  const { enrollSkill } = useEnrollmentState();
+
   // Resolve Role and Skill dynamically from route parameters
   const roleId = currentRoute.params?.roleId || JOB_ROLES[0].id;
   const role: JobRole = JOB_ROLES.find(r => r.id === roleId) || JOB_ROLES[0];
   const skill: SkillCategory = SKILL_CATEGORIES.find(s => s.id === role.skillId) || SKILL_CATEGORIES[0];
 
-  // Selected Plan state
-  const [selectedPlan, setSelectedPlan] = useState<PlanType>((currentRoute.params?.selectedPlan as PlanType) || 'pro');
+  const [activeTripType, setActiveTripType] = useState<'one-way' | 'round-trip' | 'multy-city'>('one-way');
   const [showCartModal, setShowCartModal] = useState(false);
+  const [ticketConfirmed, setTicketConfirmed] = useState<TicketItem | null>(null);
 
   const isEnrolled = isSkillEnrolled(role.id);
-  const isLiteInCart = isInCart(role.id, 'lite');
-  const isProInCart = isInCart(role.id, 'pro');
 
-  // Role Modern Icon
-  const RoleIcon = ROLE_ICONS[role.id] || Boxes;
-  const colorTheme = ROLE_COLORS[skill.id] || { bg: 'bg-blue-50', text: 'text-blue-600', ring: 'ring-blue-200' };
+  // Tickets matching the reference screenshot design
+  const tickets: TicketItem[] = [
+    {
+      id: 'ticket-1',
+      fromCode: 'SIN',
+      fromCity: 'Singapore',
+      departureTime: '06.00',
+      flightDuration: '1h 30m',
+      toCode: 'CGK',
+      toCity: 'Jakarta',
+      arrivalTime: '07.30',
+      serviceClass: 'Business Class',
+      airlineName: 'Lorem Airways',
+      price: '$200',
+      numericPrice: 200,
+    },
+    {
+      id: 'ticket-2',
+      fromCode: 'SIN',
+      fromCity: 'Singapore',
+      departureTime: '09.00',
+      flightDuration: '1h 30m',
+      toCode: 'CGK',
+      toCity: 'Jakarta',
+      arrivalTime: '10.30',
+      serviceClass: 'Business Class',
+      airlineName: 'Ipsum Airways',
+      price: '$200',
+      numericPrice: 200,
+    },
+    {
+      id: 'ticket-3',
+      fromCode: 'SIN',
+      fromCity: 'Singapore',
+      departureTime: '14.00',
+      flightDuration: '1h 30m',
+      toCode: 'CGK',
+      toCity: 'Jakarta',
+      arrivalTime: '15.30',
+      serviceClass: 'Business Class',
+      airlineName: 'Dolor Express',
+      price: '$200',
+      numericPrice: 200,
+    },
+  ];
 
-  // Ensure 4 standard modules for display
-  const getModulesList = (): { id: string; moduleNumber: number; title: string; durationMinutes: number }[] => {
-    if (role.modules && role.modules.length >= 4) {
-      return role.modules.map((m, idx) => ({
-        id: m.id,
-        moduleNumber: idx + 1,
-        title: m.title,
-        durationMinutes: m.durationMinutes || 25,
-      }));
-    }
-
-    if (role.modules && role.modules.length > 0) {
-      const existing = role.modules.map((m, idx) => ({
-        id: m.id,
-        moduleNumber: idx + 1,
-        title: m.title,
-        durationMinutes: m.durationMinutes || 25,
-      }));
-
-      const defaultTitles = [
-        'Foundational SOPs & Standard Workflows',
-        'Operating Systems, Tools & Digital Equipment',
-        'Quality Audits, Safety & Anomaly Resolution',
-        'Shift Handovers, SLA Tracking & Practical Mastery'
-      ];
-
-      while (existing.length < 4) {
-        const nextNum = existing.length + 1;
-        existing.push({
-          id: `${role.id}-mod-${nextNum}`,
-          moduleNumber: nextNum,
-          title: defaultTitles[nextNum - 1] || `Module ${nextNum}: Workplace Execution`,
-          durationMinutes: 25,
-        });
-      }
-      return existing;
-    }
-
-    return [
-      { id: `${role.id}-mod-1`, moduleNumber: 1, title: 'Inbound Verification & Foundational SOPs', durationMinutes: 25 },
-      { id: `${role.id}-mod-2`, moduleNumber: 2, title: 'Digital Systems & Tool Operation', durationMinutes: 30 },
-      { id: `${role.id}-mod-3`, moduleNumber: 3, title: 'Quality Audits & Safety Compliance', durationMinutes: 25 },
-      { id: `${role.id}-mod-4`, moduleNumber: 4, title: 'SLA Throughput & Shift Performance', durationMinutes: 20 },
-    ];
-  };
-
-  const moduleList = getModulesList();
-
-  // Selecting the level immediately adds it to cart and pops up the separate cart screen to pay or add more
-  const handleSelectLevelAndOpenCart = (plan: PlanType) => {
-    if (isEnrolled) {
-      navigate('course-modules', { roleId: role.id, skillId: skill.id });
-      return;
-    }
-    const price = plan === 'pro' ? role.proPrice : role.litePrice;
+  const handleSelectTicket = (ticket: TicketItem) => {
     addToCart({
-      id: `cart-skill-${role.id}-${plan}`,
+      id: `cart-skill-${role.id}-${ticket.id}`,
       productId: role.id,
       productType: 'skill',
-      title: role.title,
-      price,
-      selectedPlan: plan,
+      title: `${role.title} (${ticket.airlineName})`,
+      price: ticket.numericPrice,
+      selectedPlan: 'pro' as PlanType,
       skillId: skill.id,
-      duration: `${role.durationWeeks} Weeks`
+      duration: `${role.durationWeeks || 4} Weeks`
     });
-    setSelectedPlan(plan);
-    setShowCartModal(true);
-  };
-
-  const handleModuleClick = (moduleNum: number) => {
-    if (isEnrolled) {
-      navigate('course-modules', { roleId: role.id, skillId: skill.id });
-    }
+    setTicketConfirmed(ticket);
   };
 
   return (
-    <div className="w-full bg-white min-h-screen pb-20 font-sans">
+    <div className="w-full min-h-screen bg-[#1157C7] flex justify-center selection:bg-blue-300 select-none pb-24">
       
-      {/* 1. BREADCRUMB / TOP BAR NAVIGATION */}
-      <div 
-        className="fixed top-0 left-0 right-0 w-full h-32 z-10 shadow-2xs overflow-hidden pt-10"
-        style={{ viewTransitionName: `skill-card-${role.id}` }}
-      >
-        {/* Background Image */}
-        <img src={getRolePhoto(role.id)} alt={role.title} className="absolute inset-0 w-full h-full object-cover" />
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/40" />
-
-        {/* Content */}
-        <div className="absolute inset-0 flex items-center px-4 sm:px-6 mt-10">
-          <div className="max-w-4xl mx-auto w-full flex items-center gap-4">
-            <button 
-              onClick={() => navigate('choose-skill', { selectedSkillId: skill.id })} 
-              className="p-2 rounded-full bg-black/20 text-white hover:bg-black/30"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <h1 className="text-2xl font-bold text-white">{role.title}</h1>
-          </div>
-        </div>
-      </div>
-      <div className="h-32" /> {/* Spacer */}
-
-      <div className="max-w-4xl mx-auto px-3.5 sm:px-6 pt-5 sm:pt-8 space-y-6 sm:space-y-10">
+      {/* Mobile Device Frame Container */}
+      <div className="w-full max-w-md bg-[#135ED1] min-h-screen relative flex flex-col overflow-hidden shadow-2xl">
         
-        {/* BANNERS FOR LEARNING VIDEO, PRACTICAL, INTERVIEW, ENGLISH PREP */}
-        <section id="additional-prep-section" className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-4">
-            <LiquidGlassCard 
-              onClick={() => navigate('course-module-list', { roleId: role.id })}
-              className="p-5 flex flex-col items-center text-center gap-3 text-slate-900 bg-emerald-100/20 backdrop-blur-md border border-emerald-200/50"
-            >
-              <div className="w-16 h-16 bg-white/40 backdrop-blur-sm text-emerald-800 rounded-2xl flex items-center justify-center">
-                <PlayCircle className="w-10 h-10" />
-              </div>
-              <h3 className="font-bold text-slate-900">Learning Videos</h3>
-              <p className="text-xs text-emerald-900">{skill.name} • {role.durationWeeks} Weeks</p>
-            </LiquidGlassCard>
-            <LiquidGlassCard 
-              onClick={() => navigate('practical-training', { roleId: role.id })}
-              className="p-5 flex flex-col items-center text-center gap-3 text-slate-900 bg-emerald-100/20 backdrop-blur-md border border-emerald-200/50"
-            >
-              <div className="w-16 h-16 bg-white/40 backdrop-blur-sm text-emerald-800 rounded-2xl flex items-center justify-center">
-                <ClipboardCheck className="w-10 h-10" />
-              </div>
-              <h3 className="font-bold text-slate-900">Practical Labs</h3>
-              <p className="text-xs text-emerald-900">Apply skills in real-world scenarios.</p>
-            </LiquidGlassCard>
-            <LiquidGlassCard 
-              onClick={() => navigate('interview-prep', { roleId: role.id, returnTo: 'role-detail' })}
-              className="p-5 flex flex-col items-center text-center gap-3 text-slate-900 bg-emerald-100/20 backdrop-blur-md border border-emerald-200/50"
-            >
-              <div className="w-16 h-16 bg-white/40 backdrop-blur-sm text-emerald-800 rounded-2xl flex items-center justify-center">
-                <ShieldCheck className="w-10 h-10" />
-              </div>
-              <h3 className="font-bold text-slate-900">Interview Prep</h3>
-              <p className="text-xs text-emerald-900">Master interviews with confidence.</p>
-            </LiquidGlassCard>
-            <LiquidGlassCard 
-              onClick={() => navigate('training-viewer', { url: '/English/english-foundations-v10.html', title: 'English Foundations', returnTo: 'role-detail' })}
-              className="p-5 flex flex-col items-center text-center gap-3 text-slate-900 bg-emerald-100/20 backdrop-blur-md border border-emerald-200/50"
-            >
-              <div className="w-16 h-16 bg-white/40 backdrop-blur-sm text-emerald-800 rounded-2xl flex items-center justify-center">
-                <BookOpen className="w-10 h-10" />
-              </div>
-              <h3 className="font-bold text-slate-900">English Prep</h3>
-              <p className="text-xs text-emerald-900">Build your workplace English skills</p>
-            </LiquidGlassCard>
-        </section>
+        {/* 1. TOP HERO SECTION (Airplane boarding background + Floating pill) */}
+        <div className="relative w-full h-[220px] shrink-0 overflow-hidden">
+          {/* Background Airport / Airplane Image */}
+          <img 
+            src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1000&q=80" 
+            alt="Boarding Gateway" 
+            className="w-full h-full object-cover object-center"
+          />
+          
+          {/* Subtle dark glass overlay for perfect readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/50" />
 
-        {/* 4. SELECT THE LEVEL (AT THE BOTTOM) */}
-        <section id="select-level-section" className="pt-4 sm:pt-6 space-y-4">
-          <div className="max-w-md mx-auto">
-            
-            {/* SINGLE COMPREHENSIVE PROFESSIONAL PLAN CARD (₹199) */}
-            <LiquidGlassCard
-              id="level-card-pro"
-              onClick={() => handleSelectLevelAndOpenCart('pro')}
-              className="p-4 border-2 border-blue-600 flex flex-col justify-between relative ring-2 ring-blue-600/10 !overflow-visible"
+          {/* Top Bar with Back Button */}
+          <div className="absolute top-4 left-4 z-20">
+            <button 
+              onClick={() => navigate('choose-skill', { selectedSkillId: skill.id })}
+              className="w-9 h-9 rounded-xl bg-white/90 text-slate-800 shadow-md flex items-center justify-center hover:bg-white active:scale-95 transition-all cursor-pointer"
             >
-              <div className="absolute -top-3 right-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[11px] font-extrabold uppercase tracking-wider px-3.5 py-1 rounded-full shadow-md z-10">
-                All Access • Recommended
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-bold uppercase tracking-wider text-blue-400">Professional All-Access</span>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight mt-0.5">Complete Career Mastery</h3>
-                  </div>
-                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                    Digital + Lab
-                  </span>
-                </div>
-
-                <div className="flex items-baseline gap-2.5 pt-1">
-                  <span className="text-3xl sm:text-4xl font-black text-slate-900">₹199</span>
-                  <span className="text-sm font-bold text-slate-400 line-through">₹599</span>
-                  <span className="text-xs font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">66% OFF</span>
-                </div>
-
-                <div className="space-y-2.5 pt-3 border-t border-slate-100 text-xs sm:text-sm text-slate-700 font-medium">
-                  <div className="flex items-center gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
-                    <span>All {moduleList.length} Video Modules & SOP Guides</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
-                    <span>Module Quizzes & SkillGo Digital Certificate</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
-                    <span>Practical Simulation Labs & Interactive Hardware Sims</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
-                    <span>Barcode Scanner & Warehouse Handheld Simulators</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
-                    <span>Priority Partner Hiring Referral & Direct Interview Pass</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-slate-100">
-                {isEnrolled ? (
-                  <div className="w-full py-3 text-center text-xs sm:text-sm font-bold text-emerald-700 bg-emerald-50 rounded-2xl border border-emerald-200">
-                    Enrolled
-                  </div>
-                ) : isProInCart ? (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowCartModal(true);
-                    }}
-                    className="w-full py-3 text-xs sm:text-sm font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-2xl border border-blue-200 transition-colors cursor-pointer flex items-center justify-center gap-2"
-                  >
-                    <ShoppingBag className="w-4 h-4" />
-                    <span>In Cart • Pay or Add More →</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSelectLevelAndOpenCart('pro');
-                    }}
-                    id="choose-pro-btn"
-                    className="w-full py-3 text-xs sm:text-sm font-black rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/25 transition-all cursor-pointer flex items-center justify-center gap-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Enroll Now (₹199) →</span>
-                  </button>
-                )}
-              </div>
-            </LiquidGlassCard>
+              <ArrowLeft className="w-5 h-5 text-[#0E2856] stroke-[2.5]" />
+            </button>
           </div>
-        </section>
 
-        {/* 5. GO BACK BUTTON AT THE BOTTOM */}
-        <div className="pt-6 sm:pt-8 flex justify-center">
-          <button
-            onClick={() => navigate('choose-skill', { selectedSkillId: skill.id })}
-            id="role-detail-bottom-back-btn"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold text-sm border border-slate-300 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
-          >
-            <ArrowLeft className="w-4 h-4 text-slate-700" />
-            <span>Go Back</span>
-          </button>
+          {/* Center Origin & Destination Floating Widget */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pt-2 px-4 z-10 text-center">
+            <span className="text-xs text-white/80 font-semibold tracking-wide">From</span>
+            <h1 className="text-xl font-extrabold text-white tracking-tight drop-shadow-md">
+              Changi, Singapore
+            </h1>
+            
+            {/* Pill Badge: "To : Jakarta, Indonesia" */}
+            <div className="mt-1.5 bg-white/95 backdrop-blur-md px-4 py-1 rounded-full shadow-lg border border-white/40 flex items-center gap-1">
+              <span className="text-[11px] font-semibold text-slate-500">To :</span>
+              <span className="text-[11px] font-extrabold text-[#1864DB]">Jakarta, Indonesia</span>
+            </div>
+          </div>
         </div>
 
-      </div>
+        {/* 2. ROYAL BLUE ARCHED CONTAINER */}
+        <div className="w-full bg-[#1864DB] rounded-t-[34px] -mt-6 z-20 flex-1 px-5 pt-4 pb-28 flex flex-col shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
+          
+          {/* Mini Action Icons (Calendar & Seat) */}
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <button 
+              className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform"
+              title="Schedule / Calendar"
+            >
+              <Calendar className="w-5 h-5 text-[#1864DB] stroke-[2.2]" />
+            </button>
+            <button 
+              className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform"
+              title="Seat Selection"
+            >
+              <Armchair className="w-5 h-5 text-[#1864DB] stroke-[2.2]" />
+            </button>
+          </div>
 
-      {/* Cart Modal Screen Pop-up */}
-      <CartModal
-        isOpen={showCartModal}
-        onClose={() => setShowCartModal(false)}
-      />
+          {/* Trip Type Segmented Tab Bar */}
+          <div className="flex items-center justify-between px-2 mb-5">
+            <button
+              onClick={() => setActiveTripType('one-way')}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+                activeTripType === 'one-way'
+                  ? 'border border-white/90 text-white shadow-sm'
+                  : 'text-white/80 hover:text-white'
+              }`}
+            >
+              One Way
+            </button>
+            <button
+              onClick={() => setActiveTripType('round-trip')}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                activeTripType === 'round-trip'
+                  ? 'border border-white/90 text-white shadow-sm'
+                  : 'text-white/80 hover:text-white'
+              }`}
+            >
+              Round Trip
+            </button>
+            <button
+              onClick={() => setActiveTripType('multy-city')}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                activeTripType === 'multy-city'
+                  ? 'border border-white/90 text-white shadow-sm'
+                  : 'text-white/80 hover:text-white'
+              }`}
+            >
+              Multy - City
+            </button>
+          </div>
+
+          {/* 3. STACKED FLIGHT / CAREER PASS TICKET CARDS */}
+          <div className="space-y-4">
+            {tickets.map((ticket) => (
+              <div 
+                key={ticket.id}
+                className="w-full bg-white rounded-[22px] p-4 shadow-[0_10px_24px_rgba(0,0,0,0.12)] border border-white/60 transition-transform active:scale-[0.99]"
+              >
+                {/* Top Half: Origin, Airplane Icon, Destination */}
+                <div className="flex items-center justify-between px-1">
+                  
+                  {/* Origin */}
+                  <div className="flex flex-col">
+                    <span className="text-lg font-black text-slate-900 leading-none">
+                      {ticket.fromCode}
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-semibold mt-0.5">
+                      {ticket.fromCity}
+                    </span>
+                    <span className="text-sm font-extrabold text-slate-900 mt-2">
+                      {ticket.departureTime}
+                    </span>
+                  </div>
+
+                  {/* Flight Duration & Plane */}
+                  <div className="flex flex-col items-center justify-center px-2">
+                    <div className="text-[#1864DB] mb-1">
+                      <Plane className="w-5 h-5 fill-[#1864DB] rotate-45 transform" />
+                    </div>
+                    <span className="text-[11px] text-slate-400 font-semibold">
+                      {ticket.flightDuration}
+                    </span>
+                  </div>
+
+                  {/* Destination */}
+                  <div className="flex flex-col items-end">
+                    <span className="text-lg font-black text-slate-900 leading-none">
+                      {ticket.toCode}
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-semibold mt-0.5">
+                      {ticket.toCity}
+                    </span>
+                    <span className="text-sm font-extrabold text-slate-900 mt-2">
+                      {ticket.arrivalTime}
+                    </span>
+                  </div>
+
+                </div>
+
+                {/* Perforated Dashed Divider */}
+                <div className="w-full border-b border-dashed border-slate-300 my-3" />
+
+                {/* Bottom Half: Class Icons & Airline Price Pill */}
+                <div className="flex items-center justify-between px-1">
+                  
+                  {/* Class Info */}
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-6 h-6 rounded-lg bg-slate-800 flex items-center justify-center text-white">
+                        <Utensils className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="w-6 h-6 rounded-lg bg-slate-800 flex items-center justify-center text-white">
+                        <Briefcase className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+                    <span className="text-[11px] text-slate-600 font-bold mt-1">
+                      {ticket.serviceClass}
+                    </span>
+                  </div>
+
+                  {/* Airline Name & Price Button */}
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="text-xs font-extrabold text-[#1864DB]">
+                      {ticket.airlineName}
+                    </span>
+                    <button
+                      onClick={() => handleSelectTicket(ticket)}
+                      className="bg-[#1864DB] hover:bg-blue-700 active:scale-95 text-white text-xs font-extrabold px-6 py-1.5 rounded-full shadow-md transition-all cursor-pointer"
+                    >
+                      {ticket.price}
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+            ))}
+          </div>
+
+        </div>
+
+        {/* 4. FLOATING WHITE BOTTOM NAVIGATION (4 Icons: Home, Globe, Bookmark, Settings) */}
+        <div className="fixed bottom-4 left-0 right-0 max-w-md mx-auto px-6 z-50">
+          <div className="w-full bg-white/95 backdrop-blur-xl border border-white/80 rounded-full py-3 px-6 shadow-[0_16px_36px_rgba(0,0,0,0.22)] flex items-center justify-around">
+            <button 
+              onClick={() => navigate('home')}
+              className="text-slate-400 hover:text-blue-600 active:scale-95 transition-colors p-1"
+              title="Home"
+            >
+              <Home className="w-5 h-5 stroke-[2]" />
+            </button>
+            <button 
+              onClick={() => navigate('choose-skill')}
+              className="text-blue-600 active:scale-95 transition-colors p-1"
+              title="Explore"
+            >
+              <Globe className="w-5 h-5 stroke-[2]" />
+            </button>
+            <button 
+              onClick={() => navigate('my-learning')}
+              className="text-slate-400 hover:text-blue-600 active:scale-95 transition-colors p-1"
+              title="Bookmarks / Saved"
+            >
+              <Bookmark className="w-5 h-5 stroke-[2]" />
+            </button>
+            <button 
+              onClick={() => navigate('my-dashboard')}
+              className="text-slate-400 hover:text-blue-600 active:scale-95 transition-colors p-1"
+              title="Settings"
+            >
+              <Settings className="w-5 h-5 stroke-[2]" />
+            </button>
+          </div>
+        </div>
+
+        {/* Ticket Confirmation Modal */}
+        {ticketConfirmed && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <div className="bg-white rounded-[24px] max-w-xs w-full p-5 shadow-2xl border border-slate-100 relative text-center flex flex-col items-center">
+              <button 
+                onClick={() => setTicketConfirmed(null)}
+                className="absolute top-3.5 right-3.5 text-slate-400 hover:text-slate-700"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-3">
+                <CheckCircle2 className="w-7 h-7" />
+              </div>
+
+              <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Flight Pass Ready</span>
+              <h3 className="text-base font-extrabold text-slate-900 mt-1">
+                {ticketConfirmed.airlineName} • {ticketConfirmed.price}
+              </h3>
+              <p className="text-xs text-slate-500 mt-1">
+                From {ticketConfirmed.fromCity} ({ticketConfirmed.fromCode}) to {ticketConfirmed.toCity} ({ticketConfirmed.toCode})
+              </p>
+
+              <div className="w-full mt-4 space-y-2">
+                <button
+                  onClick={() => {
+                    enrollSkill(role.id);
+                    setTicketConfirmed(null);
+                    navigate('course-modules', { roleId: role.id, skillId: skill.id });
+                  }}
+                  className="w-full py-2.5 bg-[#1864DB] hover:bg-blue-700 text-white rounded-full text-xs font-bold transition-all shadow-md shadow-blue-500/25"
+                >
+                  Start Career Flight Now
+                </button>
+                <button
+                  onClick={() => {
+                    setTicketConfirmed(null);
+                    setShowCartModal(true);
+                  }}
+                  className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-semibold transition-all"
+                >
+                  View Cart & Checkout
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cart Modal */}
+        <CartModal
+          isOpen={showCartModal}
+          onClose={() => setShowCartModal(false)}
+        />
+
+      </div>
 
     </div>
   );

@@ -175,14 +175,14 @@ export function ChooseSkillScreen() {
       <div className="w-full max-w-md px-5 pt-3 flex flex-col flex-1">
         
         {/* 1. TOP HEADER */}
-        <header className="w-full flex items-center justify-between py-1 mb-2">
+        <header className="w-full flex items-center justify-between py-1.5 mb-2">
           {selectedCategory ? (
             <button 
               onClick={() => setSelectedCategory(null)}
-              className="p-2 -ml-2 rounded-full hover:bg-slate-200/60 transition-colors text-slate-700 flex items-center gap-1.5 font-semibold text-sm"
+              className="p-2 -ml-2 rounded-full hover:bg-slate-200/60 transition-colors text-slate-800"
+              title="Back to Industries"
             >
-              <ArrowLeft className="w-5 h-5 text-slate-700" />
-              <span>Industries</span>
+              <Menu className="w-6 h-6" />
             </button>
           ) : (
             <button 
@@ -192,6 +192,15 @@ export function ChooseSkillScreen() {
               <Menu className="w-6 h-6" />
             </button>
           )}
+
+          {/* Center Brand / Industry Name (Replaces GoFast with Industry Name) */}
+          <div className="flex-1 text-center px-2">
+            <span className="text-base font-extrabold text-[#0D1F3C] tracking-tight">
+              {selectedCategory 
+                ? (INDUSTRIES.find(c => c.id === selectedCategory)?.name || 'Career Roles')
+                : 'SkillGo'}
+            </span>
+          </div>
 
           <div className="w-9 h-9 rounded-full bg-slate-300 border-2 border-white shadow-sm flex items-center justify-center text-slate-600 font-bold text-xs overflow-hidden">
             <img 
@@ -324,57 +333,70 @@ export function ChooseSkillScreen() {
 
           </div>
         ) : (
-          /* VIEW 2: Selected Industry Roles View */
-          <div className="flex flex-col w-full flex-1 mt-2">
-            <div className="mb-4">
-              <span className="text-xs font-bold text-blue-600 tracking-wider uppercase">Career Track</span>
-              <h2 className="text-2xl font-bold text-slate-900 mt-0.5">
-                {INDUSTRIES.find(c => c.id === selectedCategory)?.name || 'Domain Roles'}
+          /* VIEW 2: Selected Industry Roles View (Matches Reference Screenshot) */
+          <div className="flex flex-col w-full flex-1 mt-1">
+            
+            {/* Header: Popular Roles + View All */}
+            <div className="flex items-center justify-between mb-3.5 px-0.5">
+              <h2 className="text-lg font-extrabold text-[#0D1F3C] tracking-tight">
+                Popular Roles
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Select a certified specialization to start roleplay training
-              </p>
+              <button 
+                onClick={() => {}}
+                className="text-sm font-semibold text-[#1E75FF] hover:text-blue-700 transition-colors"
+              >
+                View All
+              </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3.5">
-              {filteredRoles.map((roleItem: JobRole) => {
+            {/* 2x2 Grid of Full-Bleed Picture Cards */}
+            <div className="grid grid-cols-2 gap-3.5 mb-5">
+              {filteredRoles.map((roleItem: JobRole, index: number) => {
                 const roleImage = ROLE_IMAGES[roleItem.id] || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80';
+                const tagLabels = ['$250', '$300', '$450', '$400'];
+                const priceTag = tagLabels[index % tagLabels.length];
                 
                 return (
                   <div 
                     key={roleItem.id}
                     onClick={() => handleSelectRole(roleItem)}
-                    className="w-full bg-white border border-slate-100 rounded-2xl p-3 flex flex-col justify-between cursor-pointer shadow-sm hover:shadow-md transition-all group overflow-hidden"
+                    className="w-full aspect-[3/4] relative rounded-[22px] overflow-hidden cursor-pointer shadow-[0_12px_28px_-6px_rgba(0,0,0,0.18)] hover:shadow-xl transition-all duration-300 group border border-black/5"
                   >
-                    <div className="w-full h-28 rounded-xl overflow-hidden relative mb-2.5">
-                      <img 
-                        src={roleImage} 
-                        alt={roleItem.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                      <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-bold text-white">
-                        {roleItem.durationWeeks || 4}w
-                      </div>
-                    </div>
-                    
-                    <h3 className="text-xs font-bold text-slate-900 leading-snug line-clamp-2 mb-2">
-                      {roleItem.title}
-                    </h3>
+                    {/* Background Image */}
+                    <img 
+                      src={roleImage} 
+                      alt={roleItem.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                    />
 
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSelectRole(roleItem);
-                      }}
-                      className="w-full py-1.5 bg-slate-900 text-white rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 group-hover:bg-blue-600 transition-colors"
-                    >
-                      <span>Explore</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
+                    {/* Top Left Price / Certification Badge (e.g. $250, $300) */}
+                    <div className="absolute top-3 left-3 z-10">
+                      <span className="bg-[#1E75FF] text-white text-xs font-bold px-2.5 py-1 rounded-lg shadow-md tracking-tight">
+                        {priceTag}
+                      </span>
+                    </div>
+
+                    {/* Bottom Dark Gradient & Title */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent flex flex-col justify-end p-3.5">
+                      <h3 className="text-sm font-extrabold text-white leading-tight drop-shadow-md line-clamp-2">
+                        {roleItem.title}
+                      </h3>
+                    </div>
                   </div>
                 );
               })}
             </div>
+
+            {/* Bottom "Explore Now" Wide Action Button */}
+            <div className="w-full mt-auto mb-3 px-0.5">
+              <button
+                onClick={() => filteredRoles[0] && handleSelectRole(filteredRoles[0])}
+                className="w-full py-4 bg-[#081226] hover:bg-slate-900 active:scale-[0.98] text-white rounded-full text-base font-bold shadow-xl transition-all flex items-center justify-center gap-2"
+              >
+                <span>Explore Now</span>
+              </button>
+            </div>
+
           </div>
         )}
 
