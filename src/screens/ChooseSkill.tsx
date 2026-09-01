@@ -144,7 +144,9 @@ const FEATURE_PILLARS = [
 export function ChooseSkillScreen() {
   const { navigate, currentRoute } = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(currentRoute.params?.selectedSkillId || null);
+  const [activeRoleIndex, setActiveRoleIndex] = useState(0);
+  
+  const selectedCategory = currentRoute.params?.selectedSkillId || null;
   const [selectedRole, setSelectedRole] = useState<JobRole | null>(null);
   
   // Video preview popup modal state
@@ -157,8 +159,11 @@ export function ChooseSkillScreen() {
     ? JOB_ROLES.filter(r => r.skillId === selectedCategory)
     : [];
 
+  const activeRole = filteredRoles[activeRoleIndex] || filteredRoles[0];
+
   const handleOpenIndustry = (industryId: string) => {
-    setSelectedCategory(industryId);
+    navigate('choose-skill', { selectedSkillId: industryId });
+    setActiveRoleIndex(0);
   };
 
   const handleSelectRole = (role: JobRole) => {
@@ -172,67 +177,78 @@ export function ChooseSkillScreen() {
     <div className="w-full min-h-screen bg-[#F7FAFC] font-sans text-slate-900 pb-28 select-none flex flex-col items-center">
       
       {/* Container restricted to mobile width */}
-      <div className="w-full max-w-md px-5 pt-3 flex flex-col flex-1">
+      <div className="w-full max-w-md px-5 pt-1 flex flex-col flex-1">
         
-        {/* 1. TOP HEADER */}
-        <header className="w-full flex items-center justify-between py-1.5 mb-2">
-          {selectedCategory ? (
-            <button 
-              onClick={() => setSelectedCategory(null)}
-              className="p-2 -ml-2 rounded-full hover:bg-slate-200/60 transition-colors text-slate-800"
-              title="Back to Industries"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-          ) : (
-            <button 
-              onClick={() => navigate('home')}
-              className="p-2 -ml-2 rounded-full hover:bg-slate-200/60 transition-colors text-slate-800"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-          )}
-
-          {/* Center Brand / Industry Name (Replaces GoFast with Industry Name) */}
-          <div className="flex-1 text-center px-2">
-            <span className="text-base font-extrabold text-[#0D1F3C] tracking-tight">
-              {selectedCategory 
-                ? (INDUSTRIES.find(c => c.id === selectedCategory)?.name || 'Career Roles')
-                : 'SkillGo'}
-            </span>
-          </div>
-
-          <div className="w-9 h-9 rounded-full bg-slate-300 border-2 border-white shadow-sm flex items-center justify-center text-slate-600 font-bold text-xs overflow-hidden">
-            <img 
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" 
-              alt="User Avatar" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </header>
-
-        {/* 2. TEXT ON TOP: "Find Your Favorite Career / And Grow With Us" */}
-        {!selectedCategory && (
-          <div className="text-center mt-1 mb-5">
-            <h1 className="text-xl sm:text-2xl font-extrabold text-[#0D1F3C] tracking-tight leading-tight">
+        {/* 1. TOP HEADER: "Find Your Favorite Career" or "Popular Roles" in middle top center */}
+        {!selectedCategory ? (
+          <div className="text-center mt-1 mb-3">
+            <h1 className="text-2xl sm:text-[26px] font-extrabold text-[#0D1F3C] tracking-tight leading-tight">
               Find Your Favorite Career
             </h1>
-            <p className="text-xl sm:text-2xl font-extrabold text-[#0D1F3C] tracking-tight leading-tight mt-0.5">
+            <p className="text-sm font-semibold text-slate-500 tracking-tight mt-0.5">
               And Grow With Us
             </p>
           </div>
+        ) : (
+          <div className="text-center mt-1 mb-3">
+            <h1 className="text-2xl sm:text-[26px] font-extrabold text-[#0D1F3C] tracking-tight leading-tight text-center">
+              Popular Roles
+            </h1>
+          </div>
         )}
 
-        {/* VIEW 1: Main Industries Landing (Matches Reference Image) */}
+        {/* VIEW 1: Main Industries Landing */}
         {!selectedCategory ? (
           <div className="flex flex-col items-center w-full flex-1">
             
-            {/* 3. COVERFLOW CAROUSEL OF INDUSTRIES (Ultra-Premium Apple Style: Less curvy border, rich deep shadow) */}
-            <div className="relative w-full overflow-hidden my-1 flex items-center justify-center" style={{ perspective: '1200px' }}>
-              <div className="relative h-[270px] w-full flex items-center justify-center" style={{ transformStyle: 'preserve-3d' }}>
+            {/* 2. 360-DEGREE CIRCULAR COVERFLOW CAROUSEL (Behind card visible, blurred & smaller) */}
+            <div className="relative w-full overflow-visible my-2 flex items-center justify-center" style={{ perspective: '1100px' }}>
+              <div className="relative h-[260px] w-full flex items-center justify-center" style={{ transformStyle: 'preserve-3d' }}>
                 {INDUSTRIES.map((item, index) => {
-                  const activeTrackIndex = index - activeIndex;
-                  const isActive = activeTrackIndex === 0;
+                  const count = INDUSTRIES.length;
+                  // Circular offset in range [-count/2, count/2]
+                  let diff = (index - activeIndex) % count;
+                  if (diff > count / 2) diff -= count;
+                  if (diff < -count / 2) diff += count;
+
+                  const isActive = diff === 0;
+                  const isBehind = Math.abs(diff) === 2;
+                  const isSide = Math.abs(diff) === 1;
+
+                  // 360-degree positioning calculations
+                  let xOffset = 0;
+                  let zOffset = 0;
+                  let rotateY = 0;
+                  let scale = 1;
+                  let opacity = 1;
+                  let blurAmount = 'blur(0px)';
+                  let zIndex = 30;
+
+                  if (isActive) {
+                    xOffset = 0;
+                    zOffset = 0;
+                    rotateY = 0;
+                    scale = 1;
+                    opacity = 1;
+                    blurAmount = 'blur(0px)';
+                    zIndex = 40;
+                  } else if (isSide) {
+                    xOffset = diff * 105;
+                    zOffset = -110;
+                    rotateY = diff * -28;
+                    scale = 0.82;
+                    opacity = 0.88;
+                    blurAmount = 'blur(1.5px)';
+                    zIndex = 25;
+                  } else if (isBehind) {
+                    xOffset = 0;
+                    zOffset = -220;
+                    rotateY = 0;
+                    scale = 0.66;
+                    opacity = 0.55;
+                    blurAmount = 'blur(4px)';
+                    zIndex = 10;
+                  }
 
                   return (
                     <motion.div
@@ -240,90 +256,89 @@ export function ChooseSkillScreen() {
                       drag="x"
                       dragConstraints={{ left: 0, right: 0 }}
                       onDragEnd={(_, info) => {
-                        if (info.offset.x > 40) setActiveIndex((prev) => (prev - 1 + INDUSTRIES.length) % INDUSTRIES.length);
-                        if (info.offset.x < -40) setActiveIndex((prev) => (prev + 1) % INDUSTRIES.length);
+                        if (info.offset.x > 35) setActiveIndex((prev) => (prev - 1 + INDUSTRIES.length) % INDUSTRIES.length);
+                        if (info.offset.x < -35) setActiveIndex((prev) => (prev + 1) % INDUSTRIES.length);
                       }}
-                      className="absolute cursor-pointer overflow-hidden rounded-[20px] shadow-[0_22px_45px_-8px_rgba(0,0,0,0.32),0_8px_16px_-4px_rgba(0,0,0,0.18)] w-[300px] sm:w-[320px] h-[255px] bg-slate-900 border border-white/40"
+                      className="absolute cursor-pointer overflow-hidden rounded-[24px] w-[275px] sm:w-[295px] h-[245px] bg-slate-900 border border-white/50"
                       initial={false}
                       animate={{
-                        x: activeTrackIndex * 65,
-                        z: Math.abs(activeTrackIndex) * -140,
-                        rotateY: activeTrackIndex * -35,
-                        scale: isActive ? 1 : 0.86,
-                        opacity: Math.abs(activeTrackIndex) > 1 ? 0 : 1,
+                        x: xOffset,
+                        z: zOffset,
+                        rotateY: rotateY,
+                        scale: scale,
+                        opacity: opacity,
+                        filter: blurAmount,
                       }}
-                      transition={{ type: 'spring', stiffness: 240, damping: 28 }}
+                      transition={{ type: 'spring', stiffness: 260, damping: 26 }}
                       onClick={() => {
                         if (isActive) {
-                          // Clicking on pic opens video screen modal for learner to see industry
                           setPreviewingIndustryVideo(item);
                         } else {
                           setActiveIndex(index);
                         }
                       }}
                       style={{
-                        zIndex: 50 - Math.abs(activeTrackIndex),
+                        zIndex,
                         transformStyle: 'preserve-3d',
+                        boxShadow: isActive 
+                          ? '0 20px 40px -10px rgba(0,0,0,0.35), 0 8px 18px -4px rgba(0,0,0,0.18)' 
+                          : isBehind 
+                            ? '0 10px 25px -8px rgba(0,0,0,0.2)' 
+                            : '0 14px 28px -6px rgba(0,0,0,0.25)',
                       }}
                     >
+                      {/* Clean High-Resolution Picture - NO TEXT */}
                       <img 
                         src={item.image} 
                         alt={item.name} 
                         className="w-full h-full object-cover" 
                       />
-                      
-                      {/* Apple Glass Dark Gradient Overlay (No play icon) */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10 flex flex-col justify-between p-4">
-                        
-                        {/* Top Category Badge & Video Preview Hint */}
-                        <div className="flex justify-between items-center">
-                          <span className="bg-white/20 backdrop-blur-md text-white text-[11px] font-semibold px-3 py-1 rounded-full border border-white/30 shadow-sm">
-                            Domain #{index + 1}
-                          </span>
-                          <span className="bg-black/30 backdrop-blur-md text-white/90 text-[10px] font-medium px-2.5 py-0.5 rounded-full border border-white/20">
-                            Tap to preview
-                          </span>
-                        </div>
-
-                        {/* Bottom Card Title */}
-                        <div>
-                          <h3 className="text-lg font-extrabold text-white leading-tight drop-shadow-md">
-                            {item.name}
-                          </h3>
-                          <p className="text-xs text-white/85 line-clamp-1 mt-0.5 font-medium">
-                            {item.subtitle}
-                          </p>
-                        </div>
-                      </div>
                     </motion.div>
                   );
                 })}
               </div>
             </div>
 
-            {/* 4. INDUSTRY ACTION BUTTON (Replaces "Log In" with Industry Name) */}
-            <div className="w-full mt-4 px-1">
+            {/* 3. WAREHOUSE & LOGISTICS / INDUSTRY DEPTH CARD (White card with deep shadows and blue font) */}
+            <div className="w-full mt-3 px-1">
               <button
                 onClick={() => handleOpenIndustry(activeIndustry.id)}
-                className="w-full py-3.5 bg-[#1E75FF] hover:bg-blue-600 active:scale-[0.98] text-white rounded-full text-base font-bold shadow-[0_10px_25px_-5px_rgba(30,117,255,0.4)] transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 px-5 bg-white hover:bg-slate-50 active:scale-[0.98] rounded-[22px] shadow-[0_16px_36px_-6px_rgba(0,0,0,0.1),0_4px_12px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,1)] border border-slate-100/90 transition-all duration-300 flex items-center justify-between group cursor-pointer"
               >
-                <span>{activeIndustry.name}</span>
-                <ArrowRight className="w-5 h-5" />
+                <div className="flex items-center gap-3.5 text-left">
+                  <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    {React.createElement(activeIndustry.icon, { className: 'w-5 h-5 text-[#1E75FF]' })}
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-[17px] font-extrabold text-[#1E75FF] tracking-tight leading-tight">
+                      {activeIndustry.name}
+                    </h3>
+                    <p className="text-xs text-slate-400 font-medium line-clamp-1 mt-0.5">
+                      {activeIndustry.subtitle}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/25 group-hover:translate-x-1 transition-transform">
+                  <ArrowRight className="w-4 h-4" />
+                </div>
               </button>
             </div>
 
-            {/* 5. 4 COLORFUL CHARACTER / FEATURE ELEMENT ICONS (No circle around icons, colorful standalone icons with small labels) */}
-            <div className="w-full grid grid-cols-4 gap-2 mt-7 mb-1 px-1">
+            {/* 4. 4 FEATURE ELEMENTS - Icons resized 25% less (w-5 h-5), text non-bold and small */}
+            <div className="w-full grid grid-cols-4 gap-1.5 mt-5 mb-1 px-1">
               {FEATURE_PILLARS.map((pillar) => {
                 const IconComponent = pillar.icon;
                 return (
                   <button
                     key={pillar.id}
                     onClick={() => setFeatureDetail(pillar)}
-                    className="flex flex-col items-center justify-center p-1.5 rounded-xl hover:bg-slate-100/80 active:scale-95 transition-all text-center focus:outline-none group"
+                    className="flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-slate-100/70 active:scale-95 transition-all text-center focus:outline-none group cursor-pointer"
                   >
-                    <IconComponent className={`w-7 h-7 sm:w-8 sm:h-8 ${pillar.color} transition-transform group-hover:scale-110 drop-shadow-sm`} />
-                    <span className="text-[11px] font-bold text-slate-800 mt-1.5 leading-tight text-center">
+                    <div className="p-1.5 transition-transform group-hover:scale-110">
+                      <IconComponent className={`w-5 h-5 sm:w-5.5 sm:h-5.5 ${pillar.color} drop-shadow-xs`} />
+                    </div>
+                    <span className="text-[10px] sm:text-[11px] font-normal text-slate-600 mt-0.5 leading-tight text-center">
                       {pillar.label}
                     </span>
                   </button>
@@ -333,68 +348,52 @@ export function ChooseSkillScreen() {
 
           </div>
         ) : (
-          /* VIEW 2: Selected Industry Roles View (Matches Reference Screenshot) */
-          <div className="flex flex-col w-full flex-1 mt-1">
+          /* VIEW 2: Selected Industry Roles View - 2-Column Grid with Banner Depth, No Outline & Role Cards under each picture */
+          <div className="flex flex-col items-center w-full flex-1 pt-3 sm:pt-4">
             
-            {/* Header: Popular Roles + View All */}
-            <div className="flex items-center justify-between mb-3.5 px-0.5">
-              <h2 className="text-lg font-extrabold text-[#0D1F3C] tracking-tight">
-                Popular Roles
-              </h2>
-              <button 
-                onClick={() => {}}
-                className="text-sm font-semibold text-[#1E75FF] hover:text-blue-700 transition-colors"
-              >
-                View All
-              </button>
-            </div>
+            {/* 1. 2-COLUMN GRID OF ROLE PICTURES + CARDS (Shifted ~10% towards bottom) */}
+            <div className="w-full grid grid-cols-2 gap-x-3.5 gap-y-4 my-2">
+              {filteredRoles.map((roleItem: JobRole) => {
+                const roleImage = ROLE_IMAGES[roleItem.id] || roleItem.image || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80';
 
-            {/* 2x2 Grid of Full-Bleed Picture Cards */}
-            <div className="grid grid-cols-2 gap-3.5 mb-5">
-              {filteredRoles.map((roleItem: JobRole, index: number) => {
-                const roleImage = ROLE_IMAGES[roleItem.id] || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80';
-                const tagLabels = ['$250', '$300', '$450', '$400'];
-                const priceTag = tagLabels[index % tagLabels.length];
-                
                 return (
-                  <div 
+                  <div
                     key={roleItem.id}
                     onClick={() => handleSelectRole(roleItem)}
-                    className="w-full aspect-[3/4] relative rounded-[22px] overflow-hidden cursor-pointer shadow-[0_12px_28px_-6px_rgba(0,0,0,0.18)] hover:shadow-xl transition-all duration-300 group border border-black/5"
+                    className="flex flex-col gap-2 cursor-pointer group select-none"
                   >
-                    {/* Background Image */}
-                    <img 
-                      src={roleImage} 
-                      alt={roleItem.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                    />
-
-                    {/* Top Left Price / Certification Badge (e.g. $250, $300) */}
-                    <div className="absolute top-3 left-3 z-10">
-                      <span className="bg-[#1E75FF] text-white text-xs font-bold px-2.5 py-1 rounded-lg shadow-md tracking-tight">
-                        {priceTag}
-                      </span>
+                    {/* Picture Container with rich carousel banner depth & NO outline */}
+                    <div className="relative w-full aspect-[4/3.2] rounded-[22px] overflow-hidden shadow-[0_20px_40px_-10px_rgba(0,0,0,0.26),0_8px_16px_-4px_rgba(0,0,0,0.12)] bg-slate-900 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-[0_24px_45px_-10px_rgba(0,0,0,0.32)]">
+                      <img 
+                        src={roleImage} 
+                        alt={roleItem.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                      />
                     </div>
 
-                    {/* Bottom Dark Gradient & Title */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent flex flex-col justify-end p-3.5">
-                      <h3 className="text-sm font-extrabold text-white leading-tight drop-shadow-md line-clamp-2">
-                        {roleItem.title}
-                      </h3>
+                    {/* Small Depth Card Underneath Picture with Role Title */}
+                    <div className="w-full py-2 px-2.5 bg-white hover:bg-slate-50 active:scale-[0.98] rounded-[16px] shadow-[0_10px_25px_-5px_rgba(0,0,0,0.08),0_2px_6px_rgba(0,0,0,0.03),inset_0_1px_0_rgba(255,255,255,1)] border border-slate-100/90 transition-all duration-300 flex items-center justify-between">
+                      <div className="flex items-center gap-2 min-w-0 pr-1 text-left">
+                        <div className="w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                          <Briefcase className="w-3.5 h-3.5 text-[#1E75FF]" />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="text-xs sm:text-[13px] font-extrabold text-[#1E75FF] tracking-tight leading-tight truncate">
+                            {roleItem.title}
+                          </h3>
+                          <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
+                            {roleItem.startingSalary ? `Starting ${roleItem.startingSalary}` : 'Certified Training'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-xs shadow-blue-500/25 group-hover:translate-x-0.5 transition-transform">
+                        <ArrowRight className="w-3 h-3" />
+                      </div>
                     </div>
                   </div>
                 );
               })}
-            </div>
-
-            {/* Bottom "Explore Now" Wide Action Button */}
-            <div className="w-full mt-auto mb-3 px-0.5">
-              <button
-                onClick={() => filteredRoles[0] && handleSelectRole(filteredRoles[0])}
-                className="w-full py-4 bg-[#081226] hover:bg-slate-900 active:scale-[0.98] text-white rounded-full text-base font-bold shadow-xl transition-all flex items-center justify-center gap-2"
-              >
-                <span>Explore Now</span>
-              </button>
             </div>
 
           </div>

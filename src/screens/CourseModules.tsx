@@ -90,7 +90,7 @@ export function CourseModulesScreen() {
     setQuizAnswers({});
     setQuizSubmitted(false);
     setLessonCompleted(completedModules.includes(activeModule.id));
-  }, [activeModule.id, completedModules]);
+  }, [activeModule.id, completedModules.length]);
 
   // Video progress simulation
   useEffect(() => {
@@ -171,50 +171,57 @@ export function CourseModulesScreen() {
   return (
     <div className="w-full bg-[#FDFDFE] min-h-screen pb-20">
 
-      {/* 1. TOP COURSE CONTEXT HEADER */}
-      <header className="bg-white border-b border-slate-100 sticky top-16 sm:top-18 z-30 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          
-          {/* Left: Breadcrumbs & Role Context */}
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => navigate('course-module-list', { roleId: role.id })}
-              className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer"
-              title="Return to Modules"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </button>
-            <div>
-              <h1 className="text-base sm:text-lg font-black text-[#0B192C] leading-tight">
-                {role.title}
-              </h1>
-            </div>
-          </div>
+      {/* TOP LEFT DEDICATED BACK BUTTON ICON TO ROLE DETAIL */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-1 flex items-center">
+        <button 
+          onClick={() => navigate('role-detail', { roleId: role.id, skillId: skill.id })}
+          className="w-10 h-10 rounded-full bg-white shadow-[0_4px_14px_rgba(0,0,0,0.08)] border border-slate-100/90 text-slate-800 hover:text-[#1864DB] flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+          title="Back to Team Leader Curriculum"
+        >
+          <ArrowLeft className="w-5 h-5 stroke-[2.5] text-slate-800 group-hover:text-[#1864DB] group-hover:-translate-x-0.5 transition-transform" />
+        </button>
+      </div>
 
-          {/* Right: Quick Progress Metric */}
-          <div className="flex items-center gap-4 sm:border-l sm:border-slate-100 sm:pl-4">
-            <div className="text-left sm:text-right">
-              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                Course Progress
-              </div>
-              <div className="text-sm font-black text-slate-900">
-                {completedModules.length} of {role.modules.length} Modules ({progressPercent}%)
-              </div>
-            </div>
-            <div className="w-20 hidden sm:block">
-              <ProgressBar value={progressPercent} color="blue" />
-            </div>
-          </div>
-
-        </div>
-      </header>
-
-      {/* 2. MAIN LEARNING WORKSPACE (Two-Column Desktop Grid) */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+      {/* 2. MAIN LEARNING WORKSPACE */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4">
         
+        {/* 1. TOP TEAM LEADER COURSE PROGRESS FLAT CARD (Home page green background & curved card styling with depth) */}
+        <div className="w-full bg-[#DCEAF0] rounded-[22px] p-5 sm:p-6 mb-6 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.06)] border border-white/80 transition-all relative overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-100/80 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-emerald-600" />
+                  Course Progress
+                </span>
+              </div>
+              <h2 className="text-lg sm:text-xl font-black text-[#0B192C] tracking-tight">
+                {role.title} Course Progress
+              </h2>
+            </div>
+
+            <div className="flex items-baseline sm:flex-col sm:items-end gap-2 sm:gap-0.5">
+              <span className="text-sm sm:text-base font-black text-[#0B192C]">
+                {completedModules.length} to {role.modules.length} Modules ({progressPercent}%)
+              </span>
+              <span className="text-xs font-semibold text-slate-500">
+                {completedModules.length} of {role.modules.length} Completed
+              </span>
+            </div>
+          </div>
+
+          {/* Progress Bar Line */}
+          <div className="w-full bg-white/80 rounded-full h-2.5 overflow-hidden p-0.5 border border-white shadow-inner">
+            <div 
+              className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-[#1864DB] transition-all duration-500 shadow-xs" 
+              style={{ width: `${progressPercent}%` }} 
+            />
+          </div>
+        </div>
+
         {/* COURSE COMPLETED BANNER (If All Modules Finished) */}
         {isCourseComplete && (
-          <div className="mb-8 p-6 bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 rounded-3xl border border-emerald-200 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="mb-6 p-6 bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 rounded-[22px] border border-emerald-200 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.06)] flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-1.5">
               <div className="flex items-center gap-2 text-emerald-800 font-black text-lg">
                 <Award className="w-6 h-6 text-emerald-600" />
@@ -245,7 +252,7 @@ export function CourseModulesScreen() {
           <div className="lg:col-span-8 space-y-6">
             
             {/* Current Lesson Header */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-2xs">
+            <div className="bg-white rounded-[22px] p-6 sm:p-8 border border-slate-100/90 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.06)]">
               
               <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2">
@@ -274,7 +281,7 @@ export function CourseModulesScreen() {
             </div>
 
             {/* VIDEO / INTERACTIVE PLAYER AREA */}
-            <div className="bg-slate-950 rounded-3xl overflow-hidden shadow-md border border-slate-800 text-white relative">
+            <div className="bg-slate-950 rounded-[22px] overflow-hidden shadow-md border border-slate-800 text-white relative">
               
               <div className="relative aspect-video w-full flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
                 
@@ -392,7 +399,7 @@ export function CourseModulesScreen() {
             </div>
 
             {/* WHAT YOU'LL LEARN IN THIS LESSON & KEY TAKEAWAYS */}
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-2xs space-y-6">
+            <div className="bg-white rounded-[22px] p-6 sm:p-8 border border-slate-100/90 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.06)] space-y-6">
               
               <div>
                 <h3 className="text-base sm:text-lg font-black text-[#0B192C] mb-1">
@@ -493,35 +500,20 @@ export function CourseModulesScreen() {
           {/* RIGHT / SUPPORT SIDEBAR (Cols 9-12) */}
           <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-36">
             
-            {/* 1. COURSE PROGRESS CARD */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-black uppercase tracking-wider text-slate-400">
-                  Your Progress
-                </h3>
-                <span className="text-lg font-black text-[#0B192C]">
-                  {progressPercent}%
-                </span>
-              </div>
-
-              <div className="space-y-1.5">
-                <ProgressBar value={progressPercent} color="blue" />
-                <div className="text-[11px] font-semibold text-slate-500 flex justify-between">
-                  <span>{completedModules.length} of {role.modules.length} modules completed</span>
-                  {isCourseComplete && <span className="text-emerald-600 font-bold">Done</span>}
-                </div>
-              </div>
-            </div>
-
-            {/* 2. SEQUENTIAL MODULE LIST */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
+            {/* SEQUENTIAL MODULE LIST CARD (Curved with Depth) */}
+            <div className="bg-white rounded-[22px] p-6 border border-slate-100/90 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.06)] space-y-4">
               
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <h3 className="text-sm font-black text-[#0B192C]">
-                  Course Curriculum
-                </h3>
-                <span className="text-xs font-semibold text-slate-400">
-                  {role.moduleCount} Modules
+                <div>
+                  <h3 className="text-sm font-black text-[#0B192C]">
+                    Course Curriculum
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-medium mt-0.5">
+                    {completedModules.length} of {role.modules.length} Completed
+                  </p>
+                </div>
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-[#1864DB]">
+                  {progressPercent}%
                 </span>
               </div>
 
@@ -538,7 +530,7 @@ export function CourseModulesScreen() {
                       onClick={() => handleSelectModule(m, idx)}
                       className={`p-3.5 rounded-2xl border transition-all flex items-start gap-3 ${
                         isCurrent
-                          ? 'border-[#0B192C] bg-[#EFF5FA] shadow-xs'
+                          ? 'border-[#1864DB] bg-[#EFF5FA] shadow-xs'
                           : isDone
                           ? 'border-emerald-200 bg-emerald-50/40 hover:bg-emerald-50/70 cursor-pointer'
                           : isUnlocked
@@ -551,7 +543,7 @@ export function CourseModulesScreen() {
                         isDone
                           ? 'bg-emerald-500 text-white'
                           : isCurrent
-                          ? 'bg-[#0B192C] text-white'
+                          ? 'bg-[#1864DB] text-white'
                           : isUnlocked
                           ? 'bg-slate-200 text-slate-700'
                           : 'bg-slate-100 text-slate-400'
@@ -602,8 +594,8 @@ export function CourseModulesScreen() {
 
             </div>
 
-            {/* 3. PRACTICAL TRAINING / CERTIFICATE GATE */}
-            <div className="bg-slate-50 rounded-3xl p-6 border border-slate-200/80 text-xs text-slate-700 space-y-3">
+            {/* PRACTICAL TRAINING / CERTIFICATE GATE */}
+            <div className="bg-white rounded-[22px] p-6 border border-slate-100/90 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.06)] text-xs text-slate-700 space-y-3">
               <div className="flex items-center gap-2 font-bold text-slate-900">
                 <ShieldCheck className="w-4 h-4 text-blue-600" />
                 <span>Certification Gate</span>

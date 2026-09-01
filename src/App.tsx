@@ -53,6 +53,7 @@ import {
   TrendingUp,
   Receipt,
   ArrowRight,
+  ArrowLeft,
   HelpCircle,
   LogOut,
   Settings,
@@ -212,112 +213,175 @@ function AppLayout() {
       {loadingStage === 'splash' && <SplashScreen onComplete={handleSplashComplete} />}
 
       {loadingStage === 'app' && (
-        <div className={`h-screen flex flex-col font-sans text-slate-900 antialiased selection:bg-blue-600 selection:text-white ${currentRoute.screen === 'home' || currentRoute.screen === 'library' ? 'bg-[#FFF8F9]' : 'bg-[#FDFDFE]'}`}>
+        <div className={`h-screen flex flex-col font-sans text-slate-900 antialiased selection:bg-blue-600 selection:text-white ${currentRoute.screen === 'home' ? 'bg-[#DCEAF0]' : currentRoute.screen === 'library' ? 'bg-[#FFF8F9]' : 'bg-[#FDFDFE]'}`}>
           
-          {/* 1. APPLE-STYLE TRANSLUCENT TOP NAVIGATION BAR (Hidden on Home, Role Detail, and My Learning Screen) */}
+          {/* 1. APPLE-STYLE TRANSLUCENT TOP NAVIGATION BAR (Hidden on Home, Role Detail, and My Learning Screen; Transparent on Choose Skill) */}
           {currentRoute.screen !== 'home' && currentRoute.screen !== 'role-detail' && currentRoute.screen !== 'my-learning' && (
-            <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 h-14 sm:h-16 flex items-center justify-between px-4 sm:px-6">
-              <SkillGoLogo onClick={() => navigate('home')} />
+            <nav className={`fixed top-0 left-0 right-0 z-50 h-14 sm:h-16 flex items-center justify-between px-4 sm:px-6 transition-colors ${
+              currentRoute.screen === 'choose-skill' || currentRoute.screen === 'skill-detail'
+                ? 'bg-transparent border-none'
+                : 'bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-xs'
+            }`}>
+              {currentRoute.screen === 'choose-skill' || currentRoute.screen === 'skill-detail' ? (
+                <button 
+                  onClick={() => {
+                    if (currentRoute.screen === 'choose-skill' && currentRoute.params?.selectedSkillId) {
+                      navigate('choose-skill');
+                    } else {
+                      navigate('home');
+                    }
+                  }}
+                  className="w-10 h-10 rounded-full bg-white/60 hover:bg-white/90 active:scale-95 backdrop-blur-md border border-white/70 shadow-sm flex items-center justify-center text-slate-800 transition-all cursor-pointer"
+                  title={currentRoute.params?.selectedSkillId ? "Back to Industries" : "Back to Home"}
+                >
+                  <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
+                </button>
+              ) : (
+                <SkillGoLogo onClick={() => navigate('home')} />
+              )}
+              
               <div className="flex items-center gap-2">
-                <button onClick={() => setLanguageModalOpen(true)} className="p-2 rounded-full hover:bg-black/5"><Globe className="w-5 h-5" /></button>
-                <button onClick={() => setCartModalOpen(true)} className="p-2 rounded-full hover:bg-black/5"><ShoppingBag className="w-5 h-5" /></button>
-                <button onClick={() => setProfileModalOpen(true)} className="p-2 rounded-full hover:bg-black/5"><User className="w-5 h-5" /></button>
+                <button onClick={() => setLanguageModalOpen(true)} className="p-2 rounded-full bg-white/50 hover:bg-white/80 backdrop-blur-md border border-white/60 shadow-xs text-slate-700 transition-all cursor-pointer"><Globe className="w-4.5 h-4.5" /></button>
+                <button onClick={() => setCartModalOpen(true)} className="p-2 rounded-full bg-white/50 hover:bg-white/80 backdrop-blur-md border border-white/60 shadow-xs text-slate-700 transition-all cursor-pointer"><ShoppingBag className="w-4.5 h-4.5" /></button>
+                <button onClick={() => setProfileModalOpen(true)} className="p-2 rounded-full bg-white/50 hover:bg-white/80 backdrop-blur-md border border-white/60 shadow-xs text-slate-700 transition-all cursor-pointer"><User className="w-4.5 h-4.5" /></button>
               </div>
             </nav>
           )}
 
           {/* 2. DYNAMIC SCREEN CONTENT */}
-          <main className={`flex-1 overflow-y-auto ${currentRoute.screen === 'home' || currentRoute.screen === 'role-detail' || currentRoute.screen === 'my-learning' ? 'pt-0 pb-0' : 'pt-16 pb-20 md:pb-0'} flex flex-col`}>
-            {currentRoute.screen === 'home' && <HomeScreen />}
-            {currentRoute.screen === 'choose-skill' && <ChooseSkillScreen />}
-            {currentRoute.screen === 'skill-detail' && <ChooseSkillScreen />}
-            {currentRoute.screen === 'role-detail' && <RoleDetailScreen />}
-            {currentRoute.screen === 'choose-plan' && <ChoosePlanScreen />}
-            {currentRoute.screen === 'course-modules' && <CourseModulesScreen />}
-            {currentRoute.screen === 'course-module-list' && <CourseModuleListScreen />}
-            {currentRoute.screen === 'module-video' && <ModuleVideoScreen />}
-            {currentRoute.screen === 'module-quiz' && <ModuleQuizScreen />}
-            {currentRoute.screen === 'course-complete' && <CourseCompleteScreen />}
-            {currentRoute.screen === 'practical-training' && <PracticalTrainingScreen />}
-            {currentRoute.screen === 'training-viewer' && <TrainingViewerScreen />}
-            {currentRoute.screen === 'final-assessment' && <FinalAssessmentScreen />}
-            {currentRoute.screen === 'my-learning' && <MyLearningScreen />}
-            {currentRoute.screen === 'my-dashboard' && <MyDashboardScreen />}
-            {currentRoute.screen === 'library' && <LibraryScreen />}
-            {currentRoute.screen === 'library-detail' && <LibraryDetailScreen />}
-            {currentRoute.screen === 'certificate' && <CertificateScreen />}
-            {currentRoute.screen === 'roleplay' && <AiRoleplayPrototype />}
-            {currentRoute.screen === 'interview-prep' && <InterviewPrep />}
-            {currentRoute.screen === 'skillgo-english' && <SkillGoEnglish />}
-            {currentRoute.screen === 'english-practice-home' && <EnglishPracticeHome />}
-            {currentRoute.screen === 'english-practice-translate' && <TranslateSpeak />}
-            {currentRoute.screen === 'english-practice-answer' && <AnswerImprove />}
-            {currentRoute.screen === 'english-practice-real' && <RealConversations />}
-            {currentRoute.screen === 'english-practice-library' && <SentenceLibrary />}
-          </main>
+          {(() => {
+            const isChooseSkill = currentRoute.screen === 'choose-skill' || currentRoute.screen === 'skill-detail';
+            return (
+              <main className={`flex-1 overflow-y-auto ${
+                currentRoute.screen === 'home' || currentRoute.screen === 'role-detail' || currentRoute.screen === 'my-learning' 
+                  ? 'pt-0 pb-0' 
+                  : isChooseSkill
+                    ? 'pt-14 pb-4'
+                    : 'pt-16 pb-20 md:pb-0'
+              } flex flex-col`}>
+                {currentRoute.screen === 'home' && <HomeScreen />}
+                {currentRoute.screen === 'choose-skill' && <ChooseSkillScreen />}
+                {currentRoute.screen === 'skill-detail' && <ChooseSkillScreen />}
+                {currentRoute.screen === 'role-detail' && <RoleDetailScreen />}
+                {currentRoute.screen === 'choose-plan' && <ChoosePlanScreen />}
+                {currentRoute.screen === 'course-modules' && <CourseModulesScreen />}
+                {currentRoute.screen === 'course-module-list' && <CourseModuleListScreen />}
+                {currentRoute.screen === 'module-video' && <ModuleVideoScreen />}
+                {currentRoute.screen === 'module-quiz' && <ModuleQuizScreen />}
+                {currentRoute.screen === 'course-complete' && <CourseCompleteScreen />}
+                {currentRoute.screen === 'practical-training' && <PracticalTrainingScreen />}
+                {currentRoute.screen === 'training-viewer' && <TrainingViewerScreen />}
+                {currentRoute.screen === 'final-assessment' && <FinalAssessmentScreen />}
+                {currentRoute.screen === 'my-learning' && <MyLearningScreen />}
+                {currentRoute.screen === 'my-dashboard' && <MyDashboardScreen />}
+                {currentRoute.screen === 'library' && <LibraryScreen />}
+                {currentRoute.screen === 'library-detail' && <LibraryDetailScreen />}
+                {currentRoute.screen === 'certificate' && <CertificateScreen />}
+                {currentRoute.screen === 'roleplay' && <AiRoleplayPrototype />}
+                {currentRoute.screen === 'interview-prep' && <InterviewPrep />}
+                {currentRoute.screen === 'skillgo-english' && <SkillGoEnglish />}
+                {currentRoute.screen === 'english-practice-home' && <EnglishPracticeHome />}
+                {currentRoute.screen === 'english-practice-translate' && <TranslateSpeak />}
+                {currentRoute.screen === 'english-practice-answer' && <AnswerImprove />}
+                {currentRoute.screen === 'english-practice-real' && <RealConversations />}
+                {currentRoute.screen === 'english-practice-library' && <SentenceLibrary />}
+              </main>
+            );
+          })()}
 
-          {/* 3. FLOATING APPLE GLASS TRANSLUCENT BOTTOM NAVIGATION BAR */}
-          {currentRoute.screen !== 'role-detail' && currentRoute.screen !== 'my-learning' && (
+          {/* 3. TRANSLUCENT APPLE GLASS BOTTOM NAVIGATION BAR WITH POP-UP ICONS & GREEN OUTLINE */}
+          {currentRoute.screen !== 'role-detail' && 
+           currentRoute.screen !== 'my-learning' && 
+           currentRoute.screen !== 'choose-skill' && 
+           currentRoute.screen !== 'skill-detail' && (
             <nav 
               id="mobile-bottom-nav"
-              className="fixed bottom-5 left-4 right-4 max-w-md mx-auto z-50 bg-white/65 backdrop-blur-2xl border border-white/60 shadow-[0_16px_36px_-6px_rgba(0,0,0,0.12),0_0_0_1px_rgba(255,255,255,0.4)_inset] rounded-full px-2.5 py-1.5 md:hidden flex items-center justify-around"
+              className="fixed bottom-0 left-0 right-0 z-50 bg-white/35 hover:bg-white/45 backdrop-blur-2xl border-t border-white/50 shadow-[0_-10px_35px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.8)] px-3 pt-2 pb-2.5 max-w-md mx-auto sm:rounded-t-3xl flex items-center justify-around transition-all"
             >
               {/* Tab 1: Home */}
               <button
                 onClick={() => navigate('home')}
                 id="mobile-bottom-tab-home"
-                className={`group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 ${
-                  activeTab === 'home' ? 'bg-white/80 text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-                }`}
+                className="group relative flex flex-col items-center justify-center flex-1 py-0.5 px-1 cursor-pointer select-none"
               >
-                <Home className={`w-5 h-5 ${activeTab === 'home' ? 'stroke-[2.4] text-slate-900' : 'stroke-[1.8]'}`} />
-                <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Home</span>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-2.5 group-hover:scale-115 group-hover:border-2 group-hover:border-emerald-500 group-hover:bg-emerald-500/15 group-hover:text-emerald-600 group-hover:shadow-[0_8px_18px_-2px_rgba(16,185,129,0.45)] ${
+                  activeTab === 'home' 
+                    ? '-translate-y-1.5 scale-105 border-2 border-emerald-500 bg-emerald-500/15 text-emerald-600 shadow-[0_4px_14px_rgba(16,185,129,0.35)]' 
+                    : 'border-2 border-white/40 text-slate-700 bg-white/40 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]'
+                }`}>
+                  <Home className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${activeTab === 'home' ? 'stroke-[2.5] text-emerald-600' : 'stroke-[2]'}`} />
+                </div>
+                <span className={`text-[10px] mt-0.5 tracking-tight transition-all duration-200 group-hover:text-emerald-600 group-hover:font-extrabold ${activeTab === 'home' ? 'font-extrabold text-emerald-600' : 'font-medium text-slate-700'}`}>
+                  Home
+                </span>
               </button>
 
               {/* Tab 2: Careers */}
               <button
                 onClick={() => navigate('choose-skill')}
                 id="mobile-bottom-tab-careers"
-                className={`group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 ${
-                  activeTab === 'careers' ? 'bg-white/80 text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-                }`}
+                className="group relative flex flex-col items-center justify-center flex-1 py-0.5 px-1 cursor-pointer select-none"
               >
-                <ShoppingBag className={`w-5 h-5 ${activeTab === 'careers' ? 'stroke-[2.4] text-slate-900' : 'stroke-[1.8]'}`} />
-                <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Careers</span>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-2.5 group-hover:scale-115 group-hover:border-2 group-hover:border-emerald-500 group-hover:bg-emerald-500/15 group-hover:text-emerald-600 group-hover:shadow-[0_8px_18px_-2px_rgba(16,185,129,0.45)] ${
+                  activeTab === 'careers' 
+                    ? '-translate-y-1.5 scale-105 border-2 border-emerald-500 bg-emerald-500/15 text-emerald-600 shadow-[0_4px_14px_rgba(16,185,129,0.35)]' 
+                    : 'border-2 border-white/40 text-slate-700 bg-white/40 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]'
+                }`}>
+                  <ShoppingBag className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${activeTab === 'careers' ? 'stroke-[2.5] text-emerald-600' : 'stroke-[2]'}`} />
+                </div>
+                <span className={`text-[10px] mt-0.5 tracking-tight transition-all duration-200 group-hover:text-emerald-600 group-hover:font-extrabold ${activeTab === 'careers' ? 'font-extrabold text-emerald-600' : 'font-medium text-slate-700'}`}>
+                  Careers
+                </span>
               </button>
 
               {/* Tab 3: My Learning */}
               <button
                 onClick={() => navigate('my-learning')}
                 id="mobile-bottom-tab-learning"
-                className={`group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 ${
-                  activeTab === 'learning' ? 'bg-white/80 text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-                }`}
+                className="group relative flex flex-col items-center justify-center flex-1 py-0.5 px-1 cursor-pointer select-none"
               >
-                <BookOpen className={`w-5 h-5 ${activeTab === 'learning' ? 'stroke-[2.4] text-slate-900' : 'stroke-[1.8]'}`} />
-                <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Learning</span>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-2.5 group-hover:scale-115 group-hover:border-2 group-hover:border-emerald-500 group-hover:bg-emerald-500/15 group-hover:text-emerald-600 group-hover:shadow-[0_8px_18px_-2px_rgba(16,185,129,0.45)] ${
+                  activeTab === 'learning' 
+                    ? '-translate-y-1.5 scale-105 border-2 border-emerald-500 bg-emerald-500/15 text-emerald-600 shadow-[0_4px_14px_rgba(16,185,129,0.35)]' 
+                    : 'border-2 border-white/40 text-slate-700 bg-white/40 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]'
+                }`}>
+                  <BookOpen className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${activeTab === 'learning' ? 'stroke-[2.5] text-emerald-600' : 'stroke-[2]'}`} />
+                </div>
+                <span className={`text-[10px] mt-0.5 tracking-tight transition-all duration-200 group-hover:text-emerald-600 group-hover:font-extrabold ${activeTab === 'learning' ? 'font-extrabold text-emerald-600' : 'font-medium text-slate-700'}`}>
+                  Learning
+                </span>
               </button>
 
               {/* Tab 4: Dashboard */}
               <button
                 onClick={() => navigate('my-dashboard')}
                 id="mobile-bottom-tab-dashboard"
-                className={`group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 ${
-                  activeTab === 'dashboard' ? 'bg-white/80 text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-                }`}
+                className="group relative flex flex-col items-center justify-center flex-1 py-0.5 px-1 cursor-pointer select-none"
               >
-                <TrendingUp className={`w-5 h-5 ${activeTab === 'dashboard' ? 'stroke-[2.4] text-slate-900' : 'stroke-[1.8]'}`} />
-                <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Dashboard</span>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-2.5 group-hover:scale-115 group-hover:border-2 group-hover:border-emerald-500 group-hover:bg-emerald-500/15 group-hover:text-emerald-600 group-hover:shadow-[0_8px_18px_-2px_rgba(16,185,129,0.45)] ${
+                  activeTab === 'dashboard' 
+                    ? '-translate-y-1.5 scale-105 border-2 border-emerald-500 bg-emerald-500/15 text-emerald-600 shadow-[0_4px_14px_rgba(16,185,129,0.35)]' 
+                    : 'border-2 border-white/40 text-slate-700 bg-white/40 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]'
+                }`}>
+                  <TrendingUp className={`w-5 h-5 transition-transform duration-200 group-hover:scale-110 ${activeTab === 'dashboard' ? 'stroke-[2.5] text-emerald-600' : 'stroke-[2]'}`} />
+                </div>
+                <span className={`text-[10px] mt-0.5 tracking-tight transition-all duration-200 group-hover:text-emerald-600 group-hover:font-extrabold ${activeTab === 'dashboard' ? 'font-extrabold text-emerald-600' : 'font-medium text-slate-700'}`}>
+                  Dashboard
+                </span>
               </button>
 
               {/* Tab 5: Profile */}
               <button
                 onClick={() => setProfileModalOpen(true)}
                 id="mobile-bottom-tab-profile"
-                className="group flex flex-col items-center justify-center flex-1 py-1.5 px-1 cursor-pointer rounded-full transition-all duration-200 text-slate-500 hover:text-slate-800"
+                className="group relative flex flex-col items-center justify-center flex-1 py-0.5 px-1 cursor-pointer select-none"
               >
-                <User className="w-5 h-5 stroke-[1.8]" />
-                <span className="text-[10px] mt-0.5 font-semibold tracking-tight">Profile</span>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ease-out transform group-hover:-translate-y-2.5 group-hover:scale-115 group-hover:border-2 group-hover:border-emerald-500 group-hover:bg-emerald-500/15 group-hover:text-emerald-600 group-hover:shadow-[0_8px_18px_-2px_rgba(16,185,129,0.45)] border-2 border-white/40 text-slate-700 bg-white/40 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)]">
+                  <User className="w-5 h-5 stroke-[2] transition-transform duration-200 group-hover:scale-110" />
+                </div>
+                <span className="text-[10px] mt-0.5 font-medium text-slate-700 tracking-tight transition-all duration-200 group-hover:text-emerald-600 group-hover:font-extrabold">
+                  Profile
+                </span>
               </button>
             </nav>
           )}

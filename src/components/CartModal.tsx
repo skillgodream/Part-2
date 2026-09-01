@@ -98,7 +98,7 @@ export function CartModal({ isOpen, onClose, initialStep = 'cart' }: CartModalPr
         setUserEmail(profile.email);
       }
     }
-  }, [isOpen, initialStep, profile]);
+  }, [isOpen, initialStep, profile?.name, profile?.phone, profile?.email]);
 
   // Timer countdown for registration OTP
   useEffect(() => {

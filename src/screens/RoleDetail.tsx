@@ -32,7 +32,7 @@ interface PracticalLabItem {
 export function RoleDetailScreen() {
   const { currentRoute, navigate } = useRouter();
   const { addToCart, isSkillEnrolled } = useCartState();
-  const { enrollSkill, getEnrollments } = useEnrollmentState();
+  const { enrollSkill, enrollments } = useEnrollmentState();
 
   // Resolve Role and Skill dynamically from route parameters
   const roleId = currentRoute.params?.roleId || JOB_ROLES[0].id;
@@ -44,7 +44,6 @@ export function RoleDetailScreen() {
   const [showCartModal, setShowCartModal] = useState(false);
   const [selectedModuleModal, setSelectedModuleModal] = useState<CourseModule | PracticalLabItem | null>(null);
 
-  const enrollments = getEnrollments();
   const currentEnrollment = enrollments.find(e => e.roleId === role.id);
   const isEnrolled = isSkillEnrolled(role.id) || !!currentEnrollment;
   
@@ -165,7 +164,7 @@ export function RoleDetailScreen() {
           {/* Center Origin & Destination Floating Widget: Role Name + Program Completion % */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pt-2 px-6 z-10 text-center">
             <span className="text-[11px] uppercase tracking-wider text-white/80 font-bold">Career Track</span>
-            <h1 className="text-2xl font-black text-white tracking-tight drop-shadow-md leading-tight mt-0.5 max-w-[320px]">
+            <h1 className="text-[29px] sm:text-[33px] font-black text-white tracking-tight drop-shadow-md leading-tight mt-0.5 max-w-[340px]">
               {role.title}
             </h1>
             
@@ -180,52 +179,52 @@ export function RoleDetailScreen() {
         {/* 2. ROYAL BLUE ARCHED CONTAINER */}
         <div className="w-full bg-[#1864DB] rounded-t-[34px] -mt-6 z-20 flex-1 px-5 pt-4 pb-20 flex flex-col shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
           
-          {/* Mini Action Icons (Calendar replaced with Interview Prep, Sofa replaced with English Prep, no text) */}
+          {/* Mini Action Icons (Interview Prep navigates to interview page, English Prep navigates to english page) */}
           <div className="flex items-center justify-center gap-4 mb-4">
             <button 
-              onClick={() => navigate('library')}
+              onClick={() => navigate('interview-prep', { roleId: role.id, skillId: skill.id })}
               className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform cursor-pointer"
               title="Interview Prep"
             >
               <UserCheck className="w-5 h-5 text-[#1864DB] stroke-[2.2]" />
             </button>
             <button 
-              onClick={() => navigate('library')}
+              onClick={() => navigate('skillgo-english', { roleId: role.id, skillId: skill.id })}
               className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform cursor-pointer"
-              title="English Prep"
+              title="English Practice"
             >
               <Languages className="w-5 h-5 text-[#1864DB] stroke-[2.2]" />
             </button>
           </div>
 
-          {/* Filter Tabs: Video Training (active by default), Practical Lab, Open Roles */}
-          <div className="flex items-center justify-between px-1 mb-5">
+          {/* Filter Tabs: Solid complete white card when active */}
+          <div className="flex items-center justify-between px-1 mb-5 gap-2">
             <button
               onClick={() => setActiveTab('video-training')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              className={`flex-1 py-2 rounded-full text-xs font-extrabold transition-all cursor-pointer text-center ${
                 activeTab === 'video-training'
-                  ? 'border border-white/90 text-white shadow-sm'
-                  : 'text-white/80 hover:text-white'
+                  ? 'bg-white text-[#1864DB] shadow-md scale-100'
+                  : 'text-white/85 hover:text-white hover:bg-white/10'
               }`}
             >
               Video Training
             </button>
             <button
               onClick={() => setActiveTab('practical-lab')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              className={`flex-1 py-2 rounded-full text-xs font-extrabold transition-all cursor-pointer text-center ${
                 activeTab === 'practical-lab'
-                  ? 'border border-white/90 text-white shadow-sm'
-                  : 'text-white/80 hover:text-white'
+                  ? 'bg-white text-[#1864DB] shadow-md scale-100'
+                  : 'text-white/85 hover:text-white hover:bg-white/10'
               }`}
             >
               Practical Lab
             </button>
             <button
               onClick={() => setActiveTab('open-roles')}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              className={`flex-1 py-2 rounded-full text-xs font-extrabold transition-all cursor-pointer text-center ${
                 activeTab === 'open-roles'
-                  ? 'border border-white/90 text-white shadow-sm'
-                  : 'text-white/80 hover:text-white'
+                  ? 'bg-white text-[#1864DB] shadow-md scale-100'
+                  : 'text-white/85 hover:text-white hover:bg-white/10'
               }`}
             >
               Open Roles
@@ -255,16 +254,13 @@ export function RoleDetailScreen() {
                     {/* Top Half: Module Name, Progress Bar, Duration */}
                     <div className="flex items-center justify-between px-1">
                       
-                      {/* Top-Left: Module Name */}
-                      <div className="flex flex-col max-w-[130px]">
-                        <span className="text-sm font-black text-slate-900 leading-tight line-clamp-1">
+                      {/* Top-Left: Module Name replaced Video Lesson with Module Title in Blue */}
+                      <div className="flex flex-col max-w-[135px]">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                           Module {mod.moduleNumber || index + 1}
                         </span>
-                        <span className="text-[11px] text-slate-500 font-semibold mt-0.5 line-clamp-1">
+                        <span className="text-sm font-extrabold text-[#1864DB] mt-1 leading-snug line-clamp-2">
                           {mod.title}
-                        </span>
-                        <span className="text-sm font-extrabold text-slate-900 mt-2">
-                          Video Lesson
                         </span>
                       </div>
 
@@ -370,16 +366,13 @@ export function RoleDetailScreen() {
                     {/* Top Half */}
                     <div className="flex items-center justify-between px-1">
                       
-                      {/* Top-Left: Lab Title */}
-                      <div className="flex flex-col max-w-[130px]">
-                        <span className="text-sm font-black text-[#1E2E20] leading-tight line-clamp-1">
+                      {/* Top-Left: Lab Title in Blue */}
+                      <div className="flex flex-col max-w-[135px]">
+                        <span className="text-xs font-bold text-[#4A5D4D] uppercase tracking-wider">
                           Lab {lab.moduleNumber}
                         </span>
-                        <span className="text-[11px] text-[#4A5D4D] font-semibold mt-0.5 line-clamp-1">
+                        <span className="text-sm font-extrabold text-[#1864DB] mt-1 leading-snug line-clamp-2">
                           {lab.title}
-                        </span>
-                        <span className="text-sm font-extrabold text-[#2C402E] mt-2">
-                          Hands-on Rig
                         </span>
                       </div>
 
