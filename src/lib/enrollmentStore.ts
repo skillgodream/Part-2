@@ -608,6 +608,7 @@ export function useCartState() {
 }
 
 export function useEnrollmentState() {
+  const [enrollments, setEnrollments] = useState<Enrollment[]>(() => enrollmentStore.getEnrollments());
   const [activeEnrollment, setActiveEnrollment] = useState<Enrollment | null>(() => enrollmentStore.getActiveEnrollment());
   const [profile, setProfile] = useState<LearnerProfile>(() => enrollmentStore.getProfile());
   const [certificates, setCertificates] = useState<CertificateRecord[]>(() => enrollmentStore.getCertificates());
@@ -615,6 +616,7 @@ export function useEnrollmentState() {
 
   useEffect(() => {
     const handleUpdate = () => {
+      setEnrollments(enrollmentStore.getEnrollments());
       setActiveEnrollment(enrollmentStore.getActiveEnrollment());
       setProfile(enrollmentStore.getProfile());
       setCertificates(enrollmentStore.getCertificates());
@@ -630,11 +632,19 @@ export function useEnrollmentState() {
   }, []);
 
   return {
+    enrollments,
+    getEnrollments: () => enrollmentStore.getEnrollments(),
     activeEnrollment,
     profile,
     certificates,
     isRegistered,
     role: activeEnrollment ? JOB_ROLES.find(r => r.id === activeEnrollment.roleId) : null,
     skill: activeEnrollment ? SKILL_CATEGORIES.find(s => s.id === activeEnrollment.skillId) : null,
+    enrollSkill: (roleId: string, skillId?: string, plan?: PlanType) => {
+      const role = JOB_ROLES.find(r => r.id === roleId);
+      const sId = skillId || role?.skillId || 'logistics-supply-chain';
+      return enrollmentStore.createEnrollment(roleId, sId, plan || 'pro');
+    },
+    createEnrollment: (roleId: string, skillId: string, plan: PlanType) => enrollmentStore.createEnrollment(roleId, skillId, plan),
   };
 }

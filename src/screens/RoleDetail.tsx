@@ -1,120 +1,144 @@
 import React, { useState } from 'react';
 import { 
   ArrowLeft, 
-  Calendar, 
-  Armchair, 
-  Plane, 
-  Utensils, 
-  Briefcase, 
-  Home, 
-  Globe, 
-  Bookmark, 
-  Settings,
+  UserCheck, 
+  Languages, 
+  Play, 
+  Sparkles,
+  FlaskConical,
   CheckCircle2,
+  Lock,
+  Layers,
+  BookOpen,
   X
 } from 'lucide-react';
 import { JOB_ROLES, SKILL_CATEGORIES } from '../lib/catalog';
 import { useRouter } from '../lib/router';
 import { useCartState, useEnrollmentState } from '../lib/enrollmentStore';
-import { JobRole, SkillCategory, PlanType } from '../lib/types';
+import { JobRole, SkillCategory, CourseModule } from '../lib/types';
 import { CartModal } from '../components/CartModal';
 
-interface TicketItem {
+interface PracticalLabItem {
   id: string;
-  fromCode: string;
-  fromCity: string;
-  departureTime: string;
-  flightDuration: string;
-  toCode: string;
-  toCity: string;
-  arrivalTime: string;
-  serviceClass: string;
-  airlineName: string;
-  price: string;
-  numericPrice: number;
+  moduleNumber: number;
+  title: string;
+  durationText: string;
+  toolEquipment: string;
+  categoryTag: string;
+  status: 'started' | 'not-started' | 'completed';
+  progressPercent: number;
 }
 
 export function RoleDetailScreen() {
   const { currentRoute, navigate } = useRouter();
   const { addToCart, isSkillEnrolled } = useCartState();
-  const { enrollSkill } = useEnrollmentState();
+  const { enrollSkill, getEnrollments } = useEnrollmentState();
 
   // Resolve Role and Skill dynamically from route parameters
   const roleId = currentRoute.params?.roleId || JOB_ROLES[0].id;
   const role: JobRole = JOB_ROLES.find(r => r.id === roleId) || JOB_ROLES[0];
   const skill: SkillCategory = SKILL_CATEGORIES.find(s => s.id === role.skillId) || SKILL_CATEGORIES[0];
 
-  const [activeTripType, setActiveTripType] = useState<'one-way' | 'round-trip' | 'multy-city'>('one-way');
+  // 1. Navigation / Filter Tabs Modification
+  const [activeTab, setActiveTab] = useState<'video-training' | 'practical-lab' | 'open-roles'>('video-training');
   const [showCartModal, setShowCartModal] = useState(false);
-  const [ticketConfirmed, setTicketConfirmed] = useState<TicketItem | null>(null);
+  const [selectedModuleModal, setSelectedModuleModal] = useState<CourseModule | PracticalLabItem | null>(null);
 
-  const isEnrolled = isSkillEnrolled(role.id);
+  const enrollments = getEnrollments();
+  const currentEnrollment = enrollments.find(e => e.roleId === role.id);
+  const isEnrolled = isSkillEnrolled(role.id) || !!currentEnrollment;
+  
+  // Calculate completion percent based on modules
+  const completedCount = currentEnrollment?.completedModules?.length || 0;
+  const totalModulesCount = role.modules && role.modules.length > 0 ? role.modules.length : 3;
+  const totalCompletionPercent = isEnrolled 
+    ? Math.min(100, Math.round((completedCount / totalModulesCount) * 100) || (currentEnrollment ? 35 : 0))
+    : 0;
 
-  // Tickets matching the reference screenshot design
-  const tickets: TicketItem[] = [
+  // Video modules for this role
+  const videoModules = role.modules && role.modules.length > 0 ? role.modules : [
     {
-      id: 'ticket-1',
-      fromCode: 'SIN',
-      fromCity: 'Singapore',
-      departureTime: '06.00',
-      flightDuration: '1h 30m',
-      toCode: 'CGK',
-      toCity: 'Jakarta',
-      arrivalTime: '07.30',
-      serviceClass: 'Business Class',
-      airlineName: 'Lorem Airways',
-      price: '$200',
-      numericPrice: 200,
+      id: `${role.id}-mod-1`,
+      roleId: role.id,
+      moduleNumber: 1,
+      title: 'Foundation & Operating SOPs',
+      durationMinutes: 30,
+      summary: 'Master the core digital operating protocols, equipment setup, and baseline procedures.',
+      videoDuration: '12:45',
+      keyTakeaways: ['Core safety guidelines', 'Digital system operations'],
+      quiz: { id: 'q1', moduleId: 'm1', title: 'Basics Quiz', passingScore: 70, questions: [] }
     },
     {
-      id: 'ticket-2',
-      fromCode: 'SIN',
-      fromCity: 'Singapore',
-      departureTime: '09.00',
-      flightDuration: '1h 30m',
-      toCode: 'CGK',
-      toCity: 'Jakarta',
-      arrivalTime: '10.30',
-      serviceClass: 'Business Class',
-      airlineName: 'Ipsum Airways',
-      price: '$200',
-      numericPrice: 200,
+      id: `${role.id}-mod-2`,
+      roleId: role.id,
+      moduleNumber: 2,
+      title: 'Workflow Execution & Scanning',
+      durationMinutes: 45,
+      summary: 'Standard dispatch, barcode verification, error containment, and quality audits.',
+      videoDuration: '18:20',
+      keyTakeaways: ['High-speed scanning', 'Zero-defect handling'],
+      quiz: { id: 'q2', moduleId: 'm2', title: 'Workflow Quiz', passingScore: 70, questions: [] }
     },
     {
-      id: 'ticket-3',
-      fromCode: 'SIN',
-      fromCity: 'Singapore',
-      departureTime: '14.00',
-      flightDuration: '1h 30m',
-      toCode: 'CGK',
-      toCity: 'Jakarta',
-      arrivalTime: '15.30',
-      serviceClass: 'Business Class',
-      airlineName: 'Dolor Express',
-      price: '$200',
-      numericPrice: 200,
-    },
+      id: `${role.id}-mod-3`,
+      roleId: role.id,
+      moduleNumber: 3,
+      title: 'Advanced Operations & Escalation',
+      durationMinutes: 40,
+      summary: 'Exception logging, team coordination, shift handover, and SLA compliance.',
+      videoDuration: '15:10',
+      keyTakeaways: ['Exception protocols', 'Speed optimizations'],
+      quiz: { id: 'q3', moduleId: 'm3', title: 'Operations Quiz', passingScore: 70, questions: [] }
+    }
   ];
 
-  const handleSelectTicket = (ticket: TicketItem) => {
-    addToCart({
-      id: `cart-skill-${role.id}-${ticket.id}`,
-      productId: role.id,
-      productType: 'skill',
-      title: `${role.title} (${ticket.airlineName})`,
-      price: ticket.numericPrice,
-      selectedPlan: 'pro' as PlanType,
-      skillId: skill.id,
-      duration: `${role.durationWeeks || 4} Weeks`
-    });
-    setTicketConfirmed(ticket);
+  // Dynamic Practical Labs generated for this role
+  const practicalLabs: PracticalLabItem[] = videoModules.map((mod, idx) => {
+    let labStatus: 'started' | 'not-started' | 'completed' = 'not-started';
+    let progress = 0;
+    if (idx === 0) {
+      labStatus = 'started';
+      progress = 65;
+    } else if (idx === 1 && currentEnrollment?.completedModules?.includes(mod.id)) {
+      labStatus = 'completed';
+      progress = 100;
+    }
+
+    return {
+      id: `lab-${mod.id}`,
+      moduleNumber: idx + 1,
+      title: `Lab ${idx + 1}: ${mod.title.split('&')[0].trim()} Simulation`,
+      durationText: `${mod.durationMinutes + 15} mins`,
+      toolEquipment: idx === 0 ? 'RF Handheld Scanner' : idx === 1 ? 'Terminal Simulator' : 'Barcode & WMS Rig',
+      categoryTag: idx === 0 ? 'Hands-on Drill' : idx === 1 ? 'Live Environment' : 'Capstone Exam',
+      status: labStatus,
+      progressPercent: progress
+    };
+  });
+
+  const getModuleStatus = (mod: CourseModule, index: number): { status: 'started' | 'not-started' | 'completed'; label: string; progress: number } => {
+    const isCompleted = currentEnrollment?.completedModules?.includes(mod.id);
+    if (isCompleted) {
+      return { status: 'completed', label: 'Completed', progress: 100 };
+    }
+    if (index === 0 || (currentEnrollment && currentEnrollment.currentModuleId === mod.id)) {
+      return { status: 'started', label: 'Started', progress: 45 };
+    }
+    return { status: 'not-started', label: 'Not Started', progress: 0 };
+  };
+
+  const handleLaunchModule = (moduleId: string) => {
+    if (!isEnrolled) {
+      enrollSkill(role.id);
+    }
+    navigate('course-modules', { roleId: role.id, skillId: skill.id, moduleId });
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#1157C7] flex justify-center selection:bg-blue-300 select-none pb-24">
+    <div className="w-full min-h-screen bg-[#1157C7] flex justify-center selection:bg-blue-300 select-none pb-16 overflow-y-auto">
       
       {/* Mobile Device Frame Container */}
-      <div className="w-full max-w-md bg-[#135ED1] min-h-screen relative flex flex-col overflow-hidden shadow-2xl">
+      <div className="w-full max-w-md bg-[#135ED1] min-h-screen relative flex flex-col shadow-2xl">
         
         {/* 1. TOP HERO SECTION (Airplane boarding background + Floating pill) */}
         <div className="relative w-full h-[220px] shrink-0 overflow-hidden">
@@ -126,7 +150,7 @@ export function RoleDetailScreen() {
           />
           
           {/* Subtle dark glass overlay for perfect readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/35 to-black/60" />
 
           {/* Top Bar with Back Button */}
           <div className="absolute top-4 left-4 z-20">
@@ -138,245 +162,361 @@ export function RoleDetailScreen() {
             </button>
           </div>
 
-          {/* Center Origin & Destination Floating Widget */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center pt-2 px-4 z-10 text-center">
-            <span className="text-xs text-white/80 font-semibold tracking-wide">From</span>
-            <h1 className="text-xl font-extrabold text-white tracking-tight drop-shadow-md">
-              Changi, Singapore
+          {/* Center Origin & Destination Floating Widget: Role Name + Program Completion % */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pt-2 px-6 z-10 text-center">
+            <span className="text-[11px] uppercase tracking-wider text-white/80 font-bold">Career Track</span>
+            <h1 className="text-2xl font-black text-white tracking-tight drop-shadow-md leading-tight mt-0.5 max-w-[320px]">
+              {role.title}
             </h1>
             
-            {/* Pill Badge: "To : Jakarta, Indonesia" */}
-            <div className="mt-1.5 bg-white/95 backdrop-blur-md px-4 py-1 rounded-full shadow-lg border border-white/40 flex items-center gap-1">
-              <span className="text-[11px] font-semibold text-slate-500">To :</span>
-              <span className="text-[11px] font-extrabold text-[#1864DB]">Jakarta, Indonesia</span>
+            {/* Pill Badge: Program Completion % */}
+            <div className="mt-2 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full shadow-lg border border-white/40 flex items-center gap-1.5">
+              <span className="text-[11px] font-bold text-slate-600">Completion :</span>
+              <span className="text-[11px] font-black text-[#1864DB]">{totalCompletionPercent}% Completed</span>
             </div>
           </div>
         </div>
 
         {/* 2. ROYAL BLUE ARCHED CONTAINER */}
-        <div className="w-full bg-[#1864DB] rounded-t-[34px] -mt-6 z-20 flex-1 px-5 pt-4 pb-28 flex flex-col shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
+        <div className="w-full bg-[#1864DB] rounded-t-[34px] -mt-6 z-20 flex-1 px-5 pt-4 pb-20 flex flex-col shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
           
-          {/* Mini Action Icons (Calendar & Seat) */}
+          {/* Mini Action Icons (Calendar replaced with Interview Prep, Sofa replaced with English Prep, no text) */}
           <div className="flex items-center justify-center gap-4 mb-4">
             <button 
-              className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform"
-              title="Schedule / Calendar"
+              onClick={() => navigate('library')}
+              className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+              title="Interview Prep"
             >
-              <Calendar className="w-5 h-5 text-[#1864DB] stroke-[2.2]" />
+              <UserCheck className="w-5 h-5 text-[#1864DB] stroke-[2.2]" />
             </button>
             <button 
-              className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform"
-              title="Seat Selection"
+              onClick={() => navigate('library')}
+              className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+              title="English Prep"
             >
-              <Armchair className="w-5 h-5 text-[#1864DB] stroke-[2.2]" />
+              <Languages className="w-5 h-5 text-[#1864DB] stroke-[2.2]" />
             </button>
           </div>
 
-          {/* Trip Type Segmented Tab Bar */}
-          <div className="flex items-center justify-between px-2 mb-5">
+          {/* Filter Tabs: Video Training (active by default), Practical Lab, Open Roles */}
+          <div className="flex items-center justify-between px-1 mb-5">
             <button
-              onClick={() => setActiveTripType('one-way')}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                activeTripType === 'one-way'
+              onClick={() => setActiveTab('video-training')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'video-training'
                   ? 'border border-white/90 text-white shadow-sm'
                   : 'text-white/80 hover:text-white'
               }`}
             >
-              One Way
+              Video Training
             </button>
             <button
-              onClick={() => setActiveTripType('round-trip')}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                activeTripType === 'round-trip'
+              onClick={() => setActiveTab('practical-lab')}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'practical-lab'
                   ? 'border border-white/90 text-white shadow-sm'
                   : 'text-white/80 hover:text-white'
               }`}
             >
-              Round Trip
+              Practical Lab
             </button>
             <button
-              onClick={() => setActiveTripType('multy-city')}
-              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                activeTripType === 'multy-city'
+              onClick={() => setActiveTab('open-roles')}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'open-roles'
                   ? 'border border-white/90 text-white shadow-sm'
                   : 'text-white/80 hover:text-white'
               }`}
             >
-              Multy - City
+              Open Roles
             </button>
           </div>
 
-          {/* 3. STACKED FLIGHT / CAREER PASS TICKET CARDS */}
-          <div className="space-y-4">
-            {tickets.map((ticket) => (
-              <div 
-                key={ticket.id}
-                className="w-full bg-white rounded-[22px] p-4 shadow-[0_10px_24px_rgba(0,0,0,0.12)] border border-white/60 transition-transform active:scale-[0.99]"
-              >
-                {/* Top Half: Origin, Airplane Icon, Destination */}
-                <div className="flex items-center justify-between px-1">
-                  
-                  {/* Origin */}
-                  <div className="flex flex-col">
-                    <span className="text-lg font-black text-slate-900 leading-none">
-                      {ticket.fromCode}
-                    </span>
-                    <span className="text-[11px] text-slate-500 font-semibold mt-0.5">
-                      {ticket.fromCity}
-                    </span>
-                    <span className="text-sm font-extrabold text-slate-900 mt-2">
-                      {ticket.departureTime}
-                    </span>
-                  </div>
+          {/* 3. DYNAMICALLY RENDERED MODULE CARDS */}
+          {activeTab === 'video-training' && (
+            <div className="space-y-4">
+              {videoModules.map((mod, index) => {
+                const { status, label, progress } = getModuleStatus(mod, index);
+                
+                // Color-coded pill button for status: Blue (Started), Grey (Not Started), Green (Completed)
+                let statusPillClass = 'bg-[#1864DB] text-white hover:bg-blue-700';
+                if (status === 'completed') {
+                  statusPillClass = 'bg-emerald-600 text-white hover:bg-emerald-700';
+                } else if (status === 'not-started') {
+                  statusPillClass = 'bg-slate-400 text-white hover:bg-slate-500';
+                }
 
-                  {/* Flight Duration & Plane */}
-                  <div className="flex flex-col items-center justify-center px-2">
-                    <div className="text-[#1864DB] mb-1">
-                      <Plane className="w-5 h-5 fill-[#1864DB] rotate-45 transform" />
-                    </div>
-                    <span className="text-[11px] text-slate-400 font-semibold">
-                      {ticket.flightDuration}
-                    </span>
-                  </div>
-
-                  {/* Destination */}
-                  <div className="flex flex-col items-end">
-                    <span className="text-lg font-black text-slate-900 leading-none">
-                      {ticket.toCode}
-                    </span>
-                    <span className="text-[11px] text-slate-500 font-semibold mt-0.5">
-                      {ticket.toCity}
-                    </span>
-                    <span className="text-sm font-extrabold text-slate-900 mt-2">
-                      {ticket.arrivalTime}
-                    </span>
-                  </div>
-
-                </div>
-
-                {/* Perforated Dashed Divider */}
-                <div className="w-full border-b border-dashed border-slate-300 my-3" />
-
-                {/* Bottom Half: Class Icons & Airline Price Pill */}
-                <div className="flex items-center justify-between px-1">
-                  
-                  {/* Class Info */}
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-6 h-6 rounded-lg bg-slate-800 flex items-center justify-center text-white">
-                        <Utensils className="w-3.5 h-3.5" />
+                return (
+                  <div 
+                    key={mod.id}
+                    onClick={() => handleLaunchModule(mod.id)}
+                    className="w-full bg-white rounded-[22px] p-4 shadow-[0_10px_24px_rgba(0,0,0,0.12)] border border-white/60 transition-transform active:scale-[0.99] cursor-pointer"
+                  >
+                    {/* Top Half: Module Name, Progress Bar, Duration */}
+                    <div className="flex items-center justify-between px-1">
+                      
+                      {/* Top-Left: Module Name */}
+                      <div className="flex flex-col max-w-[130px]">
+                        <span className="text-sm font-black text-slate-900 leading-tight line-clamp-1">
+                          Module {mod.moduleNumber || index + 1}
+                        </span>
+                        <span className="text-[11px] text-slate-500 font-semibold mt-0.5 line-clamp-1">
+                          {mod.title}
+                        </span>
+                        <span className="text-sm font-extrabold text-slate-900 mt-2">
+                          Video Lesson
+                        </span>
                       </div>
-                      <div className="w-6 h-6 rounded-lg bg-slate-800 flex items-center justify-center text-white">
-                        <Briefcase className="w-3.5 h-3.5" />
+
+                      {/* Middle Flight Icon replacement: Completion Progress Bar */}
+                      <div className="flex flex-col items-center justify-center px-2 flex-1 max-w-[105px]">
+                        <div className="text-[#1864DB] mb-1 flex items-center justify-center">
+                          <Play className="w-4 h-4 fill-[#1864DB] text-[#1864DB]" />
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden border border-slate-200">
+                          <div 
+                            className={`h-full rounded-full ${status === 'completed' ? 'bg-emerald-500' : 'bg-[#1864DB]'}`} 
+                            style={{ width: `${progress}%` }} 
+                          />
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-semibold mt-1">
+                          {progress}% Done
+                        </span>
                       </div>
+
+                      {/* Top-Right: Video Length / Duration */}
+                      <div className="flex flex-col items-end">
+                        <span className="text-sm font-black text-slate-900 leading-none">
+                          {mod.durationMinutes ? `${mod.durationMinutes} mins` : '45 mins'}
+                        </span>
+                        <span className="text-[11px] text-slate-500 font-semibold mt-0.5">
+                          {mod.videoDuration || '15:00'} runtime
+                        </span>
+                        <span className="text-sm font-extrabold text-slate-900 mt-2">
+                          HD Video
+                        </span>
+                      </div>
+
                     </div>
-                    <span className="text-[11px] text-slate-600 font-bold mt-1">
-                      {ticket.serviceClass}
-                    </span>
+
+                    {/* Perforated Dashed Divider */}
+                    <div className="w-full border-b border-dashed border-slate-300 my-3" />
+
+                    {/* Bottom Half: Class Icons & Status Pill */}
+                    <div className="flex items-center justify-between px-1">
+                      
+                      {/* Bottom-Left: Sub-text & Module Icons */}
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-6 h-6 rounded-lg bg-slate-800 flex items-center justify-center text-white">
+                            <BookOpen className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="w-6 h-6 rounded-lg bg-slate-800 flex items-center justify-center text-white">
+                            <Sparkles className="w-3.5 h-3.5" />
+                          </div>
+                        </div>
+                        <span className="text-[11px] text-slate-600 font-bold mt-1">
+                          Curriculum Track
+                        </span>
+                      </div>
+
+                      {/* Bottom-Right: Status Pill Box */}
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="text-xs font-extrabold text-[#1864DB]">
+                          Module Status
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleLaunchModule(mod.id);
+                          }}
+                          className={`${statusPillClass} active:scale-95 text-xs font-extrabold px-5 py-1.5 rounded-full shadow-md transition-all cursor-pointer`}
+                        >
+                          {label}
+                        </button>
+                      </div>
+
+                    </div>
+
                   </div>
-
-                  {/* Airline Name & Price Button */}
-                  <div className="flex flex-col items-end gap-1">
-                    <span className="text-xs font-extrabold text-[#1864DB]">
-                      {ticket.airlineName}
-                    </span>
-                    <button
-                      onClick={() => handleSelectTicket(ticket)}
-                      className="bg-[#1864DB] hover:bg-blue-700 active:scale-95 text-white text-xs font-extrabold px-6 py-1.5 rounded-full shadow-md transition-all cursor-pointer"
-                    >
-                      {ticket.price}
-                    </button>
-                  </div>
-
-                </div>
-
-              </div>
-            ))}
-          </div>
-
-        </div>
-
-        {/* 4. FLOATING WHITE BOTTOM NAVIGATION (4 Icons: Home, Globe, Bookmark, Settings) */}
-        <div className="fixed bottom-4 left-0 right-0 max-w-md mx-auto px-6 z-50">
-          <div className="w-full bg-white/95 backdrop-blur-xl border border-white/80 rounded-full py-3 px-6 shadow-[0_16px_36px_rgba(0,0,0,0.22)] flex items-center justify-around">
-            <button 
-              onClick={() => navigate('home')}
-              className="text-slate-400 hover:text-blue-600 active:scale-95 transition-colors p-1"
-              title="Home"
-            >
-              <Home className="w-5 h-5 stroke-[2]" />
-            </button>
-            <button 
-              onClick={() => navigate('choose-skill')}
-              className="text-blue-600 active:scale-95 transition-colors p-1"
-              title="Explore"
-            >
-              <Globe className="w-5 h-5 stroke-[2]" />
-            </button>
-            <button 
-              onClick={() => navigate('my-learning')}
-              className="text-slate-400 hover:text-blue-600 active:scale-95 transition-colors p-1"
-              title="Bookmarks / Saved"
-            >
-              <Bookmark className="w-5 h-5 stroke-[2]" />
-            </button>
-            <button 
-              onClick={() => navigate('my-dashboard')}
-              className="text-slate-400 hover:text-blue-600 active:scale-95 transition-colors p-1"
-              title="Settings"
-            >
-              <Settings className="w-5 h-5 stroke-[2]" />
-            </button>
-          </div>
-        </div>
-
-        {/* Ticket Confirmation Modal */}
-        {ticketConfirmed && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-            <div className="bg-white rounded-[24px] max-w-xs w-full p-5 shadow-2xl border border-slate-100 relative text-center flex flex-col items-center">
-              <button 
-                onClick={() => setTicketConfirmed(null)}
-                className="absolute top-3.5 right-3.5 text-slate-400 hover:text-slate-700"
-              >
-                <X className="w-4 h-4" />
-              </button>
-
-              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-3">
-                <CheckCircle2 className="w-7 h-7" />
-              </div>
-
-              <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Flight Pass Ready</span>
-              <h3 className="text-base font-extrabold text-slate-900 mt-1">
-                {ticketConfirmed.airlineName} • {ticketConfirmed.price}
-              </h3>
-              <p className="text-xs text-slate-500 mt-1">
-                From {ticketConfirmed.fromCity} ({ticketConfirmed.fromCode}) to {ticketConfirmed.toCity} ({ticketConfirmed.toCode})
-              </p>
-
-              <div className="w-full mt-4 space-y-2">
-                <button
-                  onClick={() => {
-                    enrollSkill(role.id);
-                    setTicketConfirmed(null);
-                    navigate('course-modules', { roleId: role.id, skillId: skill.id });
-                  }}
-                  className="w-full py-2.5 bg-[#1864DB] hover:bg-blue-700 text-white rounded-full text-xs font-bold transition-all shadow-md shadow-blue-500/25"
-                >
-                  Start Career Flight Now
-                </button>
-                <button
-                  onClick={() => {
-                    setTicketConfirmed(null);
-                    setShowCartModal(true);
-                  }}
-                  className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-semibold transition-all"
-                >
-                  View Cart & Checkout
-                </button>
-              </div>
+                );
+              })}
             </div>
-          </div>
-        )}
+          )}
+
+          {/* PRACTICAL LAB VIEW: Warm sage / soft grey warm tone card colors */}
+          {activeTab === 'practical-lab' && (
+            <div className="space-y-4">
+              {practicalLabs.map((lab) => {
+                let statusPillClass = 'bg-[#1864DB] text-white hover:bg-blue-700';
+                let label = 'Started';
+                if (lab.status === 'completed') {
+                  statusPillClass = 'bg-emerald-600 text-white hover:bg-emerald-700';
+                  label = 'Completed';
+                } else if (lab.status === 'not-started') {
+                  statusPillClass = 'bg-slate-400 text-white hover:bg-slate-500';
+                  label = 'Not Started';
+                }
+
+                return (
+                  <div 
+                    key={lab.id}
+                    onClick={() => {
+                      const matchingMod = videoModules[lab.moduleNumber - 1];
+                      handleLaunchModule(matchingMod?.id || videoModules[0].id);
+                    }}
+                    className="w-full bg-[#F4F6F0] rounded-[22px] p-4 shadow-[0_10px_24px_rgba(0,0,0,0.12)] border border-[#E1E6DC] transition-transform active:scale-[0.99] cursor-pointer"
+                  >
+                    {/* Top Half */}
+                    <div className="flex items-center justify-between px-1">
+                      
+                      {/* Top-Left: Lab Title */}
+                      <div className="flex flex-col max-w-[130px]">
+                        <span className="text-sm font-black text-[#1E2E20] leading-tight line-clamp-1">
+                          Lab {lab.moduleNumber}
+                        </span>
+                        <span className="text-[11px] text-[#4A5D4D] font-semibold mt-0.5 line-clamp-1">
+                          {lab.title}
+                        </span>
+                        <span className="text-sm font-extrabold text-[#2C402E] mt-2">
+                          Hands-on Rig
+                        </span>
+                      </div>
+
+                      {/* Middle Flight Icon replacement: Progress Bar */}
+                      <div className="flex flex-col items-center justify-center px-2 flex-1 max-w-[105px]">
+                        <div className="text-[#3B6645] mb-1 flex items-center justify-center">
+                          <FlaskConical className="w-4 h-4 text-[#3B6645]" />
+                        </div>
+                        <div className="w-full bg-[#E5EBE0] rounded-full h-1.5 overflow-hidden border border-[#D5DDD0]">
+                          <div 
+                            className={`h-full rounded-full ${lab.status === 'completed' ? 'bg-emerald-600' : 'bg-[#3B6645]'}`} 
+                            style={{ width: `${lab.progressPercent}%` }} 
+                          />
+                        </div>
+                        <span className="text-[10px] text-[#556958] font-semibold mt-1">
+                          {lab.progressPercent}% Done
+                        </span>
+                      </div>
+
+                      {/* Top-Right: Lab Duration */}
+                      <div className="flex flex-col items-end">
+                        <span className="text-sm font-black text-[#1E2E20] leading-none">
+                          {lab.durationText}
+                        </span>
+                        <span className="text-[11px] text-[#4A5D4D] font-semibold mt-0.5">
+                          Interactive
+                        </span>
+                        <span className="text-sm font-extrabold text-[#2C402E] mt-2">
+                          VR / Sim
+                        </span>
+                      </div>
+
+                    </div>
+
+                    {/* Perforated Dashed Divider */}
+                    <div className="w-full border-b border-dashed border-[#D2DCD0] my-3" />
+
+                    {/* Bottom Half: Tool info & Status Pill */}
+                    <div className="flex items-center justify-between px-1">
+                      
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-6 h-6 rounded-lg bg-[#2D3E30] flex items-center justify-center text-white">
+                            <Layers className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="w-6 h-6 rounded-lg bg-[#2D3E30] flex items-center justify-center text-white">
+                            <FlaskConical className="w-3.5 h-3.5" />
+                          </div>
+                        </div>
+                        <span className="text-[11px] text-[#3D5240] font-bold mt-1">
+                          {lab.toolEquipment}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="text-xs font-extrabold text-[#2D5A37]">
+                          Lab Status
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const matchingMod = videoModules[lab.moduleNumber - 1];
+                            handleLaunchModule(matchingMod?.id || videoModules[0].id);
+                          }}
+                          className={`${statusPillClass} active:scale-95 text-xs font-extrabold px-5 py-1.5 rounded-full shadow-md transition-all cursor-pointer`}
+                        >
+                          {label}
+                        </button>
+                      </div>
+
+                    </div>
+
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* OPEN ROLES VIEW */}
+          {activeTab === 'open-roles' && (
+            <div className="space-y-4">
+              {role.hiringPartners && role.hiringPartners.length > 0 ? (
+                role.hiringPartners.map((partner, index) => (
+                  <div 
+                    key={index}
+                    className="w-full bg-white rounded-[22px] p-4 shadow-[0_10px_24px_rgba(0,0,0,0.12)] border border-white/60 transition-transform active:scale-[0.99]"
+                  >
+                    <div className="flex items-center justify-between px-1">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-black text-slate-900 leading-tight">
+                          {role.title}
+                        </span>
+                        <span className="text-[11px] text-slate-500 font-semibold mt-0.5">
+                          {partner}
+                        </span>
+                        <span className="text-sm font-extrabold text-slate-900 mt-2">
+                          {role.startingSalary || '₹25,000 / mo'}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col items-end">
+                        <span className="text-sm font-black text-slate-900 leading-none">
+                          Full-Time
+                        </span>
+                        <span className="text-[11px] text-slate-500 font-semibold mt-0.5">
+                          Verified Recruiter
+                        </span>
+                        <span className="text-sm font-extrabold text-emerald-600 mt-2">
+                          Actively Hiring
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="w-full border-b border-dashed border-slate-300 my-3" />
+
+                    <div className="flex items-center justify-between px-1">
+                      <span className="text-[11px] text-slate-600 font-bold">
+                        Certification Direct Referral
+                      </span>
+                      <button
+                        onClick={() => handleLaunchModule(videoModules[0].id)}
+                        className="bg-[#1864DB] hover:bg-blue-700 active:scale-95 text-white text-xs font-extrabold px-5 py-1.5 rounded-full shadow-md transition-all cursor-pointer"
+                      >
+                        Apply with Skill
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="bg-white rounded-[22px] p-6 text-center shadow-lg">
+                  <p className="text-sm font-bold text-slate-800">Direct hiring partner vacancies opening soon for this role.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+        </div>
 
         {/* Cart Modal */}
         <CartModal
@@ -389,3 +529,4 @@ export function RoleDetailScreen() {
     </div>
   );
 }
+
