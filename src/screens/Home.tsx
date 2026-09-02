@@ -14,7 +14,7 @@ export function HomeScreen() {
   const { navigate } = useRouter();
 
   return (
-    <div className="w-full min-h-screen bg-[#DCEAF0] flex flex-col pb-36 overflow-y-auto select-none">
+    <div className="w-full min-h-screen bg-[#B8D3DE] flex flex-col pb-36 overflow-y-auto select-none">
       
       {/* 1. HERO BANNER - Preserved full size and height */}
       <section className="w-full px-4 pt-0 h-[62.4vh] shrink-0 relative">
@@ -49,38 +49,38 @@ export function HomeScreen() {
         {/* MAIN COMPACT CARD: Your Career skills */}
         <div 
           onClick={() => navigate('choose-skill')}
-          className="w-full bg-white rounded-[20px] py-2 px-3.5 shadow-[0_8px_20px_-6px_rgba(0,0,0,0.06)] border border-slate-100/90 hover:border-emerald-500/80 hover:shadow-[0_10px_24px_-4px_rgba(16,185,129,0.2)] hover:-translate-y-0.5 cursor-pointer transition-all duration-300 flex flex-col items-center text-center relative group"
+          className="w-full bg-white rounded-[22px] py-3.5 px-4 shadow-[0_8px_20px_-6px_rgba(0,0,0,0.06)] border border-slate-100/90 hover:border-emerald-500/80 hover:shadow-[0_10px_24px_-4px_rgba(16,185,129,0.2)] hover:-translate-y-0.5 cursor-pointer transition-all duration-300 flex flex-col items-center text-center relative group"
         >
           {/* Top Label */}
-          <span className="text-[10px] font-bold text-emerald-600 tracking-wide uppercase mb-1 flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-emerald-500" />
+          <span className="text-[11px] font-bold text-emerald-600 tracking-wide uppercase mb-1.5 flex items-center gap-1">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
             Skill Mastery
           </span>
 
           {/* Centered Avatar Icon Ring */}
-          <div className="relative mb-1 transition-transform duration-300 group-hover:scale-105">
-            <div className="w-9 h-9 rounded-full p-[2px] border-2 border-emerald-500/40 group-hover:border-emerald-500 group-hover:ring-2 group-hover:ring-emerald-400/20 flex items-center justify-center transition-all">
+          <div className="relative mb-1.5 transition-transform duration-300 group-hover:scale-105">
+            <div className="w-11 h-11 rounded-full p-[2px] border-2 border-emerald-500/40 group-hover:border-emerald-500 group-hover:ring-2 group-hover:ring-emerald-400/20 flex items-center justify-center transition-all">
               <div className="w-full h-full rounded-full bg-emerald-500 flex items-center justify-center text-white shadow-xs">
-                <Briefcase className="w-4.5 h-4.5 stroke-[2.2]" />
+                <Briefcase className="w-5.5 h-5.5 stroke-[2.2]" />
               </div>
             </div>
-            <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-white rounded-full p-[1.5px] shadow-xs">
+            <div className="absolute bottom-0 right-0 w-4 h-4 bg-white rounded-full p-[1.5px] shadow-xs">
               <div className="w-full h-full rounded-full bg-emerald-600 flex items-center justify-center">
-                <ShieldCheck className="w-2 h-2 text-white" />
+                <ShieldCheck className="w-2.5 h-2.5 text-white" />
               </div>
             </div>
           </div>
 
           {/* Typography */}
-          <h2 className="text-sm font-extrabold text-slate-800 tracking-tight leading-tight group-hover:text-emerald-700 transition-colors">
+          <h2 className="text-base sm:text-lg font-extrabold text-slate-800 tracking-tight leading-tight group-hover:text-emerald-700 transition-colors">
             Your Career skills
           </h2>
-          <p className="text-[11px] text-slate-400 font-medium mt-0.5 leading-tight max-w-[240px]">
+          <p className="text-xs text-slate-400 font-medium mt-0.5 leading-tight max-w-[260px]">
             Unlock your path to professional growth & certifications
           </p>
 
-          <div className="absolute top-2.5 right-3 text-slate-300 group-hover:text-emerald-600 group-hover:scale-110 transition-all">
-            <ArrowUpRight className="w-3.5 h-3.5" />
+          <div className="absolute top-3 right-3.5 text-slate-300 group-hover:text-emerald-600 group-hover:scale-110 transition-all">
+            <ArrowUpRight className="w-4 h-4" />
           </div>
         </div>
         

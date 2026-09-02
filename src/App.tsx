@@ -291,10 +291,7 @@ function AppLayout() {
           })()}
 
           {/* 3. TRANSLUCENT APPLE GLASS DOCK NAVIGATION BAR WITH APPLE-STYLE FROSTED GLASS ICONS */}
-          {currentRoute.screen !== 'role-detail' && 
-           currentRoute.screen !== 'my-learning' && 
-           currentRoute.screen !== 'choose-skill' && 
-           currentRoute.screen !== 'skill-detail' && (
+          {currentRoute.screen !== 'choose-skill' && currentRoute.screen !== 'skill-detail' && (
             <div className="fixed bottom-3 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
               <nav 
                 id="mobile-bottom-nav"

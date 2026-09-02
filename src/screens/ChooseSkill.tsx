@@ -391,13 +391,13 @@ export function ChooseSkillScreen() {
       {/* INDUSTRY OVERVIEW MODAL / TAB */}
       <AnimatePresence>
         {modalCourse && activeCourseDetails && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <motion.div 
-              initial={{ y: '100%', opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: '100%', opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="w-full max-w-lg bg-white rounded-t-[32px] sm:rounded-[28px] overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+              className="w-full max-w-lg bg-white rounded-[28px] overflow-hidden shadow-2xl max-h-[85vh] flex flex-col"
             >
               {/* Modal Header */}
               <div className="relative p-5 bg-gradient-to-r from-[#2563EB] to-[#1E40AF] text-white flex items-center justify-between">
