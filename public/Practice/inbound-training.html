@@ -89,8 +89,6 @@ input[type=text],input[type=password],input[type=number],select{
   background:#fff;color:var(--text);font-family:inherit;font-size:14px;margin-bottom:10px;
 }
 input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(40,116,178,0.15);}
-.field-error{border-color:var(--red) !important;background:var(--red-bg) !important;}
-.chklist.field-error,.pillgroup.field-error{outline:2px solid var(--red);outline-offset:2px;border-radius:var(--radius);}
 input::placeholder{color:#a8b2bc;}
 label{font-size:11px;color:var(--text-dim);font-weight:600;display:block;margin-bottom:4px;}
 label .req{color:var(--red);}
@@ -243,14 +241,14 @@ label .req{color:var(--red);}
       </div>
       <div class="card">
         <label>Purchase Order <span class="req">*</span> — check the PO that matches this invoice</label>
-        <div class="chklist" id="poChecklistBox">
+        <div class="chklist">
           <div class="chkrow"><input type="checkbox" id="poChk0" value="PO-2026-8842"><label for="poChk0">PO-2026-8842</label></div>
           <div class="chkrow"><input type="checkbox" id="poChk1" value="PO-2026-9015"><label for="poChk1">PO-2026-9015</label></div>
           <div class="chkrow"><input type="checkbox" id="poChk2" value="PO-2026-9210"><label for="poChk2">PO-2026-9210</label></div>
           <div class="chkrow"><input type="checkbox" id="poChk3" value="PO-2026-9388"><label for="poChk3">PO-2026-9388</label></div>
         </div>
         <label>Vendor Type <span class="req">*</span></label>
-        <div class="pillgroup" id="vtGroup">
+        <div class="pillgroup">
           <button type="button" id="vtRegular" onclick="setVendorType('Regular')">Regular</button>
           <button type="button" id="vtDockReject" onclick="setVendorType('Dock Reject')">Dock Reject</button>
         </div>
@@ -391,7 +389,7 @@ let state = {userName:'', idx:0, results:[], attempts:0, step:'scanItem', matche
 let cameraInstance=null, cameraTargetId=null;
 
 function $(id){return document.getElementById(id);}
-function normalize(s){return (s==null?'':String(s)).replace(/[^a-zA-Z0-9]/g,'').toUpperCase();}
+function normalize(s){return (s==null?'':String(s)).trim().toUpperCase();}
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');window.scrollTo(0,0);}
 
 function doLogin(){
@@ -408,71 +406,33 @@ function setVendorType(val){
 }
 
 function resetIrnForm(){
-  ['fInvoiceNumber','fInvoiceDate','fDocketNumber','fLineItems','fInvoiceAmount','fTotalQty','fBoxes'].forEach(id=>{ $(id).value=''; $(id).classList.remove('field-error'); });
+  ['fInvoiceNumber','fInvoiceDate','fDocketNumber','fLineItems','fInvoiceAmount','fTotalQty','fBoxes'].forEach(id=>{ $(id).value=''; });
   $('fSupplier').value=''; $('fGst').value='';
-  $('fSupplier').classList.remove('field-error'); $('fGst').classList.remove('field-error');
   document.querySelectorAll('.chklist input[type=checkbox]').forEach(c=>c.checked=false);
-  $('poChecklistBox').classList.remove('field-error');
   formVendorType=null;
   $('vtRegular').classList.remove('selected'); $('vtDockReject').classList.remove('selected');
-  $('vtGroup').classList.remove('field-error');
   $('formError').textContent='';
 }
 
-const MONTHS = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
-function parseFlexDate(str){
-  if(!str) return null;
-  const tokens = String(str).trim().toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
-  let day=null, month=null, year=null;
-  for(const t of tokens){
-    if(/^\d{4}$/.test(t)){ year = parseInt(t,10); }
-    else if(MONTHS[t.slice(0,3)]){ month = MONTHS[t.slice(0,3)]; }
-    else if(/^\d{1,2}$/.test(t)){
-      const n = parseInt(t,10);
-      if(month===null && n>=1 && n<=12 && day!==null){ month = n; }
-      else if(day===null){ day = n; }
-      else if(month===null){ month = n; }
-    }
-  }
-  if(day===null || month===null || year===null) return null;
-  return year*10000 + month*100 + day;
-}
-function parseNum(str){
-  if(str==null) return NaN;
-  const cleaned = String(str).replace(/[^0-9.\-]/g,'');
-  return cleaned==='' ? NaN : parseInt(cleaned,10);
-}
-function markField(id, bad){
-  const el = $(id);
-  if(el) el.classList.toggle('field-error', bad);
-}
-
 function submitIrnForm(){
-  ['fInvoiceNumber','fInvoiceDate','fDocketNumber','fLineItems','fInvoiceAmount','fTotalQty','fBoxes','fSupplier','fGst'].forEach(id=>markField(id,false));
-  $('poChecklistBox').classList.remove('field-error');
-  $('vtGroup').classList.remove('field-error');
-
   const invNum = normalize($('fInvoiceNumber').value);
   const match = POS.find(p=>normalize(p.invoiceNumber)===invNum);
   if(!invNum || !match){
-    markField('fInvoiceNumber', true);
     $('formError').textContent = 'No open PO found for that Invoice Number. Check your document and try again.';
     return;
   }
   const errors = [];
-  const enteredDate = parseFlexDate($('fInvoiceDate').value);
-  const expectedDate = parseFlexDate(match.invoiceDate);
-  if(enteredDate===null || enteredDate!==expectedDate){ errors.push('Invoice Date'); markField('fInvoiceDate',true); }
-  if(normalize($('fDocketNumber').value) !== normalize(match.docketNumber)){ errors.push('Docket Number'); markField('fDocketNumber',true); }
-  if(normalize($('fSupplier').value) !== normalize(match.vendor)){ errors.push('Supplier'); markField('fSupplier',true); }
-  if(parseNum($('fLineItems').value) !== match.items.length){ errors.push('Invoice Line Items'); markField('fLineItems',true); }
-  if(parseNum($('fInvoiceAmount').value) !== match.invoiceAmount){ errors.push('Invoice Amount'); markField('fInvoiceAmount',true); }
-  if(parseNum($('fTotalQty').value) !== match.totalInvoiceQty){ errors.push('Total Invoice Quantity'); markField('fTotalQty',true); }
-  if(parseNum($('fBoxes').value) !== match.invoiceBoxes){ errors.push('Invoice Boxes'); markField('fBoxes',true); }
-  if(normalize($('fGst').value) !== 'YES'){ errors.push('GST Invoice'); markField('fGst',true); }
+  if(normalize($('fInvoiceDate').value) !== normalize(match.invoiceDate)) errors.push('Invoice Date');
+  if(normalize($('fDocketNumber').value) !== normalize(match.docketNumber)) errors.push('Docket Number');
+  if(normalize($('fSupplier').value) !== normalize(match.vendor)) errors.push('Supplier');
+  if(parseInt($('fLineItems').value||'-1',10) !== match.items.length) errors.push('Invoice Line Items');
+  if(parseInt($('fInvoiceAmount').value||'-1',10) !== match.invoiceAmount) errors.push('Invoice Amount');
+  if(parseInt($('fTotalQty').value||'-1',10) !== match.totalInvoiceQty) errors.push('Total Invoice Quantity');
+  if(parseInt($('fBoxes').value||'-1',10) !== match.invoiceBoxes) errors.push('Invoice Boxes');
+  if(normalize($('fGst').value) !== 'YES') errors.push('GST Invoice');
   const checked = Array.from(document.querySelectorAll('.chklist input[type=checkbox]:checked')).map(c=>c.value);
-  if(checked.length!==1 || normalize(checked[0])!==normalize(match.poNumber)){ errors.push('Purchase Order selection'); $('poChecklistBox').classList.add('field-error'); }
-  if(formVendorType !== 'Regular'){ errors.push('Vendor Type'); $('vtGroup').classList.add('field-error'); }
+  if(checked.length!==1 || checked[0]!==match.poNumber) errors.push('Purchase Order selection');
+  if(formVendorType !== 'Regular') errors.push('Vendor Type');
 
   if(errors.length){
     $('formError').textContent = 'These fields don\'t match your document — check and try again: ' + errors.join(', ') + '.';

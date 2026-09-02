@@ -34,7 +34,7 @@ import { JobRole, LibraryItem, Enrollment } from '../lib/types';
 import { Modal } from '../components/ui';
 
 // ============================================================================
-// RETRO BLUE SCOOTER ILLUSTRATION (Exact replica of the reference cartoon vector)
+// RETRO BLUE SCOOTER ILLUSTRATION (Original Vibrant Blue for Career Skills)
 // ============================================================================
 export function RetroBlueScooter({ className = "w-full h-full" }: { className?: string }) {
   return (
@@ -42,7 +42,7 @@ export function RetroBlueScooter({ className = "w-full h-full" }: { className?: 
       <defs>
         <linearGradient id="scooterBodyBlue" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#4FA5FF" />
-          <stop offset="60%" stopColor="#2563EB" />
+          <stop offset="50%" stopColor="#2563EB" />
           <stop offset="100%" stopColor="#1D4ED8" />
         </linearGradient>
         <linearGradient id="scooterLightBlue" x1="0" y1="0" x2="0" y2="1">
@@ -74,7 +74,7 @@ export function RetroBlueScooter({ className = "w-full h-full" }: { className?: 
         <circle cx="120" cy="225" r="32" fill="url(#scooterWhiteShine)" stroke="#0F172A" strokeWidth="2.5" />
         <circle cx="120" cy="225" r="22" fill="#E2E8F0" stroke="#64748B" strokeWidth="1.5" strokeDasharray="3 3" />
         <circle cx="120" cy="225" r="12" fill="#0F172A" />
-        <circle cx="120" cy="225" r="6" fill="#94A3B8" />
+        <circle cx="120" cy="225" r="6" fill="#60A5FA" />
       </g>
 
       {/* Front Wheel System */}
@@ -84,7 +84,7 @@ export function RetroBlueScooter({ className = "w-full h-full" }: { className?: 
         <circle cx="295" cy="225" r="32" fill="url(#scooterWhiteShine)" stroke="#0F172A" strokeWidth="2.5" />
         <circle cx="295" cy="225" r="22" fill="#E2E8F0" stroke="#64748B" strokeWidth="1.5" strokeDasharray="3 3" />
         <circle cx="295" cy="225" r="12" fill="#0F172A" />
-        <circle cx="295" cy="225" r="6" fill="#94A3B8" />
+        <circle cx="295" cy="225" r="6" fill="#60A5FA" />
       </g>
 
       {/* Kickstand */}
@@ -111,7 +111,7 @@ export function RetroBlueScooter({ className = "w-full h-full" }: { className?: 
 
         {/* Side Vents Air Slits */}
         <path d="M 95 180 L 140 180 M 93 190 L 142 190 M 98 200 L 138 200" 
-              stroke="#64748B" strokeWidth="3" strokeLinecap="round" />
+              stroke="#94A3B8" strokeWidth="3" strokeLinecap="round" />
 
         {/* Rear Taillight */}
         <path d="M 46 185 C 40 185 38 195 44 202 L 52 198 Z" fill="#EF4444" stroke="#0F172A" strokeWidth="2" />
@@ -158,7 +158,7 @@ export function RetroBlueScooter({ className = "w-full h-full" }: { className?: 
       <g id="handlebar-assembly">
         <path d="M 268 95 L 255 60 L 265 58 L 278 95 Z" fill="url(#scooterBodyBlue)" stroke="#0F172A" strokeWidth="2.5" />
         <ellipse cx="254" cy="52" rx="14" ry="12" fill="url(#scooterBodyBlue)" stroke="#0F172A" strokeWidth="3" />
-        <ellipse cx="260" cy="52" rx="8" ry="10" fill="#E0F2FE" stroke="#0F172A" strokeWidth="2" />
+        <ellipse cx="260" cy="52" rx="8" ry="10" fill="#E2E8F0" stroke="#0F172A" strokeWidth="2" />
         <ellipse cx="262" cy="50" rx="3" ry="5" fill="#FFFFFF" />
 
         <path d="M 245 54 L 228 58" stroke="#0F172A" strokeWidth="6" strokeLinecap="round" />
@@ -180,19 +180,19 @@ export function RetroBlueScooter({ className = "w-full h-full" }: { className?: 
 }
 
 // ============================================================================
-// TECH REEL SCOOTER ILLUSTRATION (For Reel-to-Skill View)
+// TECH REEL SCOOTER ILLUSTRATION (For Reel-to-Skill View in Mustard Yellow)
 // ============================================================================
 export function TechReelScooter({ className = "w-full h-full" }: { className?: string }) {
   return (
     <svg viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
       <defs>
-        <linearGradient id="techBlueGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#38BDF8" />
-          <stop offset="50%" stopColor="#0284C7" />
-          <stop offset="100%" stopColor="#0369A1" />
+        <linearGradient id="techMustardGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#FDE047" />
+          <stop offset="50%" stopColor="#EAB308" />
+          <stop offset="100%" stopColor="#CA8A04" />
         </linearGradient>
         <radialGradient id="techShadow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#0369A1" stopOpacity="0.3" />
+          <stop offset="0%" stopColor="#CA8A04" stopOpacity="0.3" />
           <stop offset="70%" stopColor="#0F172A" stopOpacity="0.08" />
           <stop offset="100%" stopColor="#000000" stopOpacity="0" />
         </radialGradient>
@@ -201,17 +201,17 @@ export function TechReelScooter({ className = "w-full h-full" }: { className?: s
       <ellipse cx="200" cy="285" rx="145" ry="16" fill="url(#techShadow)" />
 
       {/* Speed Lines */}
-      <path d="M 20 190 L 70 190 M 10 220 L 50 220 M 35 150 L 75 150" stroke="#0284C7" strokeWidth="3" strokeLinecap="round" opacity="0.5" strokeDasharray="8 6" />
+      <path d="M 20 190 L 70 190 M 10 220 L 50 220 M 35 150 L 75 150" stroke="#D97706" strokeWidth="3" strokeLinecap="round" opacity="0.6" strokeDasharray="8 6" />
 
       {/* Wheels */}
-      <circle cx="115" cy="225" r="48" fill="#0F172A" stroke="#0284C7" strokeWidth="2.5" />
+      <circle cx="115" cy="225" r="48" fill="#0F172A" stroke="#D97706" strokeWidth="2.5" />
       <circle cx="115" cy="225" r="34" fill="#1E293B" />
-      <circle cx="115" cy="225" r="20" fill="#38BDF8" opacity="0.4" />
+      <circle cx="115" cy="225" r="20" fill="#FDE047" opacity="0.4" />
       <circle cx="115" cy="225" r="10" fill="#FFFFFF" stroke="#0F172A" strokeWidth="2" />
 
-      <circle cx="295" cy="225" r="48" fill="#0F172A" stroke="#0284C7" strokeWidth="2.5" />
+      <circle cx="295" cy="225" r="48" fill="#0F172A" stroke="#D97706" strokeWidth="2.5" />
       <circle cx="295" cy="225" r="34" fill="#1E293B" />
-      <circle cx="295" cy="225" r="20" fill="#38BDF8" opacity="0.4" />
+      <circle cx="295" cy="225" r="20" fill="#FDE047" opacity="0.4" />
       <circle cx="295" cy="225" r="10" fill="#FFFFFF" stroke="#0F172A" strokeWidth="2" />
 
       {/* Kickstand */}
@@ -219,30 +219,30 @@ export function TechReelScooter({ className = "w-full h-full" }: { className?: s
 
       {/* Bodywork */}
       <path d="M 55 210 C 50 170 80 135 130 135 C 190 135 210 170 215 220 C 195 248 150 252 110 252 C 70 252 58 230 55 210 Z" 
-            fill="url(#techBlueGrad)" stroke="#0F172A" strokeWidth="3.5" />
+            fill="url(#techMustardGrad)" stroke="#0F172A" strokeWidth="3.5" />
       
       <path d="M 75 195 C 70 170 90 150 130 148 C 170 145 185 170 188 198 C 175 225 140 235 105 235 C 80 235 75 215 75 195 Z" 
             fill="#FFFFFF" stroke="#0F172A" strokeWidth="2.5" />
 
       {/* Play Icon Graphic */}
-      <circle cx="130" cy="190" r="18" fill="#0284C7" />
+      <circle cx="130" cy="190" r="18" fill="#D97706" />
       <path d="M 125 180 L 140 190 L 125 200 Z" fill="#FFFFFF" />
 
       {/* Fairing */}
       <path d="M 215 155 C 230 95 265 80 280 80 C 290 80 305 105 310 155 C 315 200 300 230 270 230 C 235 230 210 200 215 155 Z" 
-            fill="url(#techBlueGrad)" stroke="#0F172A" strokeWidth="3.5" />
+            fill="url(#techMustardGrad)" stroke="#0F172A" strokeWidth="3.5" />
       
-      <path d="M 260 95 L 275 175 L 268 175 L 255 95 Z" fill="#38BDF8" />
+      <path d="M 260 95 L 275 175 L 268 175 L 255 95 Z" fill="#FDE047" />
       <path d="M 260 205 C 265 175 300 170 330 185 C 340 195 338 215 330 228 C 315 220 295 215 260 205 Z" 
-            fill="url(#techBlueGrad)" stroke="#0F172A" strokeWidth="3" />
+            fill="url(#techMustardGrad)" stroke="#0F172A" strokeWidth="3" />
 
       {/* Saddle */}
       <path d="M 85 142 C 80 130 110 112 150 112 C 185 112 205 130 208 142 C 185 146 140 146 85 142 Z" 
-            fill="#0F172A" stroke="#0284C7" strokeWidth="3" />
+            fill="#0F172A" stroke="#D97706" strokeWidth="3" />
 
       {/* Headlight */}
-      <ellipse cx="258" cy="50" rx="14" ry="10" fill="url(#techBlueGrad)" stroke="#0F172A" strokeWidth="3" />
-      <ellipse cx="264" cy="50" rx="8" ry="8" fill="#38BDF8" stroke="#0F172A" strokeWidth="2" />
+      <ellipse cx="258" cy="50" rx="14" ry="10" fill="url(#techMustardGrad)" stroke="#0F172A" strokeWidth="3" />
+      <ellipse cx="264" cy="50" rx="8" ry="8" fill="#FEF08A" stroke="#0F172A" strokeWidth="2" />
       <circle cx="266" cy="48" r="3" fill="#FFFFFF" />
 
       <path d="M 245 52 L 228 54" stroke="#0F172A" strokeWidth="6" strokeLinecap="round" />
@@ -356,13 +356,13 @@ export function MyLearningScreen() {
             </div>
           </div>
 
-          {/* Navigation Bar: Left Blue Circle Icon | Center Subtext | Scroll Indicator | Hamburger Menu */}
+          {/* Navigation Bar: Left Brand Circle Icon | Center Subtext | Scroll Indicator | Hamburger Menu */}
           <div className="flex items-center justify-between pt-1">
             
-            {/* Left Circular Blue Icon */}
+            {/* Left Circular Brand Icon (Blue for Career, Mustard for Reel) */}
             <div 
               onClick={() => navigate('home')}
-              className="w-9 h-9 rounded-full bg-[#1A73E8] shadow-md flex items-center justify-center text-white cursor-pointer active:scale-95 transition-transform"
+              className={`w-9 h-9 rounded-full shadow-md flex items-center justify-center text-white cursor-pointer active:scale-95 transition-transform ${activeCategory === 'career' ? 'bg-[#1A73E8]' : 'bg-[#D97706]'}`}
             >
               <span className="font-black text-base italic font-serif">h</span>
             </div>
@@ -380,7 +380,7 @@ export function MyLearningScreen() {
             {/* Scroll / Swipe page indicator (Scroll 1/2 or Scroll 2/2) */}
             <div 
               onClick={() => setActiveCategory(activeCategory === 'career' ? 'reel' : 'career')}
-              className="text-[11px] font-extrabold text-slate-600 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 cursor-pointer transition-colors"
+              className={`text-[11px] font-extrabold px-2.5 py-1 rounded-lg cursor-pointer transition-colors ${activeCategory === 'career' ? 'text-slate-700 bg-slate-100 hover:bg-slate-200' : 'text-amber-900 bg-amber-100/70 hover:bg-amber-200/80'}`}
             >
               {activeCategory === 'career' ? 'Scroll 1/2' : 'Scroll 2/2'}
             </div>
@@ -406,25 +406,32 @@ export function MyLearningScreen() {
           className="relative w-full h-[310px] flex items-center justify-center px-4 overflow-hidden shrink-0"
         >
           
-          {/* Soft Curved Wave Background Graphic (Slate / Blue tint) */}
+          {/* Soft Curved Wave Background Graphic (Blue tint for Career, Amber tint for Reel) */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <svg className="w-full h-full" viewBox="0 0 400 320" fill="none" preserveAspectRatio="none">
-              <path d="M 0 60 Q 200 20 400 90 L 400 320 L 0 320 Z" fill="#F4F8FC" opacity="0.9" />
-              <circle cx="200" cy="180" r="130" fill="#EBF3FC" opacity="0.7" />
-            </svg>
+            {activeCategory === 'career' ? (
+              <svg className="w-full h-full" viewBox="0 0 400 320" fill="none" preserveAspectRatio="none">
+                <path d="M 0 60 Q 200 20 400 90 L 400 320 L 0 320 Z" fill="#F4F8FC" opacity="0.95" />
+                <circle cx="200" cy="180" r="130" fill="#EBF3FC" opacity="0.8" />
+              </svg>
+            ) : (
+              <svg className="w-full h-full" viewBox="0 0 400 320" fill="none" preserveAspectRatio="none">
+                <path d="M 0 60 Q 200 20 400 90 L 400 320 L 0 320 Z" fill="#FFFDF5" opacity="0.9" />
+                <circle cx="200" cy="180" r="130" fill="#FEF3C7" opacity="0.5" />
+              </svg>
+            )}
           </div>
 
           {/* Swipe Indicator Arrows */}
           <button 
             onClick={() => setActiveCategory('career')}
-            className={`absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/85 backdrop-blur-md shadow-sm border border-slate-200/60 flex items-center justify-center text-slate-600 z-10 transition-all ${activeCategory === 'career' ? 'opacity-25 cursor-default' : 'opacity-90 hover:scale-105 cursor-pointer'}`}
+            className={`absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/85 backdrop-blur-md shadow-sm border flex items-center justify-center z-10 transition-all ${activeCategory === 'career' ? 'opacity-25 border-slate-200 text-slate-400 cursor-default' : 'opacity-90 border-amber-200/60 text-amber-900 hover:scale-105 cursor-pointer'}`}
           >
             <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
           </button>
 
           <button 
             onClick={() => setActiveCategory('reel')}
-            className={`absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/85 backdrop-blur-md shadow-sm border border-slate-200/60 flex items-center justify-center text-slate-600 z-10 transition-all ${activeCategory === 'reel' ? 'opacity-25 cursor-default' : 'opacity-90 hover:scale-105 cursor-pointer'}`}
+            className={`absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/85 backdrop-blur-md shadow-sm border flex items-center justify-center z-10 transition-all ${activeCategory === 'reel' ? 'opacity-25 border-amber-200 text-amber-400 cursor-default' : 'opacity-90 border-slate-200 text-slate-700 hover:scale-105 cursor-pointer'}`}
           >
             <ArrowRight className="w-4 h-4 stroke-[2.5]" />
           </button>
@@ -452,26 +459,26 @@ export function MyLearningScreen() {
           <div className="absolute bottom-2 flex items-center gap-1.5 z-10">
             <div 
               onClick={() => setActiveCategory('career')}
-              className={`h-2 rounded-full transition-all cursor-pointer ${activeCategory === 'career' ? 'w-6 bg-[#0094FF]' : 'w-2 bg-slate-300'}`} 
+              className={`h-2 rounded-full transition-all cursor-pointer ${activeCategory === 'career' ? 'w-6 bg-[#1A73E8]' : 'w-2 bg-slate-300'}`} 
             />
             <div 
               onClick={() => setActiveCategory('reel')}
-              className={`h-2 rounded-full transition-all cursor-pointer ${activeCategory === 'reel' ? 'w-6 bg-[#0094FF]' : 'w-2 bg-slate-300'}`} 
+              className={`h-2 rounded-full transition-all cursor-pointer ${activeCategory === 'reel' ? 'w-6 bg-[#D97706]' : 'w-2 bg-amber-200'}`} 
             />
           </div>
 
         </div>
 
         {/* =========================================================================
-            3. MIDDLE CONTROL SEGMENT (Left Blue Pill & Right Search/Profile Pill)
+            3. MIDDLE CONTROL SEGMENT (Left Pill & Right Search/Profile Pill)
            ========================================================================= */}
         <div className="px-6 py-2 shrink-0 z-20">
           <div className="flex items-center gap-3">
             
-            {/* Left Vibrant Blue Pill Button ("Pell" / Active Category Name) */}
+            {/* Left Pill Button (Blue for Career "Pell", Mustard for "Reels") */}
             <button
               onClick={() => setActiveCategory(activeCategory === 'career' ? 'reel' : 'career')}
-              className="bg-[#2684FF] hover:bg-[#1A73E8] active:scale-95 text-white font-extrabold text-xs px-6 py-3 rounded-full shadow-[0_4px_16px_rgba(38,132,255,0.3)] transition-all cursor-pointer tracking-wider shrink-0"
+              className={`active:scale-95 text-white font-extrabold text-xs px-6 py-3 rounded-full transition-all cursor-pointer tracking-wider shrink-0 ${activeCategory === 'career' ? 'bg-[#2684FF] hover:bg-[#1A73E8] shadow-[0_4px_16px_rgba(38,132,255,0.3)]' : 'bg-[#D97706] hover:bg-[#B45309] shadow-[0_4px_16px_rgba(217,119,6,0.35)]'}`}
             >
               {activeCategory === 'career' ? 'Pell' : 'Reels'}
             </button>
@@ -479,17 +486,17 @@ export function MyLearningScreen() {
             {/* Right Soft Light Pill Container with Profile Icon & Search Icon */}
             <div 
               onClick={() => navigate(activeCategory === 'career' ? 'choose-skill' : 'library')}
-              className="flex-1 bg-[#F1F4F9] hover:bg-[#EAEFF6] px-4 py-2.5 rounded-full flex items-center justify-between text-slate-500 cursor-pointer transition-colors shadow-2xs border border-slate-100"
+              className={`flex-1 px-4 py-2.5 rounded-full flex items-center justify-between cursor-pointer transition-colors shadow-2xs border ${activeCategory === 'career' ? 'bg-[#F1F4F9] hover:bg-[#EAEFF6] border-slate-100 text-slate-800' : 'bg-[#FEF9EE] hover:bg-[#FDF2D8] border-amber-200/50 text-amber-900'}`}
             >
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-[#0094FF] text-white flex items-center justify-center text-[10px]">
+                <div className={`w-5 h-5 rounded-full text-white flex items-center justify-center text-[10px] ${activeCategory === 'career' ? 'bg-[#0094FF]' : 'bg-[#D97706]'}`}>
                   <User className="w-3 h-3" />
                 </div>
                 <span className="text-xs font-bold text-slate-700">
                   {activeCategory === 'career' ? 'Courses' : 'Masterclasses'}
                 </span>
               </div>
-              <Search className="w-4 h-4 text-[#0094FF] stroke-[2.5]" />
+              <Search className={`w-4 h-4 stroke-[2.5] ${activeCategory === 'career' ? 'text-[#0094FF]' : 'text-[#D97706]'}`} />
             </div>
 
           </div>
@@ -500,17 +507,17 @@ export function MyLearningScreen() {
            ========================================================================= */}
         <div className="px-6 py-3 space-y-3 shrink-0 z-20">
           
-          {/* Main Title & Blue Subtitle */}
+          {/* Main Title & Subtitle (Blue for Career, Mustard for Reel) */}
           <div>
             <h3 className="text-lg font-black text-slate-900 leading-tight">
               {activeCategory === 'career' ? 'calll now' : 'watch now'}
             </h3>
-            <span className="text-xs font-extrabold text-[#0094FF] block leading-tight">
+            <span className={`text-xs font-extrabold block leading-tight ${activeCategory === 'career' ? 'text-[#0094FF]' : 'text-[#D97706]'}`}>
               {activeCategory === 'career' ? 'Career Certification Hub' : 'Reel to Skill Library'}
             </span>
           </div>
 
-          {/* TWO SIDE-BY-SIDE SOFT BLUE CARDS (Exact replica of mockup layout) */}
+          {/* TWO SIDE-BY-SIDE CARDS (Blue-grey for Career, Soft Mustard for Reel) */}
           <div className="grid grid-cols-2 gap-3.5">
             
             {/* CARD 1: PRIMARY ROLE / REEL */}
@@ -522,22 +529,22 @@ export function MyLearningScreen() {
                   navigate('library-detail', { libraryId: primaryReelItem.id });
                 }
               }}
-              className="bg-[#E7ECF4] hover:bg-[#DEE5EF] active:scale-98 rounded-3xl p-3 flex flex-col justify-between shadow-xs transition-all cursor-pointer group border border-slate-200/60 relative overflow-hidden"
+              className={`active:scale-98 rounded-3xl p-3 flex flex-col justify-between shadow-xs transition-all cursor-pointer group border relative overflow-hidden ${activeCategory === 'career' ? 'bg-[#E7ECF4] hover:bg-[#DEE5EF] border-slate-200/60' : 'bg-[#FEF9EE] hover:bg-[#FDF2D8] border-amber-200/70'}`}
             >
               <div className="flex items-start justify-between">
                 <div className="w-16 h-12 flex items-center justify-center">
                   <RetroBlueScooter className="w-full h-full group-hover:scale-105 transition-transform" />
                 </div>
-                <span className="text-[10px] font-black text-slate-700 bg-white/80 px-2 py-0.5 rounded-full shadow-2xs">
+                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full shadow-2xs ${activeCategory === 'career' ? 'text-slate-700 bg-white/80' : 'text-amber-900 bg-white/90'}`}>
                   {activeCategory === 'career' ? '$89' : '5 min'}
                 </span>
               </div>
 
-              <div className="mt-2 flex items-center justify-between pt-1 border-t border-slate-300/40">
+              <div className={`mt-2 flex items-center justify-between pt-1 border-t ${activeCategory === 'career' ? 'border-slate-300/40' : 'border-amber-200/60'}`}>
                 <span className="text-xs font-black text-slate-900 truncate">
                   {activeCategory === 'career' ? 'Warehouse QC' : primaryReelItem.title}
                 </span>
-                <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0 ml-1" />
+                <MapPin className={`w-3.5 h-3.5 shrink-0 ml-1 ${activeCategory === 'career' ? 'text-slate-500' : 'text-amber-700'}`} />
               </div>
             </div>
 
@@ -550,22 +557,26 @@ export function MyLearningScreen() {
                   navigate('library-detail', { libraryId: secondaryReelItem.id });
                 }
               }}
-              className="bg-[#E7ECF4] hover:bg-[#DEE5EF] active:scale-98 rounded-3xl p-3 flex flex-col justify-between shadow-xs transition-all cursor-pointer group border border-slate-200/60 relative overflow-hidden"
+              className={`active:scale-98 rounded-3xl p-3 flex flex-col justify-between shadow-xs transition-all cursor-pointer group border relative overflow-hidden ${activeCategory === 'career' ? 'bg-[#E7ECF4] hover:bg-[#DEE5EF] border-slate-200/60' : 'bg-[#FEF9EE] hover:bg-[#FDF2D8] border-amber-200/70'}`}
             >
               <div className="flex items-start justify-between">
                 <div className="w-16 h-12 flex items-center justify-center">
-                  <TechReelScooter className="w-full h-full group-hover:scale-105 transition-transform" />
+                  {activeCategory === 'career' ? (
+                    <RetroBlueScooter className="w-full h-full group-hover:scale-105 transition-transform" />
+                  ) : (
+                    <TechReelScooter className="w-full h-full group-hover:scale-105 transition-transform" />
+                  )}
                 </div>
-                <div className="w-5 h-5 rounded-full bg-white/90 shadow-2xs flex items-center justify-center text-[#0094FF]">
-                  <Sparkles className="w-3 h-3 text-[#0094FF]" />
+                <div className={`w-5 h-5 rounded-full bg-white/95 shadow-2xs flex items-center justify-center ${activeCategory === 'career' ? 'text-[#0094FF]' : 'text-[#D97706]'}`}>
+                  <Sparkles className="w-3 h-3" />
                 </div>
               </div>
 
-              <div className="mt-2 flex items-center justify-between pt-1 border-t border-slate-300/40">
+              <div className={`mt-2 flex items-center justify-between pt-1 border-t ${activeCategory === 'career' ? 'border-slate-300/40' : 'border-amber-200/60'}`}>
                 <span className="text-xs font-black text-slate-900 truncate">
                   {activeCategory === 'career' ? 'QC Inbound' : secondaryReelItem.title}
                 </span>
-                <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0 ml-1" />
+                <MapPin className={`w-3.5 h-3.5 shrink-0 ml-1 ${activeCategory === 'career' ? 'text-slate-500' : 'text-amber-700'}`} />
               </div>
             </div>
 
@@ -574,7 +585,7 @@ export function MyLearningScreen() {
         </div>
 
         {/* =========================================================================
-            5. BOTTOM ACTION BAR: USER AVATAR PILL + SOLID BLUE "CALL NOW" PILL
+            5. BOTTOM ACTION BAR: USER AVATAR PILL + SOLID "CALL NOW" PILL
            ========================================================================= */}
         <div className="px-6 pt-2 pb-3 shrink-0 z-20">
           <div className="flex items-center gap-3">
@@ -582,19 +593,19 @@ export function MyLearningScreen() {
             {/* Left Pill: User Avatar + Name ("Jesus Peters") */}
             <div 
               onClick={() => navigate('my-dashboard')}
-              className="flex-1 bg-white hover:bg-slate-50 border border-slate-200/80 px-3 py-2.5 rounded-full flex items-center gap-2.5 shadow-xs cursor-pointer transition-all"
+              className={`flex-1 bg-white border px-3 py-2.5 rounded-full flex items-center gap-2.5 shadow-xs cursor-pointer transition-all ${activeCategory === 'career' ? 'border-slate-200/80 hover:bg-slate-50' : 'border-amber-200/80 hover:bg-amber-50/50'}`}
             >
               <img 
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" 
                 alt="Learner" 
-                className="w-7 h-7 rounded-full object-cover border border-slate-200"
+                className={`w-7 h-7 rounded-full object-cover border ${activeCategory === 'career' ? 'border-slate-200' : 'border-amber-200'}`}
               />
               <span className="text-xs font-black text-slate-900 truncate">
                 {profile?.fullName || 'Jesus Peters'}
               </span>
             </div>
 
-            {/* Right Solid Blue Button: "Aall now" with Chevron Up */}
+            {/* Right Solid Button: "Aall now" (Blue for Career, Mustard for Reel) */}
             <button
               onClick={() => {
                 if (activeCategory === 'career') {
@@ -603,7 +614,7 @@ export function MyLearningScreen() {
                   navigate('library');
                 }
               }}
-              className="flex-1 bg-[#1A62E8] hover:bg-[#1554C8] active:scale-98 text-white font-extrabold text-xs py-3 px-4 rounded-full shadow-[0_6px_20px_rgba(26,98,232,0.35)] flex items-center justify-center gap-2 cursor-pointer transition-all uppercase tracking-wider"
+              className={`flex-1 active:scale-98 text-white font-extrabold text-xs py-3 px-4 rounded-full flex items-center justify-center gap-2 cursor-pointer transition-all uppercase tracking-wider ${activeCategory === 'career' ? 'bg-[#1A62E8] hover:bg-[#1554C8] shadow-[0_6px_20px_rgba(26,98,232,0.35)]' : 'bg-[#D97706] hover:bg-[#B45309] shadow-[0_6px_20px_rgba(217,119,6,0.35)]'}`}
             >
               <span>Aall now</span>
               <ChevronUp className="w-4 h-4 stroke-[3]" />
@@ -619,7 +630,7 @@ export function MyLearningScreen() {
           
           <button 
             onClick={() => navigate('interview-prep')}
-            className="w-11 h-10 rounded-2xl bg-[#E2EAF4] hover:bg-[#D3E0EE] active:scale-95 flex items-center justify-center text-slate-700 transition-all cursor-pointer shadow-2xs"
+            className={`w-11 h-10 rounded-2xl active:scale-95 flex items-center justify-center transition-all cursor-pointer shadow-2xs border ${activeCategory === 'career' ? 'bg-[#E2EAF4] hover:bg-[#D3E0EE] text-slate-700 border-slate-200/60' : 'bg-[#FEF3C7]/80 hover:bg-[#FDE68A] text-amber-900 border-amber-200/60'}`}
             title="Interview Prep"
           >
             <MessageSquare className="w-4 h-4" />
@@ -627,7 +638,7 @@ export function MyLearningScreen() {
 
           <button 
             onClick={() => navigate('choose-skill')}
-            className="w-11 h-10 rounded-2xl bg-[#E2EAF4] hover:bg-[#D3E0EE] active:scale-95 flex items-center justify-center text-slate-700 transition-all cursor-pointer shadow-2xs"
+            className={`w-11 h-10 rounded-2xl active:scale-95 flex items-center justify-center transition-all cursor-pointer shadow-2xs border ${activeCategory === 'career' ? 'bg-[#E2EAF4] hover:bg-[#D3E0EE] text-slate-700 border-slate-200/60' : 'bg-[#FEF3C7]/80 hover:bg-[#FDE68A] text-amber-900 border-amber-200/60'}`}
             title="Explore Skills"
           >
             <Search className="w-4 h-4 stroke-[2.2]" />
@@ -635,7 +646,7 @@ export function MyLearningScreen() {
 
           <button 
             onClick={() => navigate('practical-training')}
-            className="w-11 h-10 rounded-2xl bg-[#E2EAF4] hover:bg-[#D3E0EE] active:scale-95 flex items-center justify-center text-slate-700 transition-all cursor-pointer shadow-2xs"
+            className={`w-11 h-10 rounded-2xl active:scale-95 flex items-center justify-center transition-all cursor-pointer shadow-2xs border ${activeCategory === 'career' ? 'bg-[#E2EAF4] hover:bg-[#D3E0EE] text-slate-700 border-slate-200/60' : 'bg-[#FEF3C7]/80 hover:bg-[#FDE68A] text-amber-900 border-amber-200/60'}`}
             title="Practical Simulation Lab"
           >
             <Zap className="w-4 h-4" />
@@ -643,7 +654,7 @@ export function MyLearningScreen() {
 
           <button 
             onClick={() => navigate('certificate')}
-            className="w-11 h-10 rounded-2xl bg-[#E2EAF4] hover:bg-[#D3E0EE] active:scale-95 flex items-center justify-center text-slate-700 transition-all cursor-pointer shadow-2xs"
+            className={`w-11 h-10 rounded-2xl active:scale-95 flex items-center justify-center transition-all cursor-pointer shadow-2xs border ${activeCategory === 'career' ? 'bg-[#E2EAF4] hover:bg-[#D3E0EE] text-slate-700 border-slate-200/60' : 'bg-[#FEF3C7]/80 hover:bg-[#FDE68A] text-amber-900 border-amber-200/60'}`}
             title="Certificates"
           >
             <Award className="w-4 h-4" />
@@ -651,7 +662,7 @@ export function MyLearningScreen() {
 
           <button 
             onClick={() => navigate('my-dashboard')}
-            className="w-11 h-10 rounded-2xl bg-[#E2EAF4] hover:bg-[#D3E0EE] active:scale-95 flex items-center justify-center text-slate-700 transition-all cursor-pointer shadow-2xs"
+            className={`w-11 h-10 rounded-2xl active:scale-95 flex items-center justify-center transition-all cursor-pointer shadow-2xs border ${activeCategory === 'career' ? 'bg-[#E2EAF4] hover:bg-[#D3E0EE] text-slate-700 border-slate-200/60' : 'bg-[#FEF3C7]/80 hover:bg-[#FDE68A] text-amber-900 border-amber-200/60'}`}
             title="My Dashboard & Velocity"
           >
             <Clock className="w-4 h-4" />
@@ -661,12 +672,12 @@ export function MyLearningScreen() {
 
         {/* =========================================================================
             7. EXPANDED SCROLLABLE CONTENT SECTION (INTELLIGENT DYNAMIC FEED)
-            When Career Skill is selected -> All Career Information comes
-            When Reel to Skill is selected -> All Reel to Skill Information comes
+            When Career Skill is selected -> All Career Information comes (in Blue theme)
+            When Reel to Skill is selected -> All Reel to Skill Information comes (in Mustard theme)
            ========================================================================= */}
-        <div className="px-6 pt-2 pb-8 space-y-6 border-t border-slate-100 bg-[#F8FAFC]">
+        <div className={`px-6 pt-2 pb-8 space-y-6 border-t ${activeCategory === 'career' ? 'border-slate-100 bg-[#F8FAFC]' : 'border-amber-100/70 bg-[#FFFDF8]'}`}>
 
-          {/* DYNAMIC CONTENT FOR CAREER SKILL MODE */}
+          {/* DYNAMIC CONTENT FOR CAREER SKILL MODE (ORIGINAL BLUE THEME) */}
           {activeCategory === 'career' ? (
             <div className="space-y-6 animate-in fade-in duration-300">
               
@@ -689,7 +700,7 @@ export function MyLearningScreen() {
 
                 {/* Progress Bar */}
                 <div className="space-y-1.5">
-                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200/60">
                     <div className="bg-gradient-to-r from-blue-500 to-[#0094FF] h-full rounded-full w-[65%]" />
                   </div>
                   <div className="flex justify-between text-[10px] font-bold text-slate-500">
@@ -726,7 +737,7 @@ export function MyLearningScreen() {
                       className="bg-white hover:bg-slate-50 border border-slate-200/70 p-3.5 rounded-2xl flex items-center justify-between cursor-pointer transition-all shadow-2xs"
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs ${idx < 4 ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-slate-100 text-slate-500'}`}>
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs ${idx < 4 ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-slate-100 text-slate-600'}`}>
                           {idx < 4 ? <CheckCircle2 className="w-4 h-4" /> : `0${idx + 1}`}
                         </div>
                         <div>
@@ -761,20 +772,20 @@ export function MyLearningScreen() {
                   <div>
                     <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
                       <span>RF Scanner & Barcode Systems</span>
-                      <span className="text-blue-600 font-extrabold">92%</span>
+                      <span className="text-[#0094FF] font-extrabold">92%</span>
                     </div>
                     <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                      <div className="bg-blue-600 h-full rounded-full w-[92%]" />
+                      <div className="bg-[#1A73E8] h-full rounded-full w-[92%]" />
                     </div>
                   </div>
 
                   <div>
                     <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
                       <span>Pallet Stacking & QC Inspection</span>
-                      <span className="text-amber-600 font-extrabold">85%</span>
+                      <span className="text-blue-600 font-extrabold">85%</span>
                     </div>
                     <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                      <div className="bg-amber-500 h-full rounded-full w-[85%]" />
+                      <div className="bg-blue-500 h-full rounded-full w-[85%]" />
                     </div>
                   </div>
 
@@ -793,7 +804,7 @@ export function MyLearningScreen() {
               {/* SECTION 4: Practical Simulation Lab Access */}
               <div 
                 onClick={() => navigate('practical-training')}
-                className="bg-gradient-to-br from-[#1A73E8] to-[#0052CC] rounded-3xl p-5 text-white shadow-md cursor-pointer hover:shadow-lg transition-all"
+                className="bg-gradient-to-br from-[#1A73E8] via-[#155CBD] to-[#0052CC] rounded-3xl p-5 text-white shadow-md cursor-pointer hover:shadow-lg transition-all"
               >
                 <div className="flex items-start justify-between">
                   <div>
@@ -815,7 +826,7 @@ export function MyLearningScreen() {
 
             </div>
           ) : (
-            /* DYNAMIC CONTENT FOR REEL TO SKILL MODE */
+            /* DYNAMIC CONTENT FOR REEL TO SKILL MODE (Mustard Yellow Palette) */
             <div className="space-y-6 animate-in fade-in duration-300">
               
               {/* SECTION 1: Featured 5-Minute Tactical Reels */}
@@ -827,7 +838,7 @@ export function MyLearningScreen() {
                   </h4>
                   <button 
                     onClick={() => navigate('library')}
-                    className="text-[11px] font-extrabold text-[#0094FF] hover:underline"
+                    className="text-[11px] font-extrabold text-[#D97706] hover:underline"
                   >
                     View All ({LIBRARY_ITEMS.length})
                   </button>
@@ -838,7 +849,7 @@ export function MyLearningScreen() {
                     <div 
                       key={item.id}
                       onClick={() => navigate('library-detail', { libraryId: item.id })}
-                      className="bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer shadow-2xs transition-all group"
+                      className="bg-white hover:bg-amber-50/40 border border-amber-200/80 rounded-2xl p-3.5 flex items-center gap-3.5 cursor-pointer shadow-2xs transition-all group"
                     >
                       {/* Video Thumbnail */}
                       <div className="w-20 h-20 rounded-xl overflow-hidden relative shrink-0 bg-slate-900">
@@ -848,7 +859,7 @@ export function MyLearningScreen() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform opacity-80"
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-7 h-7 rounded-full bg-white/90 shadow-md flex items-center justify-center text-[#0094FF]">
+                          <div className="w-7 h-7 rounded-full bg-white/95 shadow-md flex items-center justify-center text-[#D97706]">
                             <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
                           </div>
                         </div>
@@ -860,7 +871,7 @@ export function MyLearningScreen() {
                       {/* Video Details */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[9px] font-extrabold uppercase bg-sky-50 text-[#0094FF] px-2 py-0.5 rounded-md">
+                          <span className="text-[9px] font-extrabold uppercase bg-amber-100 text-[#B45309] px-2 py-0.5 rounded-md">
                             {item.category}
                           </span>
                           <span className="text-[10px] font-semibold text-slate-400">★ 4.9 (1.2k)</span>
@@ -869,7 +880,7 @@ export function MyLearningScreen() {
                         <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">{item.summary}</p>
                         <div className="mt-2 flex items-center justify-between text-[10px] font-bold text-slate-400">
                           <span>{item.level || 'Beginner'}</span>
-                          <span className="text-[#0094FF] flex items-center gap-0.5">
+                          <span className="text-[#D97706] font-bold flex items-center gap-0.5">
                             Watch Reel <ChevronRight className="w-3 h-3" />
                           </span>
                         </div>
@@ -880,16 +891,16 @@ export function MyLearningScreen() {
               </div>
 
               {/* SECTION 2: Reel-to-Skill Tactical SOP Highlights */}
-              <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm space-y-4">
+              <div className="bg-white rounded-3xl p-5 border border-amber-200/80 shadow-sm space-y-4">
                 <h4 className="text-sm font-black text-slate-900 flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-emerald-500" />
                   <span>Tactical Standard Operating Procedures</span>
                 </h4>
 
                 <div className="space-y-2.5">
-                  <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/60 flex items-center justify-between">
+                  <div className="p-3 rounded-2xl bg-amber-50/50 border border-amber-200/60 flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+                      <div className="w-7 h-7 rounded-lg bg-amber-100 text-[#B45309] flex items-center justify-center">
                         <Package className="w-4 h-4" />
                       </div>
                       <div>
@@ -902,9 +913,9 @@ export function MyLearningScreen() {
                     </span>
                   </div>
 
-                  <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/60 flex items-center justify-between">
+                  <div className="p-3 rounded-2xl bg-amber-50/50 border border-amber-200/60 flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                      <div className="w-7 h-7 rounded-lg bg-amber-100 text-[#B45309] flex items-center justify-center">
                         <Layers className="w-4 h-4" />
                       </div>
                       <div>
@@ -912,7 +923,7 @@ export function MyLearningScreen() {
                         <span className="text-[10px] text-slate-400 font-semibold">Zero damage loading technique</span>
                       </div>
                     </div>
-                    <span className="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
+                    <span className="text-[10px] font-extrabold text-[#D97706] bg-amber-100 px-2 py-1 rounded-md">
                       Play SOP
                     </span>
                   </div>

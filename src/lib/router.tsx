@@ -33,6 +33,7 @@ export type ScreenName =
   | 'careers'
   | 'interview-prep'
   | 'skillgo-english'
+  | 'english-target'
   | 'english-practice-home'
   | 'english-practice-translate'
   | 'english-practice-answer'

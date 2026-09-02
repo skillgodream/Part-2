@@ -3,8 +3,8 @@
 @layer base {
   body {
     font-family: 'Outfit', 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    color: #0f172a;
-    background-color: #f8fafc;
+    color: #1e293b;
+    background-color: #e8eef8;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: -0.01em;
@@ -14,6 +14,63 @@
     font-family: 'Outfit', 'DM Sans', system-ui, -apple-system, sans-serif;
     letter-spacing: -0.02em;
   }
+}
+
+/* Tactile Neumorphism Utility Classes */
+.neu-bg {
+  background-color: #e8eef8;
+}
+
+.neu-flat {
+  background: #e8eef8;
+  box-shadow: 6px 6px 14px #cad4e4, -6px -6px 14px #ffffff;
+}
+
+.neu-flat-lg {
+  background: #e8eef8;
+  box-shadow: 10px 10px 22px #c2cee0, -10px -10px 22px #ffffff;
+}
+
+.neu-flat-sm {
+  background: #e8eef8;
+  box-shadow: 3px 3px 8px #cad4e4, -3px -3px 8px #ffffff;
+}
+
+.neu-inset {
+  background: #e1e9f5;
+  box-shadow: inset 3px 3px 6px #cad4e4, inset -3px -3px 6px #ffffff;
+}
+
+.neu-inset-sm {
+  background: #e3ebf6;
+  box-shadow: inset 2px 2px 4px #cad4e4, inset -2px -2px 4px #ffffff;
+}
+
+.neu-btn-circle {
+  background: #e8eef8;
+  box-shadow: 5px 5px 12px #cad4e4, -5px -5px 12px #ffffff;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neu-btn-circle:active {
+  box-shadow: inset 3px 3px 6px #cad4e4, inset -3px -3px 6px #ffffff;
+  transform: scale(0.96);
+}
+
+.neu-glow-btn {
+  background: linear-gradient(135deg, #5b7ef8 0%, #7d9bfb 100%);
+  box-shadow: 0 10px 24px rgba(91, 126, 248, 0.45), 5px 5px 12px #cad4e4, -5px -5px 12px #ffffff;
+  transition: all 0.2s ease;
+}
+
+.neu-glow-btn:hover {
+  box-shadow: 0 12px 28px rgba(91, 126, 248, 0.55), 6px 6px 14px #cad4e4, -6px -6px 14px #ffffff;
+  transform: translateY(-1px);
+}
+
+.neu-glow-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 4px 12px rgba(91, 126, 248, 0.4);
 }
 
 /* Custom scrollbar utility */
@@ -28,4 +85,5 @@
 ::view-transition-group(skill-card-*) {
   animation-duration: 450ms;
 }
+
 

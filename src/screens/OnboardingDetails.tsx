@@ -161,25 +161,23 @@ export function OnboardingDetailsScreen() {
   const theme = getStepTheme();
 
   return (
-    <div className="min-h-screen bg-purple-50 relative overflow-hidden flex flex-col justify-between selection:bg-purple-600 selection:text-white" id="onboarding-wizard-screen">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-3xl pointer-events-none transition-all duration-700 opacity-70 translate-x-1/3 -translate-y-1/3 bg-gradient-to-br from-purple-300/40 via-pink-300/30 to-amber-200/30" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full blur-3xl pointer-events-none transition-all duration-700 opacity-60 -translate-x-1/3 translate-y-1/3 bg-gradient-to-tr from-rose-200/40 via-indigo-200/30 to-emerald-200/30" />
+    <div className="min-h-screen bg-white relative overflow-hidden flex flex-col justify-between selection:bg-purple-600 selection:text-white" id="onboarding-wizard-screen">
       
       {/* Skip Button */}
       <div className="absolute top-4 right-4 z-20">
         <button
           onClick={() => navigate('home')}
-          className="text-xs font-semibold text-slate-500 hover:text-purple-700 bg-white/50 hover:bg-white px-3 py-1.5 rounded-full transition-all border border-slate-200/50"
+          className="text-xs font-semibold text-slate-500 hover:text-purple-700 bg-slate-100 hover:bg-slate-200 px-3.5 py-1.5 rounded-full transition-all border border-slate-200/80 cursor-pointer"
         >
           Skip to Home
         </button>
       </div>
 
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-0">
-        <div className="w-full max-w-lg mb-8 sm:mb-10 flex justify-center pt-8">
+        <div className="w-full max-w-lg mb-6 sm:mb-8 flex justify-center pt-8">
           <SkillGoLogo size="3xl" />
         </div>
-        <div className="w-full h-full sm:h-auto sm:max-w-lg bg-white/90 backdrop-blur-xl rounded-t-3xl sm:rounded-3xl border-t sm:border border-slate-200/80 p-6 sm:p-10 shadow-2xl shadow-indigo-950/5 flex flex-col">
+        <div className="w-full h-full sm:h-auto sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl border-t sm:border border-slate-200/80 p-6 sm:p-10 shadow-2xl shadow-slate-900/5 flex flex-col">
           <div className="flex-1 flex flex-col gap-6">
             {step === 1 && (
               <form onSubmit={handleNextFromStep1} className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
@@ -206,7 +204,7 @@ export function OnboardingDetailsScreen() {
                     <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${isCityDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
                   {isCityDropdownOpen && (
-                    <div className="absolute z-30 mt-2 w-full bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute z-30 mt-2 w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
                       <div className="p-3 border-b border-slate-100 bg-slate-50">
                         <div className="relative">
                           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -290,7 +288,7 @@ export function OnboardingDetailsScreen() {
           </div>
         </div>
       </main>
-      <footer className="relative z-10 py-6 text-center text-xs text-slate-400 border-t border-amber-100/60 bg-white/50 backdrop-blur-sm">SkillGo • Job-Ready Vocational Career Acceleration • Bank-Grade Secure Supabase Auth</footer>
+      <footer className="relative z-10 py-6 text-center text-xs text-slate-400 border-t border-slate-200 bg-white">SkillGo • Job-Ready Vocational Career Acceleration • Bank-Grade Secure Supabase Auth</footer>
     </div>
   );
 }

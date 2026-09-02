@@ -273,7 +273,7 @@ let state = {userName:'', idx:0, results:[], attempts:0, step:'scanItem', matche
 let cameraInstance=null, cameraTargetId=null;
 
 function $(id){return document.getElementById(id);}
-function normalize(s){return (s==null?'':String(s)).replace(/[^a-zA-Z0-9]/g,'').toUpperCase();}
+function normalize(s){return (s==null?'':String(s)).trim().toUpperCase();}
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');window.scrollTo(0,0);}
 
 function doLogin(){

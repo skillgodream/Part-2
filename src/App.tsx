@@ -25,6 +25,7 @@ import { TrainingViewerScreen } from './screens/TrainingViewer';
 import { AiRoleplayPrototype } from './screens/AiRoleplayPrototype';
 import { InterviewPrep } from './components/InterviewPrep';
 import { SkillGoEnglish } from './screens/SkillGoEnglish';
+import { EnglishTarget } from './screens/EnglishPractice/EnglishTarget';
 import { EnglishPracticeHome } from './screens/EnglishPractice/EnglishHome';
 import { TranslateSpeak } from './screens/EnglishPractice/TranslateSpeak';
 import { AnswerImprove } from './screens/EnglishPractice/AnswerImprove';
@@ -280,6 +281,7 @@ function AppLayout() {
                 {currentRoute.screen === 'roleplay' && <AiRoleplayPrototype />}
                 {currentRoute.screen === 'interview-prep' && <InterviewPrep />}
                 {currentRoute.screen === 'skillgo-english' && <SkillGoEnglish />}
+                {currentRoute.screen === 'english-target' && <EnglishTarget />}
                 {currentRoute.screen === 'english-practice-home' && <EnglishPracticeHome />}
                 {currentRoute.screen === 'english-practice-translate' && <TranslateSpeak />}
                 {currentRoute.screen === 'english-practice-answer' && <AnswerImprove />}

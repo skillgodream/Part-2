@@ -421,7 +421,12 @@ export function PracticalTrainingScreen() {
 
   // If activityId is in router params or selected by user, we show the ACTUAL SIMULATION screen
   const [activeSimulationId, setActiveSimulationId] = useState<string | null>(() => {
-    return currentRoute.params?.activityId || null;
+    if (currentRoute.params?.activityId) return currentRoute.params.activityId;
+    if (currentRoute.params?.activityIndex !== undefined) {
+      const idx = Number(currentRoute.params.activityIndex);
+      return practicalActivities[idx]?.id || practicalActivities[0]?.id || null;
+    }
+    return null;
   });
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -456,6 +461,30 @@ export function PracticalTrainingScreen() {
     setCurrentStepIndex(0);
   };
 
+  const ACTIVITY_TRAINING_MAP: Record<string, { url: string; title: string }> = {
+    'log-prac-1': { url: '/Practice/inbound-training.html', title: 'Inbound Receiving Desktop WMS Simulator' },
+    'log-prac-3a': { url: '/Practice/picking-training.html', title: 'Batch Wave Picking Desktop WMS Simulator' },
+    'log-prac-2b': { url: '/Practice/inventory-training.html', title: 'Inventory Putaway Desktop WMS Simulator' },
+    'log-prac-4b': { url: '/Practice/outbound-training.html', title: 'Outbound Packing & Dispatch Desktop WMS Simulator' },
+    'log-prac-5': { url: '/Practice/return-training.html', title: 'Return QC & Reverse Logistics Desktop WMS Simulator' },
+    // Resources
+    'res-1': { url: '/Practice/item-barcode-master-sheet.html', title: 'Item Barcode Master Sheet' },
+    'res-2': { url: '/Practice/location-barcode-sheet.html', title: 'Location Barcode Sheet' },
+    'res-3': { url: '/Practice/practice-po-sheets.html', title: 'Practice PO Sheets' },
+    'res-4': { url: '/Practice/task-reference-sheets.html', title: 'Task Reference Sheets' },
+  };
+
+  const getTrainingLink = (activityId: string) => {
+    return ACTIVITY_TRAINING_MAP[activityId] || null;
+  };
+
+  const LEARNER_RESOURCES = [
+    { id: 'res-3', title: 'PO & ASN Sheets', iconType: 'boxes' },
+    { id: 'res-1', title: 'Item Barcode Sheet', iconType: 'barcode' },
+    { id: 'res-2', title: 'Location Barcode Sheet', iconType: 'barcode' },
+    { id: 'res-4', title: 'Task Reference Sheets', iconType: 'creditCard' },
+  ] as const;
+
   const getLearnerResourceIcon = (type: string) => {
     switch (type) {
       case 'barcode': return <Barcode className="w-5 h-5" />;
@@ -475,30 +504,6 @@ export function PracticalTrainingScreen() {
       default: return <div className="text-3xl">🏗️</div>; // Racks/Warehouse
     }
   };
-
-  const ACTIVITY_TRAINING_MAP: Record<string, { url: string; title: string }> = {
-    'log-prac-1': { url: '/Practice/inbound-training.html', title: 'Inbound Training Guide' },
-    'log-prac-3a': { url: '/Practice/picking-training.html', title: 'Batch Wave Picking Training Guide' },
-    'log-prac-2b': { url: '/Practice/inventory-training.html', title: 'Putaway Training Guide' },
-    'log-prac-4b': { url: '/Practice/outbound-training.html', title: 'Outbound Training Guide' },
-    'log-prac-5': { url: '/Practice/return-training.html', title: 'Return Training Guide' },
-    // Resources
-    'res-1': { url: '/Practice/item-barcode-master-sheet.html', title: 'Item Barcode Master Sheet' },
-    'res-2': { url: '/Practice/location-barcode-sheet.html', title: 'Location Barcode Sheet' },
-    'res-3': { url: '/Practice/practice-po-sheets.html', title: 'Practice PO Sheets' },
-    'res-4': { url: '/Practice/task-reference-sheets.html', title: 'Task Reference Sheets' },
-  };
-  
-  const getTrainingLink = (activityId: string) => {
-    return ACTIVITY_TRAINING_MAP[activityId] || null;
-  };
-
-  const LEARNER_RESOURCES = [
-    { id: 'res-3', title: 'PO', iconType: 'boxes' },
-    { id: 'res-1', title: 'Item Barcode', iconType: 'barcode' },
-    { id: 'res-2', title: 'Location Barcode', iconType: 'barcode' },
-    { id: 'res-4', title: 'Task Reference Sheets', iconType: 'creditCard' },
-  ] as const;
 
   // -------------------------------------------------------------
   // VIEW 2: ACTUAL SIMULATION SCREEN (WHEN A CARD IS CLICKED)
@@ -556,6 +561,21 @@ export function PracticalTrainingScreen() {
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
               {activeActivity.description}
             </p>
+
+            {getTrainingLink(activeActivity.id) && (
+              <div className="pt-2">
+                <button
+                  onClick={() => {
+                    const link = getTrainingLink(activeActivity.id)!;
+                    navigate('training-viewer', { url: link.url, title: link.title });
+                  }}
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold transition-all cursor-pointer border border-blue-200"
+                >
+                  <span>🖥️ Launch Virtual Desktop Simulator</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Interactive Simulation Sandbox Console */}
@@ -788,7 +808,14 @@ export function PracticalTrainingScreen() {
                 onClick={() => {
                   const link = getTrainingLink(act.id);
                   if (link) {
-                    navigate('training-viewer', { url: link.url, title: link.title });
+                    if (enrollment?.id) {
+                      enrollmentStore.completePracticalActivity(enrollment.id, act.id);
+                    }
+                    navigate('training-viewer', { url: link.url, title: link.title, returnTo: 'practical-training' });
+                  } else {
+                    setActiveSimulationId(act.id);
+                    setCurrentStepIndex(0);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                   }
                 }}
               >
@@ -816,7 +843,21 @@ export function PracticalTrainingScreen() {
 
                 {/* Footer: Start Button */}
                 <button
-                  className="w-full py-3 bg-slate-900 hover:bg-slate-800 rounded-xl text-xs font-bold text-white transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const link = getTrainingLink(act.id);
+                    if (link) {
+                      if (enrollment?.id) {
+                        enrollmentStore.completePracticalActivity(enrollment.id, act.id);
+                      }
+                      navigate('training-viewer', { url: link.url, title: link.title, returnTo: 'practical-training' });
+                    } else {
+                      setActiveSimulationId(act.id);
+                      setCurrentStepIndex(0);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}
+                  className="w-full py-3 bg-slate-900 hover:bg-slate-800 rounded-xl text-xs font-bold text-white transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                 >
                   {isCompleted ? 'Practice Again' : 'Start Simulation'} →
                 </button>
@@ -833,8 +874,10 @@ export function PracticalTrainingScreen() {
               <div
                 key={res.id}
                 onClick={() => {
-                  const link = getTrainingLink(res.id)!;
-                  navigate('training-viewer', { url: link.url, title: link.title });
+                  const link = getTrainingLink(res.id);
+                  if (link) {
+                    navigate('training-viewer', { url: link.url, title: link.title });
+                  }
                 }}
                 className="bg-white rounded-2xl p-4 border border-slate-200 hover:shadow-md hover:border-slate-400 cursor-pointer transition-all flex items-center justify-between group"
               >
@@ -844,7 +887,9 @@ export function PracticalTrainingScreen() {
                   </div>
                   <span className="text-sm font-bold text-slate-900">{res.title}</span>
                 </div>
-                <button className="px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 rounded-lg group-hover:bg-blue-100">View</button>
+                <button className="px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 rounded-lg group-hover:bg-blue-100 cursor-pointer">
+                  View
+                </button>
               </div>
             ))}
           </div>
