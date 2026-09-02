@@ -232,42 +232,38 @@ export function RoleDetailScreen() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#1157C7] flex justify-center selection:bg-blue-300 select-none pb-16 overflow-y-auto">
+    <div className="w-full min-h-screen bg-slate-900 flex justify-center selection:bg-blue-300 select-none pb-16 overflow-y-auto">
       
       {/* Mobile Device Frame Container */}
-      <div className="w-full max-w-md bg-[#135ED1] min-h-screen relative flex flex-col shadow-2xl">
+      <div className="w-full max-w-md bg-[#1864DB] min-h-screen relative flex flex-col shadow-2xl">
         
-        {/* 1. TOP HERO SECTION (Airplane boarding background + Floating pill) */}
-        <div className="relative w-full h-[220px] shrink-0 overflow-hidden">
-          {/* Background Airport / Airplane Image */}
+        {/* 1. TOP HERO SECTION (Full bleed to the top) */}
+        <div className="relative w-full h-[260px] shrink-0 overflow-hidden">
           <img 
             src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1000&q=80" 
             alt="Boarding Gateway" 
             className="w-full h-full object-cover object-center"
           />
-          
-          {/* Subtle dark glass overlay for perfect readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/35 to-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
 
           {/* Top Bar with Back Button */}
           <div className="absolute top-4 left-4 z-20">
             <button 
               onClick={() => navigate('choose-skill', { selectedSkillId: skill.id })}
-              className="w-9 h-9 rounded-xl bg-white/90 text-slate-800 shadow-md flex items-center justify-center hover:bg-white active:scale-95 transition-all cursor-pointer"
+              className="w-10 h-10 rounded-full bg-white/95 text-slate-900 shadow-lg flex items-center justify-center hover:bg-white active:scale-95 transition-all cursor-pointer"
             >
-              <ArrowLeft className="w-5 h-5 text-[#0E2856] stroke-[2.5]" />
+              <ArrowLeft className="w-5 h-5 text-slate-900 stroke-[2.5]" />
             </button>
           </div>
 
-          {/* Center Origin & Destination Floating Widget: Role Name + Program Completion % */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center pt-2 px-6 z-10 text-center">
-            <span className="text-[11px] uppercase tracking-wider text-white/80 font-bold">Career Track</span>
-            <h1 className="text-[29px] sm:text-[33px] font-black text-white tracking-tight drop-shadow-md leading-tight mt-0.5 max-w-[340px]">
+          {/* Center Title & Completion */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pt-6 px-6 z-10 text-center">
+            <span className="text-[11px] uppercase tracking-widest text-white/90 font-black">Career Track</span>
+            <h1 className="text-[32px] sm:text-[36px] font-black text-white tracking-tight drop-shadow-md leading-tight mt-1 max-w-[340px]">
               {role.title}
             </h1>
             
-            {/* Pill Badge: Program Completion % */}
-            <div className="mt-2 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full shadow-lg border border-white/40 flex items-center gap-1.5">
+            <div className="mt-3 bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full shadow-lg border border-white/40 flex items-center gap-1.5">
               <span className="text-[11px] font-bold text-slate-600">Completion :</span>
               <span className="text-[11px] font-black text-[#1864DB]">{totalCompletionPercent}% Completed</span>
             </div>
@@ -275,7 +271,7 @@ export function RoleDetailScreen() {
         </div>
 
         {/* 2. ROYAL BLUE ARCHED CONTAINER */}
-        <div className="w-full bg-[#1864DB] rounded-t-[34px] -mt-6 z-20 flex-1 px-5 pt-6 pb-20 flex flex-col shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
+        <div className="w-full bg-[#1864DB] rounded-t-[36px] -mt-6 z-20 flex-1 px-5 pt-6 pb-20 flex flex-col shadow-[0_-10px_30px_rgba(0,0,0,0.25)] border-t border-blue-400/30">
           
           {/* Mini Action Icons (Interview Prep navigates to interview page, English Prep navigates to english page) */}
           <div className="flex items-center justify-center gap-4 mb-4">

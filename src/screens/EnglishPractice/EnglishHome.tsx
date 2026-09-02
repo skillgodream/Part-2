@@ -5,9 +5,6 @@ import {
   Mic, 
   BookOpen, 
   ArrowLeft, 
-  Sparkles, 
-  ChevronRight,
-  Flame,
   BarChart3,
   Settings,
   TrendingUp
@@ -118,28 +115,10 @@ export const EnglishPracticeHome: React.FC = () => {
         {/* 2. RECOMMENDED JOURNEY CARD (Small Green Card matching Overview size) */}
         <div 
           onClick={() => navigate('english-target')}
-          className="p-4 rounded-2xl mb-4 text-white bg-gradient-to-r from-emerald-600 to-teal-700 shadow-md cursor-pointer hover:scale-[1.01] transition-all flex items-center justify-between"
+          className="p-4 rounded-2xl mb-4 text-white bg-gradient-to-r from-emerald-600 to-teal-700 shadow-md cursor-pointer hover:scale-[1.01] transition-all text-center"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white shrink-0">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">
-                  Recommended Journey
-                </span>
-                <span className="text-[10px] font-bold text-emerald-100 flex items-center gap-0.5">
-                  <Flame className="w-3 h-3 fill-current text-amber-300" /> 5d Streak
-                </span>
-              </div>
-              <h2 className="text-xs sm:text-sm font-black mt-1">
-                Overview ➔ Phrase Bank ➔ AI Speaking ➔ Progress
-              </h2>
-            </div>
-          </div>
-          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
-            <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+          <div className="font-black text-sm">
+            Recommended Journey
           </div>
         </div>
 
