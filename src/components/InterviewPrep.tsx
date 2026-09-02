@@ -389,22 +389,15 @@ export function InterviewPrep() {
             {activeStep === 1 && (
               <div className="space-y-5 animate-in fade-in duration-200">
                 {/* Hero Card */}
-                <div className="ip-teal-card-bg rounded-[26px] p-5 text-white relative overflow-hidden shadow-lg">
+                <div className="ip-teal-card-bg rounded-[22px] p-4 text-white relative overflow-hidden shadow-md">
                   <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-white/10 blur-xl pointer-events-none" />
                   
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="text-[10px] font-black uppercase tracking-widest bg-white/25 px-2.5 py-1 rounded-full">
                       Sequential Mastery
                     </span>
                     <span className="text-xs font-bold text-teal-100">{learnerData.name || 'Candidate'}</span>
                   </div>
-
-                  <h2 className="text-xl sm:text-2xl font-black tracking-tight mb-1">
-                    Master Workplace Interviews
-                  </h2>
-                  <p className="text-xs text-teal-100 font-medium leading-relaxed mb-4">
-                    Follow our 3-step sequence to build confidence, explore top questions, and practice with our live AI Interview Call simulator.
-                  </p>
 
                   <div className="flex items-center gap-3">
                     <button
