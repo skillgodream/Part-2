@@ -22,7 +22,6 @@ import { LibraryScreen } from './screens/Library';
 import { LibraryDetailScreen } from './screens/LibraryDetail';
 import { CertificateScreen } from './screens/Certificate';
 import { TrainingViewerScreen } from './screens/TrainingViewer';
-import { AiRoleplayPrototype } from './screens/AiRoleplayPrototype';
 import { InterviewPrep } from './components/InterviewPrep';
 import { SkillGoEnglish } from './screens/SkillGoEnglish';
 import { EnglishTarget } from './screens/EnglishPractice/EnglishTarget';
@@ -278,7 +277,7 @@ function AppLayout() {
                 {currentRoute.screen === 'library' && <LibraryScreen />}
                 {currentRoute.screen === 'library-detail' && <LibraryDetailScreen />}
                 {currentRoute.screen === 'certificate' && <CertificateScreen />}
-                {currentRoute.screen === 'roleplay' && <AiRoleplayPrototype />}
+                {currentRoute.screen === 'roleplay' && <InterviewPrep />}
                 {currentRoute.screen === 'interview-prep' && <InterviewPrep />}
                 {currentRoute.screen === 'skillgo-english' && <SkillGoEnglish />}
                 {currentRoute.screen === 'english-target' && <EnglishTarget />}

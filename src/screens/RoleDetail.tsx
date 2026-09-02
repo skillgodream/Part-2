@@ -275,7 +275,7 @@ export function RoleDetailScreen() {
         </div>
 
         {/* 2. ROYAL BLUE ARCHED CONTAINER */}
-        <div className="w-full bg-[#1864DB] rounded-t-[34px] -mt-6 z-20 flex-1 px-5 pt-4 pb-20 flex flex-col shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
+        <div className="w-full bg-[#1864DB] rounded-t-[34px] -mt-6 z-20 flex-1 px-5 pt-6 pb-20 flex flex-col shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
           
           {/* Mini Action Icons (Interview Prep navigates to interview page, English Prep navigates to english page) */}
           <div className="flex items-center justify-center gap-4 mb-4">
@@ -287,7 +287,7 @@ export function RoleDetailScreen() {
               <UserCheck className="w-5 h-5 text-[#1864DB] stroke-[2.2]" />
             </button>
             <button 
-              onClick={() => navigate('english-target', { roleId: role.id, skillId: skill.id })}
+              onClick={() => navigate('english-practice-home', { roleId: role.id, skillId: skill.id })}
               className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform cursor-pointer"
               title="English Practice"
             >

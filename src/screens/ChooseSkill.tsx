@@ -8,6 +8,7 @@ import {
   Utensils,
   Menu,
   Play,
+  Pause,
   Briefcase,
   Layers,
   ArrowRight,
@@ -19,7 +20,18 @@ import {
   Volume2,
   Sparkles,
   CheckCircle2,
-  Bot
+  Bot,
+  Palette,
+  Shirt,
+  Armchair,
+  Calculator,
+  Music,
+  Monitor,
+  UtensilsCrossed,
+  ShieldCheck,
+  Users,
+  Clock,
+  Video
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { JOB_ROLES } from '../lib/catalog';
@@ -50,514 +62,458 @@ const ROLE_IMAGES: Record<string, string> = {
   'banquet-event-coordinator': 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=800&q=80',
 };
 
-interface IndustryItem {
+interface CourseItem {
   id: string;
   name: string;
-  subtitle: string;
-  image: string;
-  videoUrl?: string;
-  videoTitle: string;
-  videoDescription: string;
   icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  bgGradient: string;
+  clickable?: boolean;
 }
 
-const INDUSTRIES: IndustryItem[] = [
-  { 
-    id: 'logistics-supply-chain', 
-    name: 'Warehouse & Logistics', 
-    subtitle: 'Inventory, Inbound & Supply Chain Operations',
-    image: warehousePic || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80', 
-    videoTitle: 'Day in the Life: Warehouse & Logistics Operations',
-    videoDescription: 'Discover how modern smart hubs orchestrate barcode staging, automated conveyor sorting, RF scanning, and rapid freight dispatching.',
-    icon: Package,
-    color: 'text-emerald-500',
-    bgGradient: 'from-emerald-400 to-teal-600'
-  },
-  { 
-    id: 'retail-operations', 
-    name: 'Retail Operations', 
-    subtitle: 'Store Merchandising, POS & Customer Experience',
-    image: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?auto=format&fit=crop&w=800&q=80', 
-    videoTitle: 'Modern Retail & Merchandising Mastery',
-    videoDescription: 'Step inside premium store environments: learn omni-channel POS checkouts, inventory planograms, and high-impact visual merchandising.',
-    icon: ShoppingCart,
-    color: 'text-blue-500',
-    bgGradient: 'from-blue-500 to-indigo-600'
-  },
-  { 
-    id: 'quick-commerce', 
-    name: 'Quick Commerce', 
-    subtitle: 'Dark Store Dispatch, Picking & Fresh Sorting',
-    image: pickerPic || 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80', 
-    videoTitle: 'Inside 10-Minute Dark Store Fulfillment',
-    videoDescription: 'Explore hyper-fast dark store pick-and-pack loops, real-time rider dispatch orchestration, and freshness grading protocols.',
-    icon: Zap,
-    color: 'text-amber-500',
-    bgGradient: 'from-amber-400 to-orange-500'
-  },
-  { 
-    id: 'hospitality', 
-    name: 'Hospitality & F&B', 
-    subtitle: 'Guest Services, Dining & Banquet Coordination',
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80', 
-    videoTitle: 'Excellence in Guest Experience & F&B',
-    videoDescription: 'Learn five-star guest reception, fine-dining table turnover, food safety HACCP workflows, and luxury banquet event hosting.',
-    icon: Utensils,
-    color: 'text-rose-500',
-    bgGradient: 'from-rose-400 to-pink-600'
-  },
+const COURSES: CourseItem[] = [
+  { id: 'warehouse', name: 'Warehouse', icon: Package, clickable: true },
+  { id: 'retail', name: 'Retail', icon: ShoppingCart, clickable: true },
+  { id: 'hotel', name: 'Hotel', icon: Utensils, clickable: true },
+  { id: 'quick-commerce', name: 'Quick Commerce', icon: Zap, clickable: true },
+  { id: 'qsr', name: 'QSR', icon: UtensilsCrossed, clickable: false },
+  { id: 'beauty', name: 'Beauty', icon: Sparkles, clickable: false },
+  { id: 'cleaning', name: 'Cleaning', icon: ShieldCheck, clickable: false },
+  { id: 'service', name: 'Service', icon: Users, clickable: false },
 ];
 
-// 4 Feature Elements as requested
-const FEATURE_PILLARS = [
-  {
-    id: 'mobile',
-    label: '100% Mobile',
-    icon: Smartphone,
-    color: 'text-emerald-500',
-    description: 'Learn on any smartphone with bite-sized, interactive micro-modules.'
+const COURSE_DETAILS: Record<string, { title: string; subtitle: string; description: string; duration: string; studentCount: string; poster: string; highlights: string[] }> = {
+  warehouse: {
+    title: 'Warehouse & Logistics Operations',
+    subtitle: 'Master modern warehouse management, inbound inspection & dispatch',
+    description: 'Gain practical workplace skills in inventory management, safe forklift operations, inbound quality control, and rapid fulfillment dispatch.',
+    duration: '2 Hours 30 Mins',
+    studentCount: '1,240+ Enrolled',
+    poster: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
+    highlights: ['Inbound Quality Inspection', 'Inventory Staging & Barcoding', 'Dispatch & Fleet Coordination', 'Safety SOPs & Compliance']
   },
-  {
-    id: 'practical',
-    label: 'Practical Lab',
-    icon: FlaskConical,
-    color: 'text-indigo-500',
-    description: 'Hands-on task simulations mirroring actual floor operations.'
+  retail: {
+    title: 'Retail Store Operations & POS',
+    subtitle: 'Deliver exceptional customer experience and master point-of-sale systems',
+    description: 'Learn modern retail store management, visual merchandising, cashier POS transactions, stock auditing, and customer relationship best practices.',
+    duration: '2 Hours 15 Mins',
+    studentCount: '980+ Enrolled',
+    poster: 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=800&q=80',
+    highlights: ['POS Cashier Operations', 'Visual Merchandising', 'Stock Auditing & Replenishment', 'Customer Delight Strategies']
   },
-  {
-    id: 'interview',
-    label: 'Interview Prep',
-    icon: UserCheck,
-    color: 'text-amber-500',
-    description: 'AI-assisted behavioral drills and real recruiter interview scenarios.'
+  hotel: {
+    title: 'Hospitality & Guest Relations',
+    subtitle: 'Excel in hotel front desk, F&B service, and guest hospitality',
+    description: 'Master hospitality standards, front desk management, banquet coordination, food safety & hygiene, and memorable guest experiences.',
+    duration: '3 Hours 00 Mins',
+    studentCount: '850+ Enrolled',
+    poster: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+    highlights: ['Front Desk & Check-in SOPs', 'F&B Service Excellence', 'Food Safety & Hygiene', 'Banquet & Event Coordination']
   },
-  {
-    id: 'english',
-    label: 'English Prep',
-    icon: Languages,
-    color: 'text-rose-500',
-    description: 'Workplace conversation practice, industry phrases & vocabulary builder.'
+  'quick-commerce': {
+    title: 'Quick Commerce & Dark Store',
+    subtitle: 'Master 10-minute delivery dark store picking, packing, and dispatch',
+    description: 'Designed for hyper-local fulfillment centers. Learn rapid batch picking, real-time inventory packing, quality grading, and rider dispatch coordination.',
+    duration: '1 Hours 45 Mins',
+    studentCount: '2,150+ Enrolled',
+    poster: 'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?auto=format&fit=crop&w=800&q=80',
+    highlights: ['Rapid Dark Store Picking', 'Fresh Produce Quality Grading', 'Dispatch Rider Coordination', 'Shift Lead Operations']
   }
-];
+};
 
 export function ChooseSkillScreen() {
   const { navigate, currentRoute } = useRouter();
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeCourseId, setActiveCourseId] = useState('warehouse');
   const [activeRoleIndex, setActiveRoleIndex] = useState(0);
+  const [modalCourse, setModalCourse] = useState<CourseItem | null>(null);
+  const [isPlayingVideo, setIsPlayingVideo] = useState<boolean>(false);
   
   const selectedCategory = currentRoute.params?.selectedSkillId || null;
-  const [selectedRole, setSelectedRole] = useState<JobRole | null>(null);
-  
-  // Video preview popup modal state
-  const [previewingIndustryVideo, setPreviewingIndustryVideo] = useState<IndustryItem | null>(null);
-  const [featureDetail, setFeatureDetail] = useState<typeof FEATURE_PILLARS[0] | null>(null);
-
-  const activeIndustry = INDUSTRIES[activeIndex] || INDUSTRIES[0];
 
   const filteredRoles = selectedCategory
     ? JOB_ROLES.filter(r => r.skillId === selectedCategory)
-    : [];
+    : JOB_ROLES.filter(r => r.skillId === 'logistics-supply-chain');
 
   const activeRole = filteredRoles[activeRoleIndex] || filteredRoles[0];
 
-  const handleOpenIndustry = (industryId: string) => {
-    navigate('choose-skill', { selectedSkillId: industryId });
-    setActiveRoleIndex(0);
+  // Touch swipe handling for swiping left/right between roles
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
   };
 
-  const handleSelectRole = (role: JobRole) => {
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      // Swipe left -> next role
+      setActiveRoleIndex((prev) => (prev + 1) % filteredRoles.length);
+    } else if (isRightSwipe) {
+      // Swipe right -> prev role
+      setActiveRoleIndex((prev) => (prev - 1 + filteredRoles.length) % filteredRoles.length);
+    }
+  };
+
+  const handleSelectCourse = (course: CourseItem) => {
+    if (course.clickable === false) return;
+    setActiveCourseId(course.id);
+    setModalCourse(course);
+    setIsPlayingVideo(false);
+  };
+
+  const handleProceedToNextScreen = (courseId: string) => {
+    setModalCourse(null);
+    setActiveCourseId(courseId);
+    setActiveRoleIndex(0);
+    if (courseId === 'warehouse') {
+      navigate('choose-skill', { selectedSkillId: 'logistics-supply-chain' });
+    } else if (courseId === 'retail') {
+      navigate('choose-skill', { selectedSkillId: 'retail-operations' });
+    } else if (courseId === 'hotel') {
+      navigate('choose-skill', { selectedSkillId: 'hospitality' });
+    } else if (courseId === 'quick-commerce') {
+      navigate('choose-skill', { selectedSkillId: 'quick-commerce' });
+    } else {
+      navigate('choose-skill', { selectedSkillId: 'logistics-supply-chain' });
+    }
+  };
+
+  const handleGetStarted = () => {
+    const course = COURSES.find(c => c.id === activeCourseId) || COURSES[0];
+    handleSelectCourse(course);
+  };
+
+  const handleLaunchCareerTrack = () => {
     navigate('role-detail', { 
-      roleId: role.id, 
-      skillId: selectedCategory || role.skillId
+      roleId: activeRole.id, 
+      skillId: selectedCategory || activeRole.skillId
     });
   };
 
+  const activeCourseDetails = modalCourse ? COURSE_DETAILS[modalCourse.id] : null;
+
   return (
-    <div className="w-full min-h-screen bg-[#F7FAFC] font-sans text-slate-900 pb-28 select-none flex flex-col items-center">
+    <div className="w-full min-h-screen bg-white font-sans text-slate-900 pb-28 select-none flex flex-col items-center">
       
-      {/* Container restricted to mobile width - brought down by 10% */}
-      <div className="w-full max-w-md px-5 pt-5 sm:pt-6 flex flex-col flex-1">
+      {/* Container restricted to mobile width */}
+      <div className="w-full max-w-md px-6 pt-8 sm:pt-10 flex flex-col flex-1 justify-between relative">
         
-        {/* 1. TOP HEADER: "Find Your Favorite Career" or "Popular Roles" in middle top center */}
         {!selectedCategory ? (
-          <div className="text-center mt-2 mb-3">
-            <h1 className="text-2xl sm:text-[26px] font-extrabold text-[#0D1F3C] tracking-tight leading-tight">
-              Find Your Favorite Career
-            </h1>
-            <p className="text-sm font-semibold text-slate-500 tracking-tight mt-0.5">
-              And Grow With Us
-            </p>
-          </div>
-        ) : (
-          <div className="text-center mt-2 mb-3">
-            <h1 className="text-2xl sm:text-[26px] font-extrabold text-[#0D1F3C] tracking-tight leading-tight text-center">
-              Popular Roles
-            </h1>
-          </div>
-        )}
-
-        {/* VIEW 1: Main Industries Landing */}
-        {!selectedCategory ? (
-          <div className="flex flex-col items-center w-full flex-1">
+          <div className="flex flex-col w-full">
             
-            {/* 2. 360-DEGREE CIRCULAR COVERFLOW CAROUSEL (Behind card visible, blurred & smaller) */}
-            <div className="relative w-full overflow-visible my-2.5 flex items-center justify-center" style={{ perspective: '1100px' }}>
-              <div className="relative h-[260px] w-full flex items-center justify-center" style={{ transformStyle: 'preserve-3d' }}>
-                {INDUSTRIES.map((item, index) => {
-                  const count = INDUSTRIES.length;
-                  // Circular offset in range [-count/2, count/2]
-                  let diff = (index - activeIndex) % count;
-                  if (diff > count / 2) diff -= count;
-                  if (diff < -count / 2) diff += count;
-
-                  const isActive = diff === 0;
-                  const isBehind = Math.abs(diff) === 2;
-                  const isSide = Math.abs(diff) === 1;
-
-                  // 360-degree positioning calculations
-                  let xOffset = 0;
-                  let zOffset = 0;
-                  let rotateY = 0;
-                  let scale = 1;
-                  let opacity = 1;
-                  let blurAmount = 'blur(0px)';
-                  let zIndex = 30;
-
-                  if (isActive) {
-                    xOffset = 0;
-                    zOffset = 0;
-                    rotateY = 0;
-                    scale = 1;
-                    opacity = 1;
-                    blurAmount = 'blur(0px)';
-                    zIndex = 40;
-                  } else if (isSide) {
-                    xOffset = diff * 105;
-                    zOffset = -110;
-                    rotateY = diff * -28;
-                    scale = 0.82;
-                    opacity = 0.88;
-                    blurAmount = 'blur(1.5px)';
-                    zIndex = 25;
-                  } else if (isBehind) {
-                    xOffset = 0;
-                    zOffset = -220;
-                    rotateY = 0;
-                    scale = 0.66;
-                    opacity = 0.55;
-                    blurAmount = 'blur(4px)';
-                    zIndex = 10;
-                  }
-
-                  return (
-                    <motion.div
-                      key={item.id}
-                      drag="x"
-                      dragConstraints={{ left: 0, right: 0 }}
-                      onDragEnd={(_, info) => {
-                        if (info.offset.x > 35) setActiveIndex((prev) => (prev - 1 + INDUSTRIES.length) % INDUSTRIES.length);
-                        if (info.offset.x < -35) setActiveIndex((prev) => (prev + 1) % INDUSTRIES.length);
-                      }}
-                      className="absolute cursor-pointer overflow-hidden rounded-[24px] w-[275px] sm:w-[295px] h-[245px] bg-slate-900 border border-white/50"
-                      initial={false}
-                      animate={{
-                        x: xOffset,
-                        z: zOffset,
-                        rotateY: rotateY,
-                        scale: scale,
-                        opacity: opacity,
-                        filter: blurAmount,
-                      }}
-                      transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-                      onClick={() => {
-                        if (isActive) {
-                          setPreviewingIndustryVideo(item);
-                        } else {
-                          setActiveIndex(index);
-                        }
-                      }}
-                      style={{
-                        zIndex,
-                        transformStyle: 'preserve-3d',
-                        boxShadow: isActive 
-                          ? '0 20px 40px -10px rgba(0,0,0,0.35), 0 8px 18px -4px rgba(0,0,0,0.18)' 
-                          : isBehind 
-                            ? '0 10px 25px -8px rgba(0,0,0,0.2)' 
-                            : '0 14px 28px -6px rgba(0,0,0,0.25)',
-                      }}
-                    >
-                      {/* Clean High-Resolution Picture - NO TEXT */}
-                      <img 
-                        src={item.image} 
-                        alt={item.name} 
-                        className="w-full h-full object-cover" 
-                      />
-                    </motion.div>
-                  );
-                })}
+            {/* Header matching reference image */}
+            <div className="mb-5 text-center">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                Choose Your Course
+              </h1>
+              <p className="text-xs text-slate-500 mt-1 font-medium">
+                Trending industries to explore
+              </p>
+              {/* Indicator dot */}
+              <div className="flex justify-center mt-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
               </div>
             </div>
 
-            {/* 3. WAREHOUSE & LOGISTICS / INDUSTRY DEPTH CARD (White card with deep shadows and blue font) */}
-            <div className="w-full mt-3 px-1">
-              <button
-                onClick={() => handleOpenIndustry(activeIndustry.id)}
-                className="w-full py-3.5 px-5 bg-white hover:bg-slate-50 active:scale-[0.98] rounded-[22px] shadow-[0_16px_36px_-6px_rgba(0,0,0,0.1),0_4px_12px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,1)] border border-slate-100/90 transition-all duration-300 flex items-center justify-between group cursor-pointer"
-              >
-                <div className="flex items-center gap-3.5 text-left">
-                  <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    {React.createElement(activeIndustry.icon, { className: 'w-5 h-5 text-[#1E75FF]' })}
-                  </div>
-                  <div>
-                    <h3 className="text-base sm:text-[17px] font-extrabold text-[#1E75FF] tracking-tight leading-tight">
-                      {activeIndustry.name}
-                    </h3>
-                    <p className="text-xs text-slate-400 font-medium line-clamp-1 mt-0.5">
-                      {activeIndustry.subtitle}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/25 group-hover:translate-x-1 transition-transform">
-                  <ArrowRight className="w-4 h-4" />
-                </div>
-              </button>
-            </div>
-
-            {/* 4. 4 FEATURE ELEMENTS - Icons resized 25% less (w-5 h-5), text non-bold and small */}
-            <div className="w-full grid grid-cols-4 gap-1.5 mt-5 mb-1 px-1">
-              {FEATURE_PILLARS.map((pillar) => {
-                const IconComponent = pillar.icon;
+            {/* Grid matching the reference screenshot: Vertical square cards with gradient icon at top */}
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              {COURSES.map((course) => {
+                const isActive = activeCourseId === course.id;
+                const IconComponent = course.icon;
+                const isClickable = course.clickable !== false;
                 return (
-                  <button
-                    key={pillar.id}
-                    onClick={() => setFeatureDetail(pillar)}
-                    className="flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-slate-100/70 active:scale-95 transition-all text-center focus:outline-none group cursor-pointer"
+                  <div
+                    key={course.id}
+                    onClick={() => handleSelectCourse(course)}
+                    className={`aspect-square rounded-[22px] p-3 flex flex-col items-center justify-center text-center transition-all duration-300 relative ${
+                      !isClickable
+                        ? 'bg-gradient-to-b from-slate-100 to-slate-200/90 text-slate-400 cursor-not-allowed shadow-[inset_0_2px_4px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] border border-slate-200/80 opacity-75'
+                        : isActive
+                        ? 'bg-gradient-to-b from-[#2563EB] to-[#1E40AF] text-white shadow-[0_10px_22px_-4px_rgba(37,99,235,0.4)] border border-blue-400/40 scale-[1.03] z-10'
+                        : 'bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-slate-700 shadow-[0_6px_16px_-4px_rgba(0,0,0,0.08)] border border-slate-200/80 cursor-pointer'
+                    }`}
                   >
-                    <div className="p-1.5 transition-transform group-hover:scale-110">
-                      <IconComponent className={`w-5 h-5 sm:w-5.5 sm:h-5.5 ${pillar.color} drop-shadow-xs`} />
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm mb-2 ${!isClickable ? 'bg-slate-200 text-slate-400' : isActive ? 'bg-white/20 text-white' : 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'}`}>
+                      <IconComponent className="w-6 h-6 stroke-[2]" />
                     </div>
-                    <span className="text-[10px] sm:text-[11px] font-normal text-slate-600 mt-0.5 leading-tight text-center">
-                      {pillar.label}
+                    <span className={`text-xs font-extrabold tracking-tight truncate w-full ${!isClickable ? 'text-slate-400' : isActive ? 'text-white' : 'text-slate-800'}`}>
+                      {course.name}
                     </span>
-                  </button>
+                    <span className={`text-[9px] font-medium mt-0.5 ${!isClickable ? 'text-slate-400' : isActive ? 'text-blue-200' : 'text-slate-400'}`}>
+                      {isClickable ? 'Explore' : 'Soon'}
+                    </span>
+                    {!isClickable && (
+                      <span className="absolute top-2 right-2 text-[8px] uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded bg-slate-200 text-slate-500">
+                        Soon
+                      </span>
+                    )}
+                  </div>
                 );
               })}
+            </div>
+
+            {/* Get Started Now Button */}
+            <div className="w-full mt-auto pb-4">
+              <button
+                onClick={handleGetStarted}
+                className="w-full py-4 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#7B2CBF] text-white font-black text-sm tracking-wider uppercase shadow-lg shadow-purple-500/25 hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer text-center"
+              >
+                Get Started Now
+              </button>
             </div>
 
           </div>
         ) : (
-          /* VIEW 2: Selected Industry Roles View - 2-Column Grid with Banner Depth, No Outline & Role Cards under each picture */
-          <div className="flex flex-col items-center w-full flex-1 pt-4 sm:pt-6">
-            
-            {/* 1. 2-COLUMN GRID OF ROLE PICTURES + CARDS (Shifted down) */}
-            <div className="w-full grid grid-cols-2 gap-x-3.5 gap-y-4 my-2">
-              {filteredRoles.map((roleItem: JobRole) => {
-                const roleImage = ROLE_IMAGES[roleItem.id] || roleItem.image || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80';
+          /* VIEW 2: Swipable Popular Career Roles Screen matching screenshot */
+          <div className="w-full min-h-screen bg-[#1157C7] flex justify-center selection:bg-blue-300 select-none pb-16 overflow-y-auto">
+            <div 
+              className="w-full max-w-md bg-[#1864DB] min-h-screen relative flex flex-col shadow-2xl"
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
+            >
+              
+              {/* Top Hero Image Section for Active Role */}
+              <div className="relative w-full h-[280px] shrink-0 overflow-hidden">
+                <img 
+                  src={ROLE_IMAGES[activeRole.id] || activeRole.image || 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1000&q=80'} 
+                  alt={activeRole.title} 
+                  className="w-full h-full object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
 
-                return (
-                  <div
-                    key={roleItem.id}
-                    onClick={() => handleSelectRole(roleItem)}
-                    className="flex flex-col gap-2 cursor-pointer group select-none"
+                {/* Back Button */}
+                <div className="absolute top-4 left-4 z-20">
+                  <button 
+                    onClick={() => navigate('choose-skill', { selectedSkillId: null })}
+                    className="w-9 h-9 rounded-xl bg-white/90 text-slate-800 shadow-md flex items-center justify-center hover:bg-white active:scale-95 transition-all cursor-pointer"
                   >
-                    {/* Picture Container with rich carousel banner depth & NO outline */}
-                    <div className="relative w-full aspect-[4/3.2] rounded-[22px] overflow-hidden shadow-[0_20px_40px_-10px_rgba(0,0,0,0.26),0_8px_16px_-4px_rgba(0,0,0,0.12)] bg-slate-900 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-[0_24px_45px_-10px_rgba(0,0,0,0.32)]">
-                      <img 
-                        src={roleImage} 
-                        alt={roleItem.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                    <ArrowLeft className="w-5 h-5 text-[#0E2856] stroke-[2.5]" />
+                  </button>
+                </div>
+
+                {/* Role Title Banner */}
+                <div className="absolute inset-x-0 bottom-8 text-center px-6 z-10">
+                  <span className="text-[11px] uppercase tracking-wider text-white/80 font-bold">CAREER TRACK</span>
+                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-md">
+                    {activeRole.title}
+                  </h1>
+                  
+                  {/* Swipe indicators */}
+                  <div className="flex items-center justify-center gap-1.5 mt-2">
+                    {filteredRoles.map((_, idx) => (
+                      <span 
+                        key={idx} 
+                        className={`h-1.5 rounded-full transition-all ${idx === activeRoleIndex ? 'w-6 bg-white' : 'w-1.5 bg-white/50'}`} 
                       />
-                    </div>
-
-                    {/* Small Depth Card Underneath Picture with Role Title */}
-                    <div className="w-full py-2 px-2.5 bg-white hover:bg-slate-50 active:scale-[0.98] rounded-[16px] shadow-[0_10px_25px_-5px_rgba(0,0,0,0.08),0_2px_6px_rgba(0,0,0,0.03),inset_0_1px_0_rgba(255,255,255,1)] border border-slate-100/90 transition-all duration-300 flex items-center justify-between">
-                      <div className="flex items-center gap-2 min-w-0 pr-1 text-left">
-                        <div className="w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                          <Briefcase className="w-3.5 h-3.5 text-[#1E75FF]" />
-                        </div>
-                        <div className="min-w-0">
-                          <h3 className="text-xs sm:text-[13px] font-extrabold text-[#1E75FF] tracking-tight leading-tight truncate">
-                            {roleItem.title}
-                          </h3>
-                          <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
-                            {roleItem.startingSalary ? `Starting ${roleItem.startingSalary}` : 'Certified Training'}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-xs shadow-blue-500/25 group-hover:translate-x-0.5 transition-transform">
-                        <ArrowRight className="w-3 h-3" />
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              </div>
 
+              {/* White Arched Card matching Screenshot */}
+              <div className="w-full bg-white rounded-t-[34px] -mt-6 z-20 flex-1 px-6 pt-6 pb-20 flex flex-col shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
+                
+                <div className="flex items-center justify-between mb-1">
+                  <h2 className="text-xl font-black text-slate-900 tracking-tight">About Course</h2>
+                  <div className="flex items-center gap-1">
+                    <button 
+                      onClick={() => setActiveRoleIndex((prev) => (prev - 1 + filteredRoles.length) % filteredRoles.length)}
+                      className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-xs font-bold"
+                    >
+                      ‹
+                    </button>
+                    <span className="text-xs font-bold text-slate-400">{activeRoleIndex + 1}/{filteredRoles.length}</span>
+                    <button 
+                      onClick={() => setActiveRoleIndex((prev) => (prev + 1) % filteredRoles.length)}
+                      className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-xs font-bold"
+                    >
+                      ›
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 my-2">
+                  {[1, 2, 3, 4].map(i => (
+                    <span key={i} className="text-purple-600 text-base">★</span>
+                  ))}
+                  <span className="text-slate-300 text-base">★</span>
+                </div>
+
+                <p className="text-xs text-slate-500 leading-relaxed mb-5">
+                  {activeRole.fullDescription || activeRole.shortDescription || 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.'}
+                </p>
+
+                <div className="space-y-3 mb-6 text-xs font-medium text-slate-700">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <span className="text-slate-400">Course Teacher :</span>
+                    <span className="font-extrabold text-slate-900">Jane Doe</span>
+                  </div>
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <span className="text-slate-400">Course Duration :</span>
+                    <span className="font-extrabold text-slate-900">2 Hours 35 minutes</span>
+                  </div>
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <span className="text-slate-400">Course Students :</span>
+                    <span className="font-extrabold text-slate-900">14+</span>
+                  </div>
+                  <div className="flex items-center justify-between pb-1">
+                    <span className="text-slate-400">Target Audience :</span>
+                    <span className="font-extrabold text-slate-900">8-12 years old</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleLaunchCareerTrack}
+                  className="w-full py-4 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#7B2CBF] text-white font-black text-xs tracking-wider uppercase shadow-lg shadow-purple-500/25 hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer text-center mt-auto"
+                >
+                  Get Started Now
+                </button>
+
+              </div>
+
+            </div>
           </div>
         )}
 
       </div>
 
-      {/* 6. INDUSTRY VIDEO SCREEN POPUP MODAL (Learner views industry experience video) */}
+      {/* INDUSTRY OVERVIEW MODAL / TAB */}
       <AnimatePresence>
-        {previewingIndustryVideo && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+        {modalCourse && activeCourseDetails && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
             <motion.div 
-              initial={{ opacity: 0, scale: 0.92, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 15 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="bg-slate-950 text-white rounded-[22px] max-w-sm w-full overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.5)] border border-white/15 relative flex flex-col"
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '100%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="w-full max-w-lg bg-white rounded-t-[32px] sm:rounded-[28px] overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
             >
-              {/* Close Button */}
-              <button 
-                onClick={() => setPreviewingIndustryVideo(null)}
-                className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md text-white/80 hover:text-white flex items-center justify-center border border-white/20 transition-all"
-              >
-                <X className="w-4 h-4" />
-              </button>
-
-              {/* Video Player Mockup Screen */}
-              <div className="w-full h-52 relative bg-black flex items-center justify-center overflow-hidden">
-                <img 
-                  src={previewingIndustryVideo.image} 
-                  alt={previewingIndustryVideo.name}
-                  className="w-full h-full object-cover opacity-70"
-                />
-                
-                {/* Video Play HUD Controls */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-black/40 flex flex-col justify-between p-3.5">
-                  <div className="flex items-center gap-2">
-                    <span className="bg-red-600 text-[10px] font-bold px-2 py-0.5 rounded text-white tracking-wider uppercase">
-                      Overview
-                    </span>
-                    <span className="text-[11px] text-white/80 font-medium">Industry Preview</span>
-                  </div>
-
-                  {/* Big Play Button inside video screen */}
-                  <div className="self-center">
-                    <div className="w-14 h-14 rounded-full bg-white/25 backdrop-blur-md border border-white/50 flex items-center justify-center text-white shadow-xl hover:scale-105 transition-transform cursor-pointer">
-                      <Play className="w-6 h-6 fill-white text-white translate-x-0.5" />
-                    </div>
-                  </div>
-
-                  {/* Progress bar */}
-                  <div className="w-full flex items-center gap-2">
-                    <div className="flex-1 h-1.5 bg-white/20 rounded-full overflow-hidden">
-                      <div className="w-1/3 h-full bg-blue-500 rounded-full" />
-                    </div>
-                    <span className="text-[10px] text-white/70">01:42</span>
-                  </div>
+              {/* Modal Header */}
+              <div className="relative p-5 bg-gradient-to-r from-[#2563EB] to-[#1E40AF] text-white flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest bg-white/20 px-2.5 py-0.5 rounded-full">
+                    Industry Brief
+                  </span>
+                  <h3 className="text-lg font-black tracking-tight mt-1">
+                    {activeCourseDetails.title}
+                  </h3>
                 </div>
+                <button
+                  onClick={() => setModalCourse(null)}
+                  className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-all cursor-pointer"
+                  title="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
-              {/* Video Info Content */}
-              <div className="p-4.5 flex flex-col gap-2.5">
-                <div>
-                  <span className="text-[11px] font-semibold text-blue-400 tracking-wide uppercase">
-                    {previewingIndustryVideo.name}
-                  </span>
-                  <h3 className="text-base font-bold text-white mt-0.5">
-                    {previewingIndustryVideo.videoTitle}
-                  </h3>
-                  <p className="text-xs text-slate-300 font-normal mt-1 leading-relaxed">
-                    {previewingIndustryVideo.videoDescription}
+              {/* Modal Body */}
+              <div className="p-5 overflow-y-auto space-y-4">
+                
+                {/* Video Format Brief Preview */}
+                <div className="relative w-full h-48 sm:h-52 rounded-2xl overflow-hidden bg-slate-900 shadow-md group">
+                  <img 
+                    src={activeCourseDetails.poster} 
+                    alt={activeCourseDetails.title}
+                    className={`w-full h-full object-cover transition-transform duration-700 ${isPlayingVideo ? 'scale-105 opacity-90' : 'opacity-80'}`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+                  {!isPlayingVideo ? (
+                    <div 
+                      onClick={() => setIsPlayingVideo(true)}
+                      className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer"
+                    >
+                      <div className="w-14 h-14 rounded-full bg-[#2563EB] text-white flex items-center justify-center shadow-xl shadow-blue-600/50 group-hover:scale-110 transition-transform">
+                        <Play className="w-6 h-6 fill-current ml-0.5" />
+                      </div>
+                      <span className="text-xs font-bold text-white mt-2.5 tracking-wide drop-shadow">
+                        Watch Industry Briefing (1:45)
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 p-4 text-center">
+                      <div className="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center mb-2 animate-pulse">
+                        <Video className="w-6 h-6" />
+                      </div>
+                      <p className="text-xs font-bold text-white mb-1">Playing Industry Overview Video...</p>
+                      <p className="text-[10px] text-slate-300">Learn core operations, safety, and career growth in {modalCourse.name}.</p>
+                      <button
+                        onClick={() => setIsPlayingVideo(false)}
+                        className="mt-3 px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 text-white text-[10px] font-bold cursor-pointer"
+                      >
+                        Pause / Reset
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-white/90 font-medium">
+                    <span className="flex items-center gap-1 bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">
+                      <Clock className="w-3 h-3 text-blue-400" /> {activeCourseDetails.duration}
+                    </span>
+                    <span className="flex items-center gap-1 bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">
+                      <Users className="w-3 h-3 text-emerald-400" /> {activeCourseDetails.studentCount}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Details Section */}
+                <div className="space-y-2">
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-400">Overview</h4>
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                    {activeCourseDetails.description}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 pt-2 border-t border-white/10">
-                  <button
-                    onClick={() => {
-                      const id = previewingIndustryVideo.id;
-                      setPreviewingIndustryVideo(null);
-                      handleOpenIndustry(id);
-                    }}
-                    className="flex-1 py-2.5 bg-[#1E75FF] hover:bg-blue-600 text-white rounded-full text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/25"
-                  >
-                    <span>View Career Roles</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setPreviewingIndustryVideo(null)}
-                    className="px-4 py-2.5 bg-white/10 hover:bg-white/15 text-white/80 text-xs font-semibold rounded-full transition-colors"
-                  >
-                    Close
-                  </button>
+                <div className="space-y-2">
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-400">Key Curriculum Highlights</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {activeCourseDetails.highlights.map((h, i) => (
+                      <div key={i} className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs font-bold text-slate-800">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
+                        <span className="truncate">{h}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
+              </div>
+
+              {/* Modal Footer Actions */}
+              <div className="p-4 sm:p-5 bg-slate-50 border-t border-slate-100 flex items-center gap-3">
+                <button
+                  onClick={() => setModalCourse(null)}
+                  className="px-5 py-3.5 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => handleProceedToNextScreen(modalCourse.id)}
+                  className="flex-1 py-3.5 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#7B2CBF] text-white font-black text-xs tracking-wider uppercase shadow-lg shadow-purple-500/25 hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer text-center flex items-center justify-center gap-2"
+                >
+                  <span>Get Started Now</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
-
-      {/* Feature Pillar Detail Popup Modal */}
-      <AnimatePresence>
-        {featureDetail && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-[22px] max-w-xs w-full p-5 shadow-2xl border border-slate-100 relative text-center flex flex-col items-center"
-            >
-              <button 
-                onClick={() => setFeatureDetail(null)}
-                className="absolute top-3.5 right-3.5 text-slate-400 hover:text-slate-700"
-              >
-                <X className="w-4 h-4" />
-              </button>
-
-              <div className="p-3 mb-2">
-                <featureDetail.icon className={`w-10 h-10 ${featureDetail.color}`} />
-              </div>
-
-              <h3 className="text-base font-bold text-slate-900">{featureDetail.label}</h3>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                {featureDetail.description}
-              </p>
-
-              <button
-                onClick={() => setFeatureDetail(null)}
-                className="mt-4 w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-xs font-bold transition-colors"
-              >
-                Awesome
-              </button>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Role Detail Popup */}
-      {selectedRole && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white p-6 rounded-3xl max-w-sm w-full relative shadow-2xl">
-            <button 
-              onClick={() => setSelectedRole(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-800 text-sm font-bold"
-            >
-              ✕
-            </button>
-            <h2 className="text-lg font-bold mb-2 text-slate-900">{selectedRole.title}</h2>
-            <div className="space-y-3 text-xs text-slate-600">
-              <p><strong>Overview:</strong> {selectedRole.description}</p>
-              <p><strong>Estimated Duration:</strong> {selectedRole.durationWeeks || 4} Weeks</p>
-            </div>
-            <button 
-              onClick={() => handleSelectRole(selectedRole)}
-              className="w-full mt-5 py-3 bg-[#1E75FF] text-white rounded-full font-bold text-sm"
-            >
-              Start Role Training
-            </button>
-          </div>
-        </div>
-      )}
 
     </div>
   );
 }
+
 
 
