@@ -2,20 +2,11 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "builds": [
-    {
-      "src": "dist/server.cjs",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "dist/**",
-      "use": "@vercel/static"
-    }
-  ],
+  "framework": "vite",
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "dist/server.cjs"
+      "destination": "/api/$1"
     },
     {
       "source": "/((?!Practice/|assets/Practice/).*)",

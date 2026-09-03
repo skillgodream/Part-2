@@ -57,8 +57,8 @@ export async function initiatePayUPayment(params: PayUPaymentParams): Promise<vo
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   
-  const surl = params.surl || `${origin}/api/payment-success`;
-  const furl = params.furl || `${origin}/api/payment-failure`;
+  const surl = params.surl || `${origin}/api/payment-call`;
+  const furl = params.furl || `${origin}/api/payment-call`;
 
   const payload = {
     txnid,
