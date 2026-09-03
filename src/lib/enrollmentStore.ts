@@ -171,6 +171,19 @@ export const enrollmentStore = {
     return inProgress || enrollments[0] || null;
   },
 
+  setActiveRole(roleId: string): Enrollment {
+    const enrollments = this.getEnrollments();
+    const existing = enrollments.find(e => e.roleId === roleId);
+    if (existing) {
+      setStorageItem(STORAGE_KEYS.ACTIVE_ENROLLMENT_ID, existing.id);
+      return existing;
+    } else {
+      const role = JOB_ROLES.find(r => r.id === roleId);
+      const skillId = role?.skillId || 'logistics-supply-chain';
+      return this.createEnrollment(roleId, skillId, 'pro');
+    }
+  },
+
   createEnrollment(roleId: string, skillId: string, plan: PlanType): Enrollment {
     const enrollments = this.getEnrollments();
     const role = JOB_ROLES.find(r => r.id === roleId);
@@ -420,21 +433,17 @@ export const cartStore = {
   addToCart(item: CartItem): boolean {
     const cart = this.getCart();
     
-    // Check if already in cart
-    const exists = cart.some(i => i.id === item.id || (i.productId === item.productId && i.selectedPlan === item.selectedPlan));
-    if (exists) {
-      return false;
+    // Check if exact item already in cart
+    const existingIndex = cart.findIndex(i => i.id === item.id || (i.productId === item.productId && i.selectedPlan === item.selectedPlan));
+    
+    let updated: CartItem[];
+    if (existingIndex >= 0) {
+      updated = [...cart];
+      updated[existingIndex] = item;
+    } else {
+      updated = [...cart, item];
     }
 
-    // Check if already purchased/enrolled
-    if (item.productType === 'skill' && this.isSkillEnrolled(item.productId)) {
-      return false;
-    }
-    if (item.productType === 'library' && this.isLibraryItemPurchased(item.productId)) {
-      return false;
-    }
-
-    const updated = [...cart, item];
     setStorageItem(STORAGE_KEYS.CART, updated);
     return true;
   },

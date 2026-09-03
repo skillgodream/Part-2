@@ -31,17 +31,18 @@ import {
   ShieldCheck,
   Users,
   Clock,
-  Video
+  Video,
+  ShoppingBag
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { JOB_ROLES } from '../lib/catalog';
 import { useRouter } from '../lib/router';
 import { JobRole } from '../lib/types';
+import { useCartState, useEnrollmentState } from '../lib/enrollmentStore';
 import animatedPic from '../assets/animated.jpeg';
 import inboundPic from '../assets/inbound.jpeg';
 import inventoryPic from '../assets/invrentory.jpeg';
 import pickerPic from '../assets/picker.jpeg';
-import warehousePic from '../assets/warehouse pic.jpeg';
 
 const ROLE_IMAGES: Record<string, string> = {
   'warehouse-associate': animatedPic,
@@ -121,7 +122,7 @@ const COURSE_DETAILS: Record<string, { title: string; subtitle: string; descript
 
 export function ChooseSkillScreen() {
   const { navigate, currentRoute } = useRouter();
-  const [activeCourseId, setActiveCourseId] = useState('warehouse');
+  const [activeCourseId, setActiveCourseId] = useState<string | null>(null);
   const [activeRoleIndex, setActiveRoleIndex] = useState(0);
   const [modalCourse, setModalCourse] = useState<CourseItem | null>(null);
   const [isPlayingVideo, setIsPlayingVideo] = useState<boolean>(false);
@@ -156,10 +157,8 @@ export function ChooseSkillScreen() {
     const isRightSwipe = distance < -minSwipeDistance;
 
     if (isLeftSwipe) {
-      // Swipe left -> next role
       setActiveRoleIndex((prev) => (prev + 1) % filteredRoles.length);
     } else if (isRightSwipe) {
-      // Swipe right -> prev role
       setActiveRoleIndex((prev) => (prev - 1 + filteredRoles.length) % filteredRoles.length);
     }
   };
@@ -193,11 +192,31 @@ export function ChooseSkillScreen() {
     handleSelectCourse(course);
   };
 
-  const handleLaunchCareerTrack = () => {
+  const { addToCart } = useCartState();
+  const { enrollSkill } = useEnrollmentState();
+  const [roleActiveTab, setRoleActiveTab] = useState<'about' | 'pricing'>('about');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const handlePayNow = () => {
+    enrollSkill(activeRole.id, selectedCategory || activeRole.skillId, 'pro');
     navigate('role-detail', { 
       roleId: activeRole.id, 
+      skillId: selectedCategory || activeRole.skillId 
+    });
+  };
+
+  const handleAddToCartRole = () => {
+    addToCart({
+      id: `cart-skill-${activeRole.id}-${Date.now()}`,
+      productId: activeRole.id,
+      productType: 'skill',
+      title: activeRole.title,
+      subtitle: 'Complete Career Mastery (Digital + Lab)',
+      price: 199,
+      selectedPlan: 'pro',
       skillId: selectedCategory || activeRole.skillId
     });
+    window.dispatchEvent(new Event('skillgo_open_cart'));
   };
 
   const activeCourseDetails = modalCourse ? COURSE_DETAILS[modalCourse.id] : null;
@@ -211,7 +230,7 @@ export function ChooseSkillScreen() {
         {!selectedCategory ? (
           <div className="flex flex-col w-full">
             
-            {/* Header matching reference image */}
+            {/* Header */}
             <div className="mb-5 text-center">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                 Choose Your Course
@@ -219,13 +238,12 @@ export function ChooseSkillScreen() {
               <p className="text-xs text-slate-500 mt-1 font-medium">
                 Trending industries to explore
               </p>
-              {/* Indicator dot */}
               <div className="flex justify-center mt-2.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-slate-900" />
               </div>
             </div>
 
-            {/* Grid matching the reference screenshot: Vertical square cards with gradient icon at top */}
+            {/* Course Grid */}
             <div className="grid grid-cols-3 gap-3.5 mb-6">
               {COURSES.map((course) => {
                 const isActive = activeCourseId === course.id;
@@ -274,7 +292,7 @@ export function ChooseSkillScreen() {
 
           </div>
         ) : (
-          /* VIEW 2: Swipable Popular Career Roles Screen matching screenshot */
+          /* VIEW 2: Swipable Popular Career Roles Screen */
           <div className="w-full min-h-screen bg-[#1157C7] flex justify-center selection:bg-blue-300 select-none pb-16 overflow-y-auto">
             <div 
               className="w-full max-w-md bg-[#1864DB] min-h-screen relative flex flex-col shadow-2xl"
@@ -321,64 +339,184 @@ export function ChooseSkillScreen() {
                 </div>
               </div>
 
-              {/* White Arched Card matching Screenshot */}
-              <div className="w-full bg-white rounded-t-[34px] -mt-6 z-20 flex-1 px-6 pt-6 pb-20 flex flex-col shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
+              {/* Toast Notification Banner */}
+              {toastMessage && (
+                <div className="absolute top-4 inset-x-6 z-50 bg-slate-900/95 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-4 duration-300 border border-slate-700">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold shrink-0 shadow">
+                      ✓
+                    </div>
+                    <p className="text-xs font-semibold leading-snug">{toastMessage}</p>
+                  </div>
+                  <button 
+                    onClick={() => setToastMessage(null)}
+                    className="text-slate-400 hover:text-white text-xs font-bold px-2 py-1 cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+
+              {/* White Arched Card */}
+              <div className="w-full bg-white rounded-t-[34px] -mt-6 z-20 flex-1 px-6 pt-5 pb-20 flex flex-col shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
                 
-                <div className="flex items-center justify-between mb-1">
-                  <h2 className="text-xl font-black text-slate-900 tracking-tight">About Course</h2>
-                  <div className="flex items-center gap-1">
-                    <button 
-                      onClick={() => setActiveRoleIndex((prev) => (prev - 1 + filteredRoles.length) % filteredRoles.length)}
-                      className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-xs font-bold"
+                {/* Tab switcher: About Role vs Course Price & Plan */}
+                <div className="flex items-center justify-between mb-4 bg-slate-100 p-1 rounded-2xl">
+                  <button
+                    onClick={() => setRoleActiveTab('about')}
+                    className={`flex-1 py-2 text-xs font-black rounded-xl transition-all cursor-pointer ${
+                      roleActiveTab === 'about'
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    About Role
+                  </button>
+                  <button
+                    onClick={() => setRoleActiveTab('pricing')}
+                    className={`flex-1 py-2 text-xs font-black rounded-xl transition-all cursor-pointer ${
+                      roleActiveTab === 'pricing'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    Course Price & Plan
+                  </button>
+                </div>
+
+                {roleActiveTab === 'about' ? (
+                  <>
+                    <div className="flex items-center justify-between mb-1">
+                      <h2 className="text-xl font-black text-slate-900 tracking-tight">Role Overview</h2>
+                      <div className="flex items-center gap-1">
+                        <button 
+                          onClick={() => setActiveRoleIndex((prev) => (prev - 1 + filteredRoles.length) % filteredRoles.length)}
+                          className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-xs font-bold"
+                        >
+                          ‹
+                        </button>
+                        <span className="text-xs font-bold text-slate-400">{activeRoleIndex + 1}/{filteredRoles.length}</span>
+                        <button 
+                          onClick={() => setActiveRoleIndex((prev) => (prev + 1) % filteredRoles.length)}
+                          className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-xs font-bold"
+                        >
+                          ›
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1 my-2">
+                      {[1, 2, 3, 4].map(i => (
+                        <span key={i} className="text-purple-600 text-base">★</span>
+                      ))}
+                      <span className="text-slate-300 text-base">★</span>
+                    </div>
+
+                    <p className="text-xs text-slate-500 leading-relaxed mb-5">
+                      {activeRole.fullDescription || activeRole.shortDescription || 'Gain practical workplace skills with our certified vocational career track designed for high-demand industry roles.'}
+                    </p>
+
+                    <div className="space-y-3 mb-6 text-xs font-medium text-slate-700">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span className="text-slate-400">Age Limit :</span>
+                        <span className="font-extrabold text-slate-900">18 - 35 Years</span>
+                      </div>
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span className="text-slate-400">Possible Companies :</span>
+                        <span className="font-extrabold text-slate-900 truncate max-w-[200px]" title={activeRole.hiringPartners ? activeRole.hiringPartners.join(', ') : 'Amazon, Flipkart, Zepto'}>
+                          {activeRole.hiringPartners && activeRole.hiringPartners.length > 0 ? activeRole.hiringPartners.slice(0, 3).join(', ') : 'Amazon, Flipkart, Zepto'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span className="text-slate-400">Salary Ranges :</span>
+                        <span className="font-extrabold text-slate-900">
+                          {activeRole.startingSalary && activeRole.seniorSalary ? `${activeRole.startingSalary} - ${activeRole.seniorSalary}` : '₹18,000 - ₹35,000 / mo'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between pb-1">
+                        <span className="text-slate-400">Cities :</span>
+                        <span className="font-extrabold text-slate-900">Mumbai, Delhi, Bengaluru, Pune</span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => setRoleActiveTab('pricing')}
+                      className="w-full py-4 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#7B2CBF] text-white font-black text-xs tracking-wider uppercase shadow-lg shadow-purple-500/25 hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer text-center mt-auto"
                     >
-                      ‹
+                      View Pricing & Enroll Now
                     </button>
-                    <span className="text-xs font-bold text-slate-400">{activeRoleIndex + 1}/{filteredRoles.length}</span>
-                    <button 
-                      onClick={() => setActiveRoleIndex((prev) => (prev + 1) % filteredRoles.length)}
-                      className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-xs font-bold"
-                    >
-                      ›
-                    </button>
-                  </div>
-                </div>
+                  </>
+                ) : (
+                  /* COURSE PRICE & PLAN TAB (Matching screenshot exact specification) */
+                  <div className="flex flex-col flex-1">
+                    
+                    {/* Recommended Pill & Title */}
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                        ALL ACCESS • RECOMMENDED
+                      </span>
+                      <span className="bg-blue-50 text-blue-700 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-blue-100">
+                        Digital + Lab
+                      </span>
+                    </div>
 
-                <div className="flex items-center gap-1 my-2">
-                  {[1, 2, 3, 4].map(i => (
-                    <span key={i} className="text-purple-600 text-base">★</span>
-                  ))}
-                  <span className="text-slate-300 text-base">★</span>
-                </div>
+                    <div className="space-y-1 mb-4">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 block">PROFESSIONAL ALL-ACCESS</span>
+                      <h3 className="text-xl font-black text-slate-900 tracking-tight leading-tight">Complete Career Mastery</h3>
+                    </div>
 
-                <p className="text-xs text-slate-500 leading-relaxed mb-5">
-                  {activeRole.fullDescription || activeRole.shortDescription || 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.'}
-                </p>
+                    {/* Price Block */}
+                    <div className="flex items-baseline gap-3 mb-5 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                      <span className="text-3xl font-black text-slate-900">₹199</span>
+                      <span className="text-sm font-bold text-slate-400 line-through">₹599</span>
+                      <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-2.5 py-1 rounded-lg">66% OFF</span>
+                    </div>
 
-                <div className="space-y-3 mb-6 text-xs font-medium text-slate-700">
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <span className="text-slate-400">Course Teacher :</span>
-                    <span className="font-extrabold text-slate-900">Jane Doe</span>
-                  </div>
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <span className="text-slate-400">Course Duration :</span>
-                    <span className="font-extrabold text-slate-900">2 Hours 35 minutes</span>
-                  </div>
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                    <span className="text-slate-400">Course Students :</span>
-                    <span className="font-extrabold text-slate-900">14+</span>
-                  </div>
-                  <div className="flex items-center justify-between pb-1">
-                    <span className="text-slate-400">Target Audience :</span>
-                    <span className="font-extrabold text-slate-900">8-12 years old</span>
-                  </div>
-                </div>
+                    {/* Checklist */}
+                    <div className="space-y-2.5 mb-6 text-xs font-semibold text-slate-700">
+                      <div className="flex items-start gap-2.5">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                        <span>All 4 Video Modules & SOP Guides</span>
+                      </div>
+                      <div className="flex items-start gap-2.5">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                        <span>Module Quizzes & SkillGo Digital Certificate</span>
+                      </div>
+                      <div className="flex items-start gap-2.5">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                        <span>Practical Simulation Labs & Interactive Hardware Sims</span>
+                      </div>
+                      <div className="flex items-start gap-2.5">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                        <span>Barcode Scanner & Warehouse Handheld Simulators</span>
+                      </div>
+                      <div className="flex items-start gap-2.5">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                        <span>Priority Partner Hiring Referral & Direct Interview Pass</span>
+                      </div>
+                    </div>
 
-                <button
-                  onClick={handleLaunchCareerTrack}
-                  className="w-full py-4 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#7B2CBF] text-white font-black text-xs tracking-wider uppercase shadow-lg shadow-purple-500/25 hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer text-center mt-auto"
-                >
-                  Get Started Now
-                </button>
+                    {/* Scenario Buttons */}
+                    <div className="space-y-2.5 mt-auto">
+                      <button
+                        onClick={handlePayNow}
+                        className="w-full py-3.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs tracking-wider uppercase shadow-lg shadow-blue-600/30 hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer text-center flex items-center justify-center gap-2"
+                      >
+                        <span>Enroll & Pay Now (₹199)</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        onClick={handleAddToCartRole}
+                        className="w-full py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs tracking-wide uppercase transition-all cursor-pointer text-center flex items-center justify-center gap-2 border border-slate-200"
+                      >
+                        <ShoppingBag className="w-4 h-4 text-blue-600" />
+                        <span>+ Add to Cart</span>
+                      </button>
+                    </div>
+
+                  </div>
+                )}
 
               </div>
 
@@ -514,6 +652,3 @@ export function ChooseSkillScreen() {
     </div>
   );
 }
-
-
-

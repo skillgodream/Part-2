@@ -31,6 +31,7 @@ import { AnswerImprove } from './screens/EnglishPractice/AnswerImprove';
 import { RealConversations } from './screens/EnglishPractice/RealConversations';
 import { SentenceLibrary } from './screens/EnglishPractice/SentenceLibrary';
 import { useEnrollmentState, useCartState, enrollmentStore, cartStore } from './lib/enrollmentStore';
+import { JOB_ROLES } from './lib/catalog';
 import { 
   ShieldCheck, 
   Search, 
@@ -74,6 +75,7 @@ function AppLayout() {
   const [selectedOrderRecord, setSelectedOrderRecord] = useState<any | null>(null);
   const [cartModalOpen, setCartModalOpen] = useState(false);
   const [languageModalOpen, setLanguageModalOpen] = useState(false);
+  const [dashboardSelectModalOpen, setDashboardSelectModalOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState(() => {
     return localStorage.getItem('skillgo_active_language_v1') || 'en';
   });
@@ -139,8 +141,13 @@ function AppLayout() {
 
     handleHashCheck();
     handleQueryParamsCheck();
+    const handleOpenCart = () => setCartModalOpen(true);
     window.addEventListener('hashchange', handleHashCheck);
-    return () => window.removeEventListener('hashchange', handleHashCheck);
+    window.addEventListener('skillgo_open_cart', handleOpenCart);
+    return () => {
+      window.removeEventListener('hashchange', handleHashCheck);
+      window.removeEventListener('skillgo_open_cart', handleOpenCart);
+    };
   }, []);
 
   const handleVerify = (e: React.FormEvent) => {
@@ -353,7 +360,7 @@ function AppLayout() {
 
                 {/* Tab 4: Dashboard */}
                 <button
-                  onClick={() => navigate('my-dashboard')}
+                  onClick={() => setDashboardSelectModalOpen(true)}
                   id="mobile-bottom-tab-dashboard"
                   className="group relative flex flex-col items-center justify-center flex-1 py-0.5 cursor-pointer select-none"
                 >
@@ -791,6 +798,66 @@ function AppLayout() {
         currentLanguage={currentLanguage}
         onSelectLanguage={handleSelectLanguage}
       />
+
+      {/* DASHBOARD COURSE SELECTOR MODAL */}
+      <Modal
+        isOpen={dashboardSelectModalOpen}
+        onClose={() => setDashboardSelectModalOpen(false)}
+        title="Select Course Dashboard"
+        maxWidth="max-w-sm"
+      >
+        <div className="space-y-3">
+          <p className="text-xs text-slate-500">
+            Choose which course dashboard you'd like to view:
+          </p>
+          <div className="space-y-2.5">
+            {(() => {
+              const enrollments = enrollmentStore.getEnrollments();
+              const enrolledRoleIds = enrollments.map(e => e.roleId);
+              const defaultRoleIds = ['f-b-service-specialist', 'warehouse-associate', 'dark-store-picker-packer'];
+              const combinedRoleIds = Array.from(new Set([...enrolledRoleIds, ...defaultRoleIds])).slice(0, 3);
+
+              return combinedRoleIds.map(roleId => {
+                const r = JOB_ROLES.find(item => item.id === roleId);
+                if (!r) return null;
+                const isEnrolled = enrolledRoleIds.includes(roleId);
+                const emoji = r.id.includes('f-b') ? '👨‍🍳' : r.id.includes('warehouse') ? '📦' : r.id.includes('dark-store') ? '⚡' : '🏢';
+                return (
+                  <div
+                    key={r.id}
+                    onClick={() => {
+                      enrollmentStore.setActiveRole(r.id);
+                      setDashboardSelectModalOpen(false);
+                      navigate('my-dashboard');
+                    }}
+                    className="bg-white border border-slate-200 rounded-xl p-3.5 hover:border-blue-500 hover:shadow-sm transition-all cursor-pointer flex items-center justify-between gap-3 group"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-xl shrink-0 border border-blue-100 shadow-inner">
+                        {emoji}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="text-xs font-bold text-slate-900 truncate group-hover:text-blue-600 transition-colors">
+                            {r.title}
+                          </h4>
+                          {isEnrolled && (
+                            <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded">Enrolled</span>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-slate-400 block truncate mt-0.5">
+                          {r.industry || 'Vocational Career Track'}
+                        </span>
+                      </div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-colors shrink-0" />
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }

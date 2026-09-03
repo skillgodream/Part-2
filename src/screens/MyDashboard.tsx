@@ -1,456 +1,431 @@
 import React, { useState } from 'react';
 import { 
-  ArrowLeft, 
-  MoreHorizontal, 
-  MapPin, 
-  Calendar, 
-  Ticket, 
-  GraduationCap, 
-  TrendingUp, 
-  Hourglass,
-  CheckCircle2,
-  BookOpen,
-  Zap,
-  ChevronRight,
-  Compass,
-  Award,
+  Bell, 
+  ChevronRight, 
+  BookOpen, 
+  Award, 
   Sparkles,
   BarChart3,
-  Flame,
+  CheckCircle2,
   Clock,
+  Flame,
   Target,
-  ShieldCheck,
-  Activity,
-  Layers
+  FileText,
+  HelpCircle,
+  Wrench,
+  GraduationCap,
+  Users,
+  TrendingUp
 } from 'lucide-react';
-import { useEnrollmentState, enrollmentStore } from '../lib/enrollmentStore';
-import { JOB_ROLES, SKILL_CATEGORIES } from '../lib/catalog';
+import { useEnrollmentState } from '../lib/enrollmentStore';
 import { useRouter } from '../lib/router';
-import { Enrollment, JobRole } from '../lib/types';
-import { Modal } from '../components/ui';
+import { JOB_ROLES } from '../lib/catalog';
 
 export function MyDashboardScreen() {
   const { navigate } = useRouter();
-  const { certificates, profile } = useEnrollmentState();
+  const { profile, activeEnrollment, role: currentRole } = useEnrollmentState();
+  const [activityFilter, setActivityFilter] = useState<'This Week' | 'This Month'>('This Week');
 
-  const allEnrollments: Enrollment[] = enrollmentStore.getEnrollments();
-  const inProgressEnrollments = allEnrollments.filter(e => !e.isCompleted && !e.assessmentPassed);
-  const completedEnrollments = allEnrollments.filter(e => e.isCompleted || e.assessmentPassed);
+  const role = currentRole || JOB_ROLES[0];
+  const roleEmoji = role.id.includes('f-b') ? '👨‍🍳' : role.id.includes('warehouse') ? '📦' : role.id.includes('dark-store') ? '⚡' : '🏢';
+  const completedCount = activeEnrollment?.completedModules?.length || 1;
+  const totalCount = role.modules?.length || 4;
+  const progressPct = Math.round((completedCount / totalCount) * 100);
 
-  // Time / Pace filter pill state: '2 min' | '5 min' | '15 min' | '10 min'
-  const [selectedPace, setSelectedPace] = useState<'2 min' | '5 min' | '15 min' | '10 min'>('15 min');
-  // Journey mode: 'departure' (Starting Career / Baseline) | 'arrival' (Target Role / Career Goal)
-  const [journeyMode, setJourneyMode] = useState<'departure' | 'arrival'>('arrival');
-  
-  // Interactive Modals
-  const [isMapExpanded, setIsMapExpanded] = useState<boolean>(false);
-  const [activeModal, setActiveModal] = useState<'none' | 'schedule' | 'tickets' | 'skills' | 'modules' | 'progress' | 'pending' | 'competency'>('none');
-
-  // Metrics Calculations
-  const totalSkillsCount = allEnrollments.length || 1;
-  
-  // Total completed modules across all enrolled skills
-  const totalModulesLearned = allEnrollments.reduce((acc, curr) => {
-    return acc + (curr.completedModules?.length || 0);
-  }, 0);
-
-  // Total modules available across enrolled skills
-  const totalEnrolledModulesCount = allEnrollments.reduce((acc, curr) => {
-    const role = JOB_ROLES.find(r => r.id === curr.roleId);
-    return acc + (role?.modules?.length || 4);
-  }, 0) || 4;
-
-  // Total pending modules
-  const pendingModulesCount = Math.max(0, totalEnrolledModulesCount - totalModulesLearned);
-
-  // Overall progress percentage
-  const overallProgressPercent = totalEnrolledModulesCount > 0 
-    ? Math.min(100, Math.round((totalModulesLearned / totalEnrolledModulesCount) * 100))
-    : 0;
-
-  // Primary enrolled role or default
-  const primaryEnrollment = allEnrollments[0];
-  const primaryRole: JobRole = primaryEnrollment ? (JOB_ROLES.find(r => r.id === primaryEnrollment.roleId) || JOB_ROLES[0]) : JOB_ROLES[0];
-  const primarySkill = primaryEnrollment ? (SKILL_CATEGORIES.find(s => s.id === primaryEnrollment.skillId) || SKILL_CATEGORIES[0]) : SKILL_CATEGORIES[0];
-
-  // Static non-editable From & To Roles
-  const originRoleTitle = 'Warehouse Associate Trainee';
-  const targetRoleTitle = primaryRole.title || 'Logistics Operations Supervisor';
-
-  // Analytics helper metrics
-  const paceMinutes = selectedPace === '2 min' ? 2 : selectedPace === '5 min' ? 5 : selectedPace === '10 min' ? 10 : 15;
-  const estimatedDaysToFinish = Math.max(1, Math.ceil((pendingModulesCount * 30) / paceMinutes));
-  
-  // Weekly study minutes dataset
-  const weeklyData = [
-    { day: 'Mon', mins: Math.round(paceMinutes * 1.2), goal: paceMinutes },
-    { day: 'Tue', mins: Math.round(paceMinutes * 1.5), goal: paceMinutes },
-    { day: 'Wed', mins: Math.round(paceMinutes * 0.8), goal: paceMinutes },
-    { day: 'Thu', mins: Math.round(paceMinutes * 1.4), goal: paceMinutes },
-    { day: 'Fri', mins: Math.round(paceMinutes * 1.8), goal: paceMinutes },
-    { day: 'Sat', mins: Math.round(paceMinutes * 0.9), goal: paceMinutes },
-    { day: 'Sun', mins: Math.round(paceMinutes * 1.1), goal: paceMinutes },
-  ];
-
-  // Competency skill breakdown
-  const competencies = [
-    { name: 'Warehouse Safety & Protocols', level: 94, status: 'Mastered', color: 'bg-emerald-400' },
-    { name: 'RF Scanner & Barcode Systems', level: 68, status: 'Proficient', color: 'bg-sky-300' },
-    { name: 'Pallet Stacking & QC Inspection', level: 45, status: 'In Progress', color: 'bg-amber-300' },
-    { name: 'Inventory Reconciliation Rig', level: 20, status: 'Upcoming', color: 'bg-indigo-300' },
+  // 7-Day Activity data matching reference image
+  const weeklyActivityData = [
+    { day: 'M', count: 4, height: '55%' },
+    { day: 'T', count: 8, height: '95%' },
+    { day: 'W', count: 6, height: '70%' },
+    { day: 'T', count: 9, height: '100%' },
+    { day: 'F', count: 5, height: '60%' },
+    { day: 'S', count: 8, height: '90%' },
+    { day: 'S', count: 2, height: '30%' },
   ];
 
   return (
-    <div className="w-full min-h-screen bg-[#F0F4F8] flex justify-center selection:bg-sky-200 select-none pb-28 overflow-y-auto">
+    <div id="my-dashboard-container" className="w-full min-h-screen bg-[#F5F8FC] flex justify-center selection:bg-blue-200 select-none pb-32 overflow-y-auto">
       
-      {/* Mobile-First Frame Container */}
-      <div className="w-full max-w-md min-h-screen bg-white shadow-2xl relative flex flex-col overflow-hidden">
+      {/* Mobile-First Container (~390px - 414px optimal width) */}
+      <div className="w-full max-w-[412px] min-h-screen bg-[#F5F8FC] flex flex-col px-4 pt-3 space-y-4">
         
         {/* =========================================================================
-            1. TOP MAP SECTION WITH INTEGRATED METRICS OVERLAY
+            HEADER
            ========================================================================= */}
-        <div className="relative w-full h-[320px] bg-[#E8EEF5] overflow-hidden shrink-0">
-          
-          {/* Stylized Vector Map Graphic */}
-          <svg className="absolute inset-0 w-full h-full object-cover opacity-80" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" preserveAspectRatio="xMidYMid slice">
-            <defs>
-              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#D3DFEE" strokeWidth="1" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="#F3F6FA" />
-            <rect width="100%" height="100%" fill="url(#grid)" />
-            
-            {/* Map Roads / Highway Vectors */}
-            <path d="M -20 180 Q 80 160 160 200 T 360 120 T 420 140" fill="none" stroke="#FFFFFF" strokeWidth="14" />
-            <path d="M -20 180 Q 80 160 160 200 T 360 120 T 420 140" fill="none" stroke="#E2EBF5" strokeWidth="10" />
-            
-            <path d="M 60 -20 Q 140 100 120 220 T 260 340" fill="none" stroke="#FFFFFF" strokeWidth="12" />
-            <path d="M 60 -20 Q 140 100 120 220 T 260 340" fill="none" stroke="#E2EBF5" strokeWidth="8" />
+        <div className="flex items-center justify-between pt-1 pb-1">
+          <div className="flex items-center gap-3">
+            {/* Profile Avatar with initials */}
+            <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-md ring-2 ring-white">
+              {profile.name ? profile.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'LE'}
+            </div>
+            <div>
+              <h1 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-1.5">
+                <span>Good morning, {profile.name || 'Learner'}</span>
+                <span className="inline-block">👋</span>
+              </h1>
+              <p className="text-xs text-slate-500 font-medium">Here’s how your learning is going</p>
+            </div>
+          </div>
 
-            <path d="M 180 -20 L 320 340" fill="none" stroke="#FFFFFF" strokeWidth="8" strokeDasharray="6 6" />
-            <path d="M 280 40 Q 320 180 420 240" fill="none" stroke="#FFFFFF" strokeWidth="10" />
-
-            {/* City zones / Learning hubs */}
-            <rect x="220" y="30" width="120" height="70" rx="8" fill="#E7EFF8" stroke="#D3DFEE" strokeWidth="1.5" />
-            <rect x="40" y="230" width="100" height="60" rx="8" fill="#E7EFF8" stroke="#D3DFEE" strokeWidth="1.5" />
-            <circle cx="340" cy="80" r="28" fill="#DDE8F5" />
-          </svg>
-
-          {/* Top Floating App Bar: Back Button | Center Pin | More Menu */}
-          <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {/* Notification Bell with red dot */}
             <button 
-              onClick={() => navigate('home')}
-              className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-md shadow-md flex items-center justify-center text-slate-800 hover:bg-white active:scale-95 transition-all cursor-pointer"
+              onClick={() => {}} 
+              className="w-10 h-10 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-700 hover:bg-slate-50 relative cursor-pointer"
             >
-              <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
+              <Bell className="w-5 h-5 stroke-[2]" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
             </button>
-
-            {/* Center Blue Location Pin (Career Milestone Hub) */}
-            <div className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-md shadow-md flex items-center justify-center text-[#0094FF]">
-              <MapPin className="w-6 h-6 fill-[#0094FF] text-white" />
-            </div>
-
-            {/* Right More Action */}
-            <button 
-              onClick={() => setIsMapExpanded(!isMapExpanded)}
-              className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-md shadow-md flex items-center justify-center text-slate-800 hover:bg-white active:scale-95 transition-all cursor-pointer"
-            >
-              <MoreHorizontal className="w-5 h-5 stroke-[2.2]" />
-            </button>
-          </div>
-
-          {/* Live Career Pin Indicator on Map with Pulse Effect */}
-          <div className="absolute top-24 left-20 z-10 flex flex-col items-center">
-            <div className="relative flex items-center justify-center">
-              <div className="absolute w-10 h-10 rounded-full bg-sky-400/40 animate-ping" />
-              <div className="w-8 h-8 rounded-full border-2 border-white bg-[#0094FF] shadow-lg flex items-center justify-center text-white relative z-10">
-                <GraduationCap className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-1 bg-white/95 backdrop-blur-md px-2.5 py-0.5 rounded-full shadow-md border border-slate-200/80 text-[10px] font-black text-slate-800 whitespace-nowrap">
-              {overallProgressPercent}% Complete
-            </div>
-          </div>
-
-          {/* Intelligently displayed broader metrics badge in top-left map area */}
-          <div className="absolute bottom-6 left-5 z-10 flex items-center gap-2">
-            <div 
-              onClick={() => setActiveModal('progress')}
-              className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-md border border-slate-200/80 flex items-center gap-2 cursor-pointer hover:bg-white transition-all"
-            >
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] font-extrabold text-slate-800">
-                {totalModulesLearned} / {totalEnrolledModulesCount} Modules Done
-              </span>
-            </div>
-          </div>
-
-          {/* "OPEN MAP" Action Button in Lower-Right */}
-          <div className="absolute bottom-5 right-4 z-20">
-            <button
-              onClick={() => setIsMapExpanded(true)}
-              className="bg-[#0099FF] hover:bg-[#0088EE] active:scale-95 text-white font-extrabold text-xs px-5 py-2.5 rounded-full shadow-[0_6px_20px_rgba(0,153,255,0.35)] transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider"
-            >
-              OPEN MAP
-            </button>
-          </div>
-
-        </div>
-
-        {/* =========================================================================
-            2. MIDDLE SECTION: NON-EDITABLE LEARNING TIMELINE (FROM & TO)
-           ========================================================================= */}
-        <div className="w-full bg-white px-6 py-5 z-20 relative border-b border-slate-100">
-          <div className="flex items-start gap-4">
-            
-            {/* Vertical Timeline Graphic: Solid Blue Dot -> Dashed Line -> Hollow Circle */}
-            <div className="flex flex-col items-center pt-2">
-              {/* Top Solid Blue Circle */}
-              <div className="w-4 h-4 rounded-full bg-[#0094FF] ring-4 ring-sky-100 shrink-0" />
-              
-              {/* Vertical Dashed Route Line */}
-              <div className="w-0.5 h-16 border-l-2 border-dashed border-slate-300 my-1" />
-              
-              {/* Bottom Hollow Circle */}
-              <div className="w-4 h-4 rounded-full border-2 border-slate-400 bg-white shrink-0" />
-            </div>
-
-            {/* From & To Static Non-Editable Text Fields */}
-            <div className="flex-1 space-y-3.5">
-              
-              {/* "From" Origin Field (Non-editable) */}
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                <div className="flex-1 pr-2">
-                  <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">
-                    From (Current Baseline)
-                  </span>
-                  <span className="text-base font-black text-[#0094FF] tracking-tight leading-tight block">
-                    {originRoleTitle}
-                  </span>
-                </div>
-                <div className="px-2.5 py-1 rounded-full bg-sky-50 text-[10px] font-extrabold text-[#0094FF] border border-sky-100 shrink-0">
-                  Origin
-                </div>
-              </div>
-
-              {/* "To" Destination Field (Non-editable) */}
-              <div className="flex items-center justify-between pt-0.5">
-                <div className="flex-1 pr-2">
-                  <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">
-                    To (Target Career Role)
-                  </span>
-                  <span className="text-base font-black text-[#0094FF] tracking-tight leading-tight block">
-                    {targetRoleTitle}
-                  </span>
-                </div>
-                <div className="px-2.5 py-1 rounded-full bg-blue-50 text-[10px] font-extrabold text-[#0094FF] border border-blue-100 shrink-0">
-                  Target
-                </div>
-              </div>
-
-            </div>
-
           </div>
         </div>
 
         {/* =========================================================================
-            3. BOTTOM CYAN / BLUE ARCHED ACTION PANEL WITH EXPANDED ANALYTICS
+            1. COURSE PROGRESS — MAIN HERO GRADIENT CARD
            ========================================================================= */}
-        <div className="w-full bg-[#1892FA] rounded-t-[34px] -mt-3 z-30 flex-1 px-6 pt-5 pb-8 flex flex-col justify-between shadow-[0_-12px_32px_rgba(0,148,255,0.22)] space-y-6">
-          
-          <div className="space-y-5">
+        <div className="w-[98%] mx-auto bg-gradient-to-br from-[#1E62FE] via-[#1652E1] to-[#0A3EC8] rounded-xl p-4 sm:p-5 text-white shadow-[0_18px_35px_rgba(30,98,254,0.35)] relative overflow-hidden min-h-[230px] flex flex-col justify-between">
+          {/* Background decorative glow */}
+          <div className="absolute right-0 top-0 w-56 h-56 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -left-16 -bottom-16 w-56 h-56 bg-blue-400/20 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 space-y-3">
             
-            {/* Departure vs Arrival Segmented Toggle */}
-            <div className="flex items-center justify-center gap-6 text-white font-extrabold text-base tracking-wide">
-              <button 
-                onClick={() => setJourneyMode('departure')}
-                className={`flex items-center gap-2 cursor-pointer transition-all ${journeyMode === 'departure' ? 'text-white scale-105' : 'text-white/70 hover:text-white'}`}
-              >
-                <span>Departure</span>
-              </button>
+            {/* Top row: Title + Role Icon */}
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-white/75 block">YOUR COURSE</span>
+                <h2 className="text-lg sm:text-xl font-black tracking-tight text-white leading-tight">{role.title}</h2>
+              </div>
               
-              {/* Radio Dot indicator */}
-              <div className="w-2.5 h-2.5 rounded-full border-2 border-white bg-transparent flex items-center justify-center">
-                <div className={`w-1 h-1 rounded-full ${journeyMode === 'arrival' ? 'bg-white' : 'bg-transparent'}`} />
-              </div>
-
-              <button 
-                onClick={() => setJourneyMode('arrival')}
-                className={`flex items-center gap-2 cursor-pointer transition-all ${journeyMode === 'arrival' ? 'text-white scale-105' : 'text-white/70 hover:text-white'}`}
-              >
-                <span>Arrival</span>
-              </button>
-            </div>
-
-            {/* Time / Pace Duration Filter Pills (2 min, 5 min, 15 min, 10 min) */}
-            <div className="flex items-center justify-between gap-2">
-              {(['2 min', '5 min', '15 min', '10 min'] as const).map((pace) => {
-                const isActive = selectedPace === pace;
-                return (
-                  <button
-                    key={pace}
-                    onClick={() => setSelectedPace(pace)}
-                    className={`flex-1 py-2 rounded-full text-xs font-black transition-all cursor-pointer text-center ${
-                      isActive 
-                        ? 'bg-transparent text-white border-2 border-white shadow-sm' 
-                        : 'bg-white text-[#1892FA] hover:bg-white/90 shadow-xs'
-                    }`}
-                  >
-                    {pace}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Broader Numbers Quick Summary Tile */}
-            <div className="bg-white/15 backdrop-blur-md rounded-2xl p-3.5 border border-white/20 flex items-center justify-around text-white">
-              <div 
-                onClick={() => setActiveModal('skills')}
-                className="text-center cursor-pointer hover:scale-105 transition-transform"
-              >
-                <span className="text-[10px] uppercase font-bold text-white/80 block">Skills</span>
-                <span className="text-base font-black">{totalSkillsCount} Enrolled</span>
-              </div>
-              <div className="w-px h-7 bg-white/25" />
-              <div 
-                onClick={() => setActiveModal('modules')}
-                className="text-center cursor-pointer hover:scale-105 transition-transform"
-              >
-                <span className="text-[10px] uppercase font-bold text-white/80 block">Completed</span>
-                <span className="text-base font-black">{totalModulesLearned} Mods</span>
-              </div>
-              <div className="w-px h-7 bg-white/25" />
-              <div 
-                onClick={() => setActiveModal('pending')}
-                className="text-center cursor-pointer hover:scale-105 transition-transform"
-              >
-                <span className="text-[10px] uppercase font-bold text-white/80 block">Pending</span>
-                <span className="text-base font-black">{pendingModulesCount} Mods</span>
+              {/* Role Icon Circle */}
+              <div className="w-12 h-12 rounded-lg bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/25 shadow-inner shrink-0">
+                <span className="text-xl">{roleEmoji}</span>
               </div>
             </div>
 
-            {/* =========================================================================
-                ADDITIONAL ANALYTICS EXPANSION: METRIC TILES & VELOCITY
-               ========================================================================= */}
-            
-            {/* 1. Daily Study Velocity & Streak Analytics */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-white space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-amber-300 fill-amber-300" />
-                  <span className="text-xs font-black uppercase tracking-wider">Weekly Learning Velocity</span>
-                </div>
-                <span className="text-[11px] font-bold text-sky-200">
-                  Target: {paceMinutes}m / day
-                </span>
-              </div>
-
-              {/* Weekly Mini Bar Chart */}
-              <div className="grid grid-cols-7 gap-1.5 items-end h-16 pt-2">
-                {weeklyData.map((item, idx) => {
-                  const barHeightPercent = Math.min(100, Math.round((item.mins / 25) * 100));
-                  return (
-                    <div key={idx} className="flex flex-col items-center gap-1 h-full justify-end">
-                      <div className="w-full bg-white/20 rounded-t-md h-full flex items-end overflow-hidden">
-                        <div 
-                          className="w-full bg-white rounded-t-md transition-all duration-500"
-                          style={{ height: `${barHeightPercent}%` }}
-                          title={`${item.day}: ${item.mins} mins`}
-                        />
-                      </div>
-                      <span className="text-[9px] font-bold text-white/80">{item.day}</span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Key Highlights row */}
-              <div className="pt-2 border-t border-white/15 flex items-center justify-between text-[11px]">
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-white/80" />
-                  <span className="font-semibold text-white/90">Est. Completion:</span>
-                </div>
-                <span className="font-black text-white">{estimatedDaysToFinish} Days Remaining</span>
-              </div>
-            </div>
-
-            {/* 2. Competency Mastery Breakdown */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-white space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Target className="w-4 h-4 text-white" />
-                  <span className="text-xs font-black uppercase tracking-wider">Competency Breakdown</span>
-                </div>
-                <button 
-                  onClick={() => setActiveModal('competency')}
-                  className="text-[10px] font-extrabold text-white/90 hover:underline cursor-pointer"
-                >
-                  View Detail
-                </button>
-              </div>
-
-              <div className="space-y-2.5">
-                {competencies.map((comp, idx) => (
-                  <div key={idx} className="space-y-1">
-                    <div className="flex justify-between text-[11px]">
-                      <span className="font-bold text-white/90 truncate max-w-[200px]">{comp.name}</span>
-                      <span className="font-black text-white">{comp.level}%</span>
-                    </div>
-                    <div className="w-full bg-black/20 rounded-full h-1.5 overflow-hidden">
-                      <div 
-                        className={`h-full rounded-full ${comp.color} transition-all duration-500`}
-                        style={{ width: `${comp.level}%` }}
-                      />
-                    </div>
+            {/* Middle Main Content: Circular Progress | Divider | Stats */}
+            <div className="flex items-center gap-5 sm:gap-7 pt-2 pb-1">
+              
+              {/* Circular Progress (Left) */}
+              <div className="flex flex-col items-center justify-center shrink-0 pr-2 sm:pr-4">
+                <div className="relative w-22 h-22 sm:w-24 sm:h-24 flex items-center justify-center">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                    <path
+                      className="text-white/20"
+                      strokeWidth="3.2"
+                      stroke="currentColor"
+                      fill="none"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    <path
+                      className="text-white drop-shadow-md"
+                      strokeDasharray="60, 100"
+                      strokeWidth="3.2"
+                      strokeLinecap="round"
+                      stroke="currentColor"
+                      fill="none"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                  </svg>
+                  <div className="absolute flex flex-col items-center justify-center text-center">
+                    <span className="text-xl sm:text-2xl font-black tracking-tight leading-none mb-0.5">60%</span>
+                    <span className="text-[9px] font-bold text-white/85 uppercase tracking-wider">Completed</span>
                   </div>
-                ))}
+                </div>
+              </div>
+
+              {/* Vertical Divider */}
+              <div className="w-[1px] h-24 bg-white/25 shrink-0" />
+
+              {/* Right Side Stats */}
+              <div className="flex-1 space-y-3 pl-2">
+                
+                {/* Stat 1 */}
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 shrink-0 text-white">
+                    <BookOpen className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="text-xs sm:text-sm font-black text-white leading-tight block">6 of 10</span>
+                    <span className="text-[10px] font-medium text-white/85 leading-tight block">Modules Completed</span>
+                  </div>
+                </div>
+
+                {/* Stat 2 */}
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 shrink-0 text-white">
+                    <Clock className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] sm:text-xs font-black text-white leading-tight block">4 Modules Remaining</span>
+                  </div>
+                </div>
+
+                {/* Stat 3 */}
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 shrink-0 text-amber-300">
+                    <Flame className="w-3.5 h-3.5 fill-amber-300" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] sm:text-xs font-black text-white leading-tight block">18 Days Left</span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        {/* =========================================================================
+            2. YOUR ACTIVITY
+           ========================================================================= */}
+        <div className="w-full mt-3 bg-white rounded-[24px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-slate-100 space-y-4">
+          
+          {/* Card Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#1E62FE] flex items-center justify-center">
+                <BarChart3 className="w-4 h-4 stroke-[2.2]" />
+              </div>
+              <h2 className="text-sm font-black text-slate-900">Your Activity</h2>
+            </div>
+            
+            {/* Filter Pill */}
+            <div className="bg-slate-100 hover:bg-slate-200 px-3 py-1 rounded-full text-xs font-bold text-slate-700 flex items-center gap-1.5 cursor-pointer transition-colors">
+              <span>{activityFilter}</span>
+              <ChevronRight className="w-3.5 h-3.5 rotate-90 text-slate-400" />
+            </div>
+          </div>
+
+          {/* Activities Completed Header */}
+          <div>
+            <span className="text-2xl font-black text-slate-900 tracking-tight">42</span>
+            <span className="text-xs font-bold text-slate-500 ml-2">Activities Completed</span>
+          </div>
+
+          {/* 7-Day Activity Chart */}
+          <div className="pt-2 pb-1">
+            <div className="flex items-end justify-between h-28 px-1 relative">
+              
+              {/* Background horizontal grid lines */}
+              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-30">
+                <div className="w-full border-b border-slate-100"></div>
+                <div className="w-full border-b border-slate-100"></div>
+                <div className="w-full border-b border-slate-100"></div>
+              </div>
+
+              {/* Vertical Bars */}
+              {weeklyActivityData.map((item, idx) => (
+                <div key={idx} className="flex flex-col items-center gap-2 z-10 flex-1 group">
+                  <div className="w-full max-w-[26px] bg-slate-100 rounded-xl h-20 flex items-end p-1">
+                    <div 
+                      className="w-full bg-gradient-to-t from-blue-600 to-indigo-500 rounded-lg transition-all duration-500 group-hover:brightness-110 shadow-sm"
+                      style={{ height: item.height }}
+                    />
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-500">{item.day}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Compact Category Breakdown Below Chart */}
+          <div className="grid grid-cols-4 gap-2 pt-2 border-t border-slate-100">
+            <div className="bg-slate-50 rounded-2xl p-2.5 text-center border border-slate-100">
+              <span className="text-base block mb-0.5">📖</span>
+              <span className="text-xs font-black text-slate-900 block">28</span>
+              <span className="text-[9px] font-bold text-slate-500 block uppercase">Learning</span>
+            </div>
+            <div className="bg-slate-50 rounded-2xl p-2.5 text-center border border-slate-100">
+              <span className="text-base block mb-0.5">❓</span>
+              <span className="text-xs font-black text-slate-900 block">8</span>
+              <span className="text-[9px] font-bold text-slate-500 block uppercase">Quick Checks</span>
+            </div>
+            <div className="bg-slate-50 rounded-2xl p-2.5 text-center border border-slate-100">
+              <span className="text-base block mb-0.5">🔧</span>
+              <span className="text-xs font-black text-slate-900 block">4</span>
+              <span className="text-[9px] font-bold text-slate-500 block uppercase">Practice</span>
+            </div>
+            <div className="bg-slate-50 rounded-2xl p-2.5 text-center border border-slate-100">
+              <span className="text-base block mb-0.5">🎯</span>
+              <span className="text-xs font-black text-slate-900 block">2</span>
+              <span className="text-[9px] font-bold text-slate-500 block uppercase">Assessments</span>
+            </div>
+          </div>
+
+        </div>
+
+        {/* =========================================================================
+            3. YOUR PERFORMANCE
+           ========================================================================= */}
+        <div className="w-full bg-white rounded-[24px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-slate-100 space-y-4">
+          
+          {/* Card Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                <Award className="w-4 h-4 stroke-[2.2]" />
+              </div>
+              <h2 className="text-sm font-black text-slate-900">Your Performance</h2>
+            </div>
+            
+            <button 
+              onClick={() => navigate('choose-skill')}
+              className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer"
+            >
+              <span>See Details</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Four Compact Colored Metric Tiles in 2x2 Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            
+            {/* Tile 1: Overall Score (Green) */}
+            <div className="bg-emerald-50/70 border border-emerald-200/60 rounded-2xl p-3.5 relative overflow-hidden flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-emerald-900">Overall Score</span>
+                <div className="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-xs">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                </div>
+              </div>
+              <div>
+                <span className="text-2xl font-black text-emerald-700 block tracking-tight">78%</span>
               </div>
             </div>
 
-            {/* 3. Performance Diagnostics Summary Tile */}
-            <div className="grid grid-cols-2 gap-3 text-white">
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 border border-white/20 space-y-1">
-                <div className="flex items-center gap-1.5 text-emerald-300">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span className="text-[10px] font-extrabold uppercase">Assessment Score</span>
+            {/* Tile 2: Practice Score (Blue) */}
+            <div className="bg-blue-50/70 border border-blue-200/60 rounded-2xl p-3.5 relative overflow-hidden flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-blue-900">Practice Score</span>
+                <div className="w-7 h-7 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                  <Target className="w-3.5 h-3.5" />
                 </div>
-                <div className="text-xl font-black">94%</div>
-                <span className="text-[10px] text-white/70 block">QC & Safety Exams</span>
               </div>
+              <div>
+                <span className="text-2xl font-black text-blue-600 block tracking-tight">82%</span>
+              </div>
+            </div>
 
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 border border-white/20 space-y-1">
-                <div className="flex items-center gap-1.5 text-amber-300">
-                  <Zap className="w-4 h-4" />
-                  <span className="text-[10px] font-extrabold uppercase">Practical Lab</span>
+            {/* Tile 3: Assessment Score (Orange) */}
+            <div className="bg-amber-50/70 border border-amber-200/60 rounded-2xl p-3.5 relative overflow-hidden flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-amber-900">Assessment Score</span>
+                <div className="w-7 h-7 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs">
+                  <FileText className="w-3.5 h-3.5" />
                 </div>
-                <div className="text-xl font-black">88%</div>
-                <span className="text-[10px] text-white/70 block">Hands-on VR Score</span>
+              </div>
+              <div>
+                <span className="text-2xl font-black text-amber-600 block tracking-tight">74%</span>
+              </div>
+            </div>
+
+            {/* Tile 4: Best Score (Purple) */}
+            <div className="bg-purple-50/70 border border-purple-200/60 rounded-2xl p-3.5 relative overflow-hidden flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold text-purple-900">Best Score</span>
+                <div className="w-7 h-7 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-xs">
+                  <Award className="w-3.5 h-3.5" />
+                </div>
+              </div>
+              <div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-2xl font-black text-purple-700 block tracking-tight">84%</span>
+                </div>
+                <span className="text-[10px] font-bold text-purple-600 block mt-0.5">Keep it up!</span>
               </div>
             </div>
 
           </div>
 
-          {/* Dual Action Buttons: SCHEDULE & TICKETS */}
-          <div className="flex items-center gap-3 pt-4">
-            
-            {/* SCHEDULE (White Pill Button) */}
-            <button
-              onClick={() => setActiveModal('schedule')}
-              className="flex-1 bg-white hover:bg-slate-50 active:scale-98 text-[#0094FF] py-3.5 px-4 rounded-full font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(0,0,0,0.1)] transition-all cursor-pointer"
-            >
-              <Calendar className="w-4 h-4 stroke-[2.5]" />
-              <span>SCHEDULE</span>
-            </button>
+        </div>
 
-            {/* TICKETS (Black Pill Button) */}
-            <button
-              onClick={() => setActiveModal('tickets')}
-              className="flex-1 bg-black hover:bg-slate-900 active:scale-98 text-white py-3.5 px-4 rounded-full font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(0,0,0,0.25)] transition-all cursor-pointer"
-            >
-              <Ticket className="w-4 h-4 stroke-[2.5]" />
-              <span>TICKETS</span>
-            </button>
+        {/* =========================================================================
+            4. COURSE PROGRESS BY AREA
+           ========================================================================= */}
+        <div className="w-full bg-white rounded-[24px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-slate-100 space-y-4">
+          
+          {/* Card Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <GraduationCap className="w-4 h-4 stroke-[2.2]" />
+              </div>
+              <h2 className="text-sm font-black text-slate-900">Course Progress by Area</h2>
+            </div>
+          </div>
+
+          {/* Four Equal Compact Tiles */}
+          <div className="grid grid-cols-2 gap-3">
+            
+            {/* Tile 1: Core Course */}
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 flex flex-col justify-between space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                  📖
+                </div>
+                <span className="text-lg font-black text-emerald-600">60%</span>
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-slate-900">Core Course</h3>
+                <p className="text-[10px] text-slate-500 font-medium mb-2">6 / 10 Modules</p>
+                <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-emerald-500 h-full rounded-full" style={{ width: '60%' }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Tile 2: English Prep */}
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 flex flex-col justify-between space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+                  🗣️
+                </div>
+                <span className="text-lg font-black text-amber-600">50%</span>
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-slate-900">English Prep</h3>
+                <p className="text-[10px] text-slate-500 font-medium mb-2">3 / 6 Modules</p>
+                <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-amber-500 h-full rounded-full" style={{ width: '50%' }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Tile 3: Interview Prep */}
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 flex flex-col justify-between space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+                  👥
+                </div>
+                <span className="text-lg font-black text-purple-600">40%</span>
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-slate-900">Interview Prep</h3>
+                <p className="text-[10px] text-slate-500 font-medium mb-2">2 / 5 Modules</p>
+                <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-purple-600 h-full rounded-full" style={{ width: '40%' }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Tile 4: Assessments */}
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 flex flex-col justify-between space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                  📋
+                </div>
+                <span className="text-lg font-black text-blue-600">70%</span>
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-slate-900">Assessments</h3>
+                <p className="text-[10px] text-slate-500 font-medium mb-2">7 / 10 Completed</p>
+                <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                  <div className="bg-blue-600 h-full rounded-full" style={{ width: '70%' }} />
+                </div>
+              </div>
+            </div>
 
           </div>
 
@@ -458,185 +433,8 @@ export function MyDashboardScreen() {
 
       </div>
 
-      {/* =========================================================================
-          INTERACTIVE MODALS FOR MAP & ACTIONS
-         ========================================================================= */}
-      
-      {/* 1. EXPANDED MAP MODAL */}
-      <Modal 
-        isOpen={isMapExpanded} 
-        onClose={() => setIsMapExpanded(false)} 
-        title="Career Learning Roadmap Map"
-      >
-        <div className="space-y-4">
-          <div className="relative w-full h-48 bg-sky-50 rounded-2xl overflow-hidden border border-sky-200 flex items-center justify-center">
-            <div className="text-center p-4">
-              <Compass className="w-10 h-10 text-[#0094FF] mx-auto mb-2" />
-              <h4 className="text-sm font-bold text-slate-800">Operational Learning Map</h4>
-              <p className="text-xs text-slate-500 mt-1">Connecting your trainee foundation to supervisor readiness across 4 milestones.</p>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <h5 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Milestone Stops</h5>
-            <div className="space-y-2">
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between">
-                <span className="text-xs font-bold text-emerald-900">Stop 1: Safety & Compliance</span>
-                <span className="text-[11px] font-extrabold text-emerald-700">100% Passed</span>
-              </div>
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between">
-                <span className="text-xs font-bold text-blue-900">Stop 2: RF Scanning & Picking</span>
-                <span className="text-[11px] font-extrabold text-blue-700">In Progress (60%)</span>
-              </div>
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-700">Stop 3: Practical Lab Rig</span>
-                <span className="text-[11px] font-semibold text-slate-400">Locked</span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setIsMapExpanded(false)}
-            className="w-full py-2.5 rounded-xl bg-[#0094FF] text-white font-bold text-xs uppercase cursor-pointer"
-          >
-            Close Map
-          </button>
-        </div>
-      </Modal>
-
-      {/* 2. SCHEDULE MODAL */}
-      <Modal 
-        isOpen={activeModal === 'schedule'} 
-        onClose={() => setActiveModal('none')} 
-        title="Training Schedule & Daily Pace"
-      >
-        <div className="space-y-4">
-          <p className="text-xs text-slate-600">
-            Selected daily commitment pace: <strong className="text-[#0094FF]">{selectedPace} / day</strong>.
-          </p>
-          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2 text-xs text-slate-700">
-            <div className="flex justify-between">
-              <span>Next Training Session:</span>
-              <strong className="text-slate-900">Today, 5:30 PM</strong>
-            </div>
-            <div className="flex justify-between">
-              <span>Estimated Certification Date:</span>
-              <strong className="text-emerald-600">In ~{estimatedDaysToFinish} days</strong>
-            </div>
-          </div>
-          <button
-            onClick={() => {
-              setActiveModal('none');
-              navigate('course-modules', { roleId: primaryRole.id });
-            }}
-            className="w-full py-2.5 rounded-xl bg-[#0094FF] text-white font-bold text-xs uppercase cursor-pointer"
-          >
-            Go to Active Course
-          </button>
-        </div>
-      </Modal>
-
-      {/* 3. TICKETS (CAREER PASS) MODAL */}
-      <Modal 
-        isOpen={activeModal === 'tickets'} 
-        onClose={() => setActiveModal('none')} 
-        title="Your Career Passes & Tickets"
-      >
-        <div className="space-y-4">
-          <div className="p-4 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl space-y-3 shadow-lg">
-            <div className="flex justify-between items-start">
-              <div>
-                <span className="text-[10px] text-sky-400 font-bold uppercase tracking-wider">BOARDING PASS</span>
-                <h4 className="text-sm font-black text-white">{primaryRole.title}</h4>
-              </div>
-              <Ticket className="w-6 h-6 text-sky-400" />
-            </div>
-            <div className="border-t border-dashed border-slate-700 pt-2 flex justify-between text-xs">
-              <div>
-                <span className="text-[9px] text-slate-400 block">ENROLLMENT</span>
-                <span className="font-bold text-white uppercase">{primaryEnrollment?.plan || 'PRO PASS'}</span>
-              </div>
-              <div>
-                <span className="text-[9px] text-slate-400 block">STATUS</span>
-                <span className="font-bold text-emerald-400">ACTIVE</span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={() => {
-              setActiveModal('none');
-              navigate('certificate');
-            }}
-            className="w-full py-2.5 rounded-xl bg-black text-white font-bold text-xs uppercase cursor-pointer"
-          >
-            View Certificates
-          </button>
-        </div>
-      </Modal>
-
-      {/* 4. COMPETENCY DETAIL MODAL */}
-      <Modal
-        isOpen={activeModal === 'competency'}
-        onClose={() => setActiveModal('none')}
-        title="Detailed Competency Matrix"
-      >
-        <div className="space-y-3 text-xs text-slate-700">
-          {competencies.map((comp, idx) => (
-            <div key={idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
-              <div className="flex justify-between font-bold text-slate-900">
-                <span>{comp.name}</span>
-                <span className="text-[#0094FF]">{comp.level}%</span>
-              </div>
-              <div className="flex justify-between text-[11px] text-slate-500">
-                <span>Status: <strong>{comp.status}</strong></span>
-                <span>Verified via practical simulations</span>
-              </div>
-            </div>
-          ))}
-          <button
-            onClick={() => setActiveModal('none')}
-            className="w-full py-2 rounded-xl bg-slate-900 text-white font-bold text-xs uppercase cursor-pointer mt-2"
-          >
-            Close
-          </button>
-        </div>
-      </Modal>
-
-      {/* 5. METRICS DETAILS MODAL */}
-      <Modal
-        isOpen={activeModal === 'skills' || activeModal === 'modules' || activeModal === 'progress' || activeModal === 'pending'}
-        onClose={() => setActiveModal('none')}
-        title="Learning Journey Analytics"
-      >
-        <div className="space-y-3 text-xs text-slate-700">
-          <div className="p-3 bg-sky-50 border border-sky-200 rounded-xl space-y-1">
-            <div className="flex justify-between font-bold">
-              <span>Total Skills Enrolled:</span>
-              <span>{totalSkillsCount}</span>
-            </div>
-            <div className="flex justify-between font-bold">
-              <span>Completed Modules:</span>
-              <span className="text-emerald-600">{totalModulesLearned}</span>
-            </div>
-            <div className="flex justify-between font-bold">
-              <span>Pending Modules:</span>
-              <span className="text-amber-600">{pendingModulesCount}</span>
-            </div>
-            <div className="flex justify-between font-bold">
-              <span>Total Progress:</span>
-              <span className="text-[#0094FF]">{overallProgressPercent}%</span>
-            </div>
-          </div>
-          <button
-            onClick={() => setActiveModal('none')}
-            className="w-full py-2 rounded-xl bg-slate-900 text-white font-bold text-xs uppercase cursor-pointer"
-          >
-            Close
-          </button>
-        </div>
-      </Modal>
-
     </div>
   );
 }
+
+export default MyDashboardScreen;
