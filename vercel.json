@@ -5,6 +5,10 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/api/payment-call",
+      "destination": "/api/payment-call.js"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/$1"
     },
