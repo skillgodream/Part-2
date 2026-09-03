@@ -203,7 +203,7 @@ export function ChooseSkillScreen() {
   const activeCourseDetails = modalCourse ? COURSE_DETAILS[modalCourse.id] : null;
 
   return (
-    <div className="w-full min-h-screen bg-white font-sans text-slate-900 pb-28 select-none flex flex-col items-center">
+    <div className="w-full min-h-screen bg-[#F4F5F6] font-sans text-slate-900 pb-28 select-none flex flex-col items-center">
       
       {/* Container restricted to mobile width */}
       <div className="w-full max-w-md px-6 pt-8 sm:pt-10 flex flex-col flex-1 justify-between relative">
@@ -226,7 +226,7 @@ export function ChooseSkillScreen() {
             </div>
 
             {/* Grid matching the reference screenshot: Vertical square cards with gradient icon at top */}
-            <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="grid grid-cols-3 gap-3.5 mb-6">
               {COURSES.map((course) => {
                 const isActive = activeCourseId === course.id;
                 const IconComponent = course.icon;
@@ -235,12 +235,12 @@ export function ChooseSkillScreen() {
                   <div
                     key={course.id}
                     onClick={() => handleSelectCourse(course)}
-                    className={`aspect-square rounded-[22px] p-3 flex flex-col items-center justify-center text-center transition-all duration-300 relative ${
+                    className={`aspect-square rounded-[16px] p-3 flex flex-col items-center justify-center text-center transition-all duration-300 relative ${
                       !isClickable
-                        ? 'bg-gradient-to-b from-slate-100 to-slate-200/90 text-slate-400 cursor-not-allowed shadow-[inset_0_2px_4px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] border border-slate-200/80 opacity-75'
+                        ? 'bg-gradient-to-b from-slate-100 to-slate-200/90 text-slate-400 cursor-not-allowed shadow-[0_20px_30px_rgba(0,0,0,0.03)] border border-slate-200/60 opacity-75'
                         : isActive
-                        ? 'bg-gradient-to-b from-[#2563EB] to-[#1E40AF] text-white shadow-[0_10px_22px_-4px_rgba(37,99,235,0.4)] border border-blue-400/40 scale-[1.03] z-10'
-                        : 'bg-gradient-to-b from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 text-slate-700 shadow-[0_6px_16px_-4px_rgba(0,0,0,0.08)] border border-slate-200/80 cursor-pointer'
+                        ? 'bg-gradient-to-b from-[#2563EB] to-[#1E40AF] text-white shadow-[0_20px_35px_rgba(37,99,235,0.18)] border border-blue-400/40 scale-[1.03] z-10'
+                        : 'bg-white hover:bg-slate-50/80 text-slate-700 shadow-[0_20px_35px_rgba(0,0,0,0.04)] border border-slate-200/60 cursor-pointer'
                     }`}
                   >
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm mb-2 ${!isClickable ? 'bg-slate-200 text-slate-400' : isActive ? 'bg-white/20 text-white' : 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white'}`}>
