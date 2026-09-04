@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Clapperboard, 
   Bot, 
@@ -10,41 +10,104 @@ import {
 import { useRouter } from '../lib/router';
 import { SkillGoLogo } from '../components/ui';
 
+const HERO_BANNERS = [
+  {
+    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    subtitle: 'We Are Here to Help',
+    title: 'For Your Dream Job',
+    alt: 'Traveler overlooking mountains'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80',
+    subtitle: 'Skill Up Your Future',
+    title: 'Industry-Ready Certifications',
+    alt: 'Modern workspace collaboration'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80',
+    subtitle: 'Learn & Grow',
+    title: 'Master Practical Workplace SOPs',
+    alt: 'Professional training session'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80',
+    subtitle: 'Accelerate Your Career',
+    title: 'Verified Digital Credentials',
+    alt: 'Team success and growth'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80',
+    subtitle: 'Confidence Guaranteed',
+    title: 'AI-Powered Interview Practice',
+    alt: 'Interview preparation'
+  }
+];
+
 export function HomeScreen() {
   const { navigate } = useRouter();
+  const [currentBanner, setCurrentBanner] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentBanner((prev) => (prev + 1) % HERO_BANNERS.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <div className="w-full min-h-screen bg-[#B8D3DE] flex flex-col pb-36 overflow-y-auto select-none">
+    <div className="w-full min-h-screen bg-[#B8D3DE] flex flex-col pb-44 overflow-y-auto select-none">
       
-      {/* 1. HERO BANNER - Preserved full size and height */}
-      <section className="w-full px-4 pt-0 h-[62.4vh] shrink-0 relative">
+      {/* 1. HERO BANNER - Preserved full size and height with Auto-Scroll */}
+      <section className="w-full px-4 pt-0 h-[48vh] sm:h-[62.4vh] shrink-0 relative">
         <div className="w-full h-full relative rounded-b-[36px] overflow-hidden shadow-[0_16px_36px_-10px_rgba(0,0,0,0.18)]">
-          <img
-            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
-            alt="Traveler overlooking mountains"
-            className="w-full h-full object-cover"
-          />
+          {HERO_BANNERS.map((banner, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentBanner ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              }`}
+            >
+              <img
+                src={banner.image}
+                alt={banner.alt}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent flex flex-col justify-end items-center text-center p-6 text-white">
+                <span className="text-xs font-semibold tracking-widest uppercase text-sky-200/90 mb-1">
+                  {banner.subtitle}
+                </span>
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white drop-shadow-md">
+                  {banner.title}
+                </h1>
+              </div>
+            </div>
+          ))}
           
           {/* Translucent Logo */}
-          <div className="absolute top-4 left-4 z-20">
+          <div className="absolute top-4 left-4 z-30">
             <div className="bg-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/30 shadow-sm opacity-90 hover:opacity-100 transition-opacity">
               <SkillGoLogo size="sm" theme="light" />
             </div>
           </div>
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent flex flex-col justify-end items-center text-center p-6 text-white">
-            <span className="text-xs font-semibold tracking-widest uppercase text-sky-200/90 mb-1">
-              We Are Here to Help
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white drop-shadow-md">
-              For Your Dream Job
-            </h1>
+          {/* Carousel Pagination Dots */}
+          <div className="absolute bottom-4 right-4 z-30 flex items-center gap-1.5 bg-black/30 backdrop-blur-xs px-2.5 py-1 rounded-full">
+            {HERO_BANNERS.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentBanner(idx)}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  idx === currentBanner ? 'w-5 bg-emerald-400' : 'w-1.5 bg-white/50 hover:bg-white'
+                }`}
+                aria-label={`Slide ${idx + 1}`}
+              />
+            ))}
           </div>
         </div>
       </section>
       
       {/* 2. COMPACT CARD CONTENT CONTAINER (Smaller cards to fit comfortably above menu dock) */}
-      <div className="px-4 flex flex-col gap-2 pt-2.5">
+      <div className="px-4 flex flex-col gap-2 pt-2">
         
         {/* MAIN COMPACT CARD: Your Career skills */}
         <div 
